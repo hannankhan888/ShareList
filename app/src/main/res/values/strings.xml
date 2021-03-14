@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">ShareList</string>
+    <string name="sharelist">ShareList</string>
+    <string name="password">Password</string>
+    <string name="email_address">Email Address</string>
+    <string name="login">Login</string>
+    <string name="forget_password">Forget Password</string>
+    <string name="register">register</string>
+    <string name="create_account">Create Account</string>
+    <string name="create_email_address">Create Email Address</string>
+    <string name="create_password">Create Password</string>
+    <string name="create_phonenumber">Create Phone Number</string>
+    <string name="create_user_name">Create User Name</string>
+</resources>
