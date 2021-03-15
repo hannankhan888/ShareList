@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "108256844651",
+    "project_id": "sharelist-afc53",
+    "storage_bucket": "sharelist-afc53.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:108256844651:android:24c62351823d5e5bb7ca2e",
+        "android_client_info": {
+          "package_name": "com.example.loginsharelist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "108256844651-jbr6crnm163oqlmqk58cdgoht98fhp31.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSSETUJfWEVDmTnmAq1ZC7cw-1pW8zNKo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "108256844651-jbr6crnm163oqlmqk58cdgoht98fhp31.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
