@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+
 public class CreateGroup extends AppCompatActivity {
     private RecyclerView recyclerViewGroup;
     private FloatingActionButton addGroupButton;
@@ -74,9 +75,11 @@ public class CreateGroup extends AppCompatActivity {
         EditText groupName = view.findViewById(R.id.addGroupName);
         Button groupSaveButton = view.findViewById(R.id.groupSaveButton);
         groupSaveButton.setOnClickListener((v) -> {
+            // Everything is converted to string
             String groupNameStr = groupName.getText().toString().trim();
             String id = databaseReference.push().getKey();
 
+            // Validate everything is not empty
             if (groupNameStr.isEmpty()) {
                 groupName.setError("It should not be empty. ");
                 return;
@@ -132,7 +135,12 @@ public class CreateGroup extends AppCompatActivity {
                 holder.view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        startActivity(new Intent(CreateGroup.this, CreateTask.class));
+                        Intent intent = new Intent(CreateGroup.this, CreateTask.class);
+                        // How do I pass data between Activities in Android application
+                        // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
+                        intent.putExtra("EXTRA_GROUP_NAME", model.getGroupName());
+                        startActivity(intent);
+//                        startActivity(new Intent(CreateGroup.this, CreateTask.class));
                     }
                 });
             }
@@ -143,3 +151,10 @@ public class CreateGroup extends AppCompatActivity {
         firebaseRecyclerAdapter.startListening();
     }
 }
+
+
+git init
+git remote add origin https://github.com/yxw1001827416/ShareList.git
+git add .
+git commit -m "update how data is stored into the firebase realtime database"
+git push -u origin main

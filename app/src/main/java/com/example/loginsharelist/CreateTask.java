@@ -44,7 +44,10 @@ public class CreateTask extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         onlineUserID = user.getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Task");
+        // How do I pass data between Activities in Android application
+        // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
+        String groupNameStr = getIntent().getStringExtra("EXTRA_GROUP_NAME");
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Task").child(groupNameStr);
 
 
         recyclerViewTask = (RecyclerView) findViewById(R.id.recyclerViewTask);
@@ -68,6 +71,7 @@ public class CreateTask extends AppCompatActivity {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
 
+        // Inflate the input task activity
         View view = layoutInflater.inflate(R.layout.activity_input_task_detail, null);
         alertDialog.setView(view);
 
@@ -78,14 +82,17 @@ public class CreateTask extends AppCompatActivity {
         EditText taskDescription = view.findViewById(R.id.addTaskDescription);
         EditText taskDueDate = view.findViewById(R.id.addTaskDueDate);
 
+        // Task save button
         Button taskSaveButton = view.findViewById(R.id.taskSaveButton);
         taskSaveButton.setOnClickListener((v) -> {
+            // Everything is converted to string
             String taskNameStr = taskName.getText().toString().trim();
             String taskDescriptionStr = taskDescription.getText().toString().trim();
             String id = databaseReference.push().getKey();
             String creationDate = DateFormat.getDateInstance().format(new Date());
             String dueDate = taskDueDate.getText().toString().trim();
 
+            // Validate that everything is not empty
             if (taskNameStr.isEmpty()) {
                 taskName.setError("It should not be empty. ");
                 return;
