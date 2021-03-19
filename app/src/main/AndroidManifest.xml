@@ -9,10 +9,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LoginShareList">
-        <activity android:name=".Receive_Task_Database_Activity"></activity>
-        <activity android:name=".Activity_Add_Task" />
+        <activity android:name=".ReceiveGroupDatabase"></activity>
+        <activity android:name=".InputGroupDetail" />
+        <activity android:name=".CreateGroup" />
+        <activity android:name=".Receive_Task_Database_Activity" />
+        <activity android:name=".InputTaskDetail" />
         <activity android:name=".ForgetPassword" />
-        <activity android:name=".EditTaskEditGroup" />
+        <activity android:name=".CreateTask" />
         <activity android:name=".RegisterUser" />
         <activity android:name=".MainActivity">
             <intent-filter>
