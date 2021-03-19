@@ -22,13 +22,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterUser extends AppCompatActivity implements View.OnClickListener {
-    private FirebaseAuth mAuth;
-    private TextView registerTitle;
     private EditText createUserName;
     private EditText createPhoneNumber;
     private EditText createEmail;
     private EditText createPassword;
     private Button createAccountButton;
+
+    private FirebaseAuth auth;
 
 
     @Override
@@ -36,20 +36,24 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_user);
 
-        mAuth = FirebaseAuth.getInstance();
-
-        createAccountButton = (Button) findViewById(R.id.createAccountButton);
-        createAccountButton.setOnClickListener(this);
+        auth = FirebaseAuth.getInstance();
 
         createUserName = (EditText) findViewById(R.id.createUserName);
         createPhoneNumber = (EditText) findViewById(R.id.createPhoneNumber);
         createEmail = (EditText) findViewById(R.id.createEmail);
         createPassword = (EditText) findViewById(R.id.createPassword);
+
+        // If the user click the create account button,
+        // it will create account on the firebase
+        createAccountButton = (Button) findViewById(R.id.createAccountButton);
+        createAccountButton.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.createAccountButton) {
+            // If the user click the create account button
+            // it will start the create account activity
             createAccountActivity();
         }
     }
@@ -83,11 +87,13 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
-        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        // connect to the firebase
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    User user = new User(userName, phoneNumber, email);
+                    User user = new User(userName, phoneNumber, email, password);
+                    // We will send everything in user to the firebase database
                     FirebaseDatabase.getInstance()
                             .getReference("User")
                             .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -108,39 +114,6 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
         });
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
