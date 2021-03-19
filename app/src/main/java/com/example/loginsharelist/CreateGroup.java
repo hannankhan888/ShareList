@@ -33,7 +33,6 @@ public class CreateGroup extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
     private FirebaseUser user;
-    private String onlineUserID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +41,6 @@ public class CreateGroup extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-        onlineUserID = user.getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Group");
 
         recyclerViewGroup = (RecyclerView) findViewById(R.id.recyclerViewGroup);

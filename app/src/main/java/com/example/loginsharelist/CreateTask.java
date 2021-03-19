@@ -46,7 +46,19 @@ public class CreateTask extends AppCompatActivity {
         onlineUserID = user.getUid();
         // How do I pass data between Activities in Android application
         // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
+        // How to use putExtra() and getExtra() for string data
+        // https://stackoverflow.com/questions/5265913/how-to-use-putextra-and-getextra-for-string-data
         String groupNameStr = getIntent().getStringExtra("EXTRA_GROUP_NAME");
+        // The task in the database is like
+        // ---Task
+        // ------group1
+        // ---------task1
+        // ---------task2
+        // ---------task3
+        // ------group2
+        // ---------task1
+        // ---------task2
+        // ---------task3
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Task").child(groupNameStr);
 
 
