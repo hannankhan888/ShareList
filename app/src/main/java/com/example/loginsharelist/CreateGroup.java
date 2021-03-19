@@ -42,7 +42,7 @@ public class CreateGroup extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         onlineUserID = user.getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Group").child(onlineUserID);
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Group");
 
         recyclerViewGroup = (RecyclerView) findViewById(R.id.recyclerViewGroup);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

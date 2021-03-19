@@ -86,9 +86,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         // connect to the firebase
+        // The user will use their email and password to login
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                // If the user login, the user will go to the create group activity
                 if (task.isSuccessful()) {
                     startActivity(new Intent(MainActivity.this, CreateGroup.class));
                 } else {

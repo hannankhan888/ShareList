@@ -44,7 +44,7 @@ public class CreateTask extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         onlineUserID = user.getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Task").child(onlineUserID);
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Task");
 
 
         recyclerViewTask = (RecyclerView) findViewById(R.id.recyclerViewTask);
@@ -94,7 +94,7 @@ public class CreateTask extends AppCompatActivity {
                 return;
             } else {
                 Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDate);
-                databaseReference.child(databaseReference.push().getKey()).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
+                databaseReference.child(id).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
                         if (task.isSuccessful()) {
