@@ -153,8 +153,3 @@ public class CreateGroup extends AppCompatActivity {
 }
 
 
-git init
-git remote add origin https://github.com/yxw1001827416/ShareList.git
-git add .
-git commit -m "update how data is stored into the firebase realtime database"
-git push -u origin main
