@@ -86,11 +86,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         // connect to the firebase
+        // The user will use their email and password to login
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
+                // If the user login, the user will go to the create group activity
                 if (task.isSuccessful()) {
-                    startActivity(new Intent(MainActivity.this, EditTaskEditGroup.class));
+                    startActivity(new Intent(MainActivity.this, CreateGroup.class));
                 } else {
                     Toast.makeText(MainActivity.this, "The email and the password is wrong. ", Toast.LENGTH_LONG).show();
                 }
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 }
+
 
 
 

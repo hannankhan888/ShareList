@@ -2,57 +2,57 @@ package com.example.loginsharelist;
 
 public class Task {
     private String taskName;
-    private String description;
-    private String id;
-    private String creationDate;
-    private String dueDate;
+    private String taskDescription;
+    private String taskId;
+    private String taskCreationDate;
+    private String taskDueDate;
 
-    public String getDueDate() {
-        return dueDate;
+    public String getTaskDueDate() {
+        return taskDueDate;
     }
 
-    public void setDueDate(String dueDate) {
-        this.dueDate = dueDate;
+    public void setTaskDueDate(String taskDueDate) {
+        this.taskDueDate = taskDueDate;
     }
 
     public void setTaskName(String taskName) {
         this.taskName = taskName;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTaskDescription(String taskDescription) {
+        this.taskDescription = taskDescription;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
-    public void setCreationDate(String creationDate) {
-        this.creationDate = creationDate;
+    public void setTaskCreationDate(String taskCreationDate) {
+        this.taskCreationDate = taskCreationDate;
     }
 
     public String getTaskName() {
         return taskName;
     }
 
-    public String getDescription() {
-        return description;
+    public String getTaskDescription() {
+        return taskDescription;
     }
 
-    public String getId() {
-        return id;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public String getCreationDate() {
-        return creationDate;
+    public String getTaskCreationDate() {
+        return taskCreationDate;
     }
 
-    public Task(String taskName, String description, String id, String creationDate, String dueDate) {
+    public Task(String taskName, String taskDescription, String taskId, String taskCreationDate, String taskDueDate) {
         this.taskName = taskName;
-        this.description = description;
-        this.id = id;
-        this.creationDate = creationDate;
-        this.dueDate = dueDate;
+        this.taskDescription = taskDescription;
+        this.taskId = taskId;
+        this.taskCreationDate = taskCreationDate;
+        this.taskDueDate = taskDueDate;
     }
 
     public Task() {

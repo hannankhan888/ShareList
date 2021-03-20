@@ -4,11 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class Activity_Add_Task extends AppCompatActivity {
+public class ReceiveGroupDatabase extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity__add__task);
+        setContentView(R.layout.activity_display_group_database);
     }
 }

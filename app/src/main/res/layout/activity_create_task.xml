@@ -5,17 +5,25 @@
     android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/recyclerViewTask"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addTaskButton"
-        android:layout_width="50dp"
+        android:layout_width="89dp"
         android:layout_height="50dp"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_baseline_add_24"
-        android:contentDescription="TODO" />
+        android:layout_margin="60dp"
+        android:contentDescription="TODO"
+        android:src="@drawable/ic_baseline_add_24" />
+
+    <TextView
+        android:id="@+id/addTaskFloatButtonNotification"
+        android:layout_width="73dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="40dp"
+        android:text="Add Task" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
