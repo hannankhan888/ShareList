@@ -161,12 +161,31 @@ public class CreateTask extends AppCompatActivity {
                 holder.setTaskName(model.getTaskName());
                 holder.setTaskDescription(model.getTaskDescription());
                 holder.setTaskDueDate(model.getTaskDueDate());
+
+                // If you click the task, it will open the task menu
+                holder.view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TaskMenuActivity();
+                    }
+                });
             }
         };
 
         // Attach the adapter
         recyclerViewTask.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
+    }
+
+    private void TaskMenuActivity() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.activity_task_menu, null);
+        alertDialog.setView(view);
+
+        AlertDialog dialog = alertDialog.create();
+
+        dialog.show();
     }
 }
 

@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LoginShareList">
-        <activity android:name=".ReceiveGroupDatabase"></activity>
+        <activity android:name=".TaskMenu"></activity>
+        <activity android:name=".ReceiveGroupDatabase" />
         <activity android:name=".InputGroupDetail" />
         <activity android:name=".CreateGroup" />
         <activity android:name=".Receive_Task_Database_Activity" />
