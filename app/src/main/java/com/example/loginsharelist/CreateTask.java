@@ -33,7 +33,12 @@ public class CreateTask extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
     private FirebaseUser user;
-    private String onlineUserID;
+
+    private String prevTaskName;
+    private String prevTaskDescription;
+    private String prevTaskID;
+    private String prevCreationDate;
+    private String prevDueDate;
 
 
     @Override
@@ -43,7 +48,6 @@ public class CreateTask extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-        onlineUserID = user.getUid();
         // How do I pass data between Activities in Android application
         // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
         // How to use putExtra() and getExtra() for string data
@@ -166,6 +170,11 @@ public class CreateTask extends AppCompatActivity {
                 holder.view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        prevTaskName = model.getTaskName();
+                        prevTaskDescription = model.getTaskDescription();
+                        prevTaskID = getRef(position).getKey();
+                        prevCreationDate = model.getTaskCreationDate();
+                        prevDueDate = model.getTaskDueDate();
                         TaskMenuActivity();
                     }
                 });
@@ -184,6 +193,53 @@ public class CreateTask extends AppCompatActivity {
         alertDialog.setView(view);
 
         AlertDialog dialog = alertDialog.create();
+
+        Button taskUpdateNameButton = view.findViewById(R.id.taskMenuUpdateNameButton);
+        taskUpdateNameButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UpdateTaskNameActivity();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void UpdateTaskNameActivity() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.activity_update_task_name, null);
+        alertDialog.setView(view);
+
+        AlertDialog dialog = alertDialog.create();
+
+        EditText taskUpdateNameInput = view.findViewById(R.id.taskUpdateNameInput);
+
+        taskUpdateNameInput.setText(prevTaskName);
+        taskUpdateNameInput.setSelection(prevTaskName.length());
+
+        Button taskUpdateNameInputButton = view.findViewById(R.id.taskUpdateNameInputButton);
+        taskUpdateNameInputButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String taskStr = taskUpdateNameInput.getText().toString().trim();
+
+                Task task = new Task(taskStr, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate);
+
+                databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
+                            dialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
 
         dialog.show();
     }

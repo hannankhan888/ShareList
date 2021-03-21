@@ -3,33 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    tools:context=".TaskMenu">
+    android:layout_height="match_parent"
+    tools:context=".UpdateTaskName">
 
-    <Button
-        android:id="@+id/taskMenuUpdateNameButton"
+    <EditText
+        android:id="@+id/taskUpdateNameInput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Update Name"
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/taskMenuUpdateDescriptionButton"
+        android:id="@+id/taskUpdateNameInputButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Update Description"
+        android:layout_marginTop="8dp"
+        android:text="Enter Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateNameButton" />
-
-    <Button
-        android:id="@+id/taskMenuUpdateDueDateButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Update Due Date"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateDescriptionButton" />
+        app:layout_constraintTop_toBottomOf="@+id/taskUpdateNameInput" />
 </androidx.constraintlayout.widget.ConstraintLayout>
