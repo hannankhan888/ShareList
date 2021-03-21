@@ -106,7 +106,7 @@ public class CreateTask extends AppCompatActivity {
             String taskDescriptionStr = taskDescription.getText().toString().trim();
             String id = databaseReference.push().getKey();
             String creationDate = DateFormat.getDateInstance().format(new Date());
-            String dueDate = taskDueDate.getText().toString().trim();
+            String dueDateStr = taskDueDate.getText().toString().trim();
 
             // Validate that everything is not empty
             if (taskNameStr.isEmpty()) {
@@ -115,8 +115,11 @@ public class CreateTask extends AppCompatActivity {
             } else if (taskDescriptionStr.isEmpty()) {
                 taskDescription.setError("It should not be empty. ");
                 return;
+            } else if (dueDateStr.isEmpty()) {
+                taskDueDate.setError("It should not be empty. ");
+                return;
             } else {
-                Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDate);
+                Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr);
                 databaseReference.child(id).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
@@ -199,6 +202,7 @@ public class CreateTask extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 UpdateTaskNameActivity();
+                dialog.dismiss();
             }
         });
 
@@ -222,7 +226,14 @@ public class CreateTask extends AppCompatActivity {
         taskUpdateNameInputButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // everything is converted to string
                 String taskStr = taskUpdateNameInput.getText().toString().trim();
+
+                // Validate everything that is not empty
+                if (taskStr.isEmpty()) {
+                    taskUpdateNameInput.setError("It should not be empty. ");
+                    return;
+                }
 
                 Task task = new Task(taskStr, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate);
 
