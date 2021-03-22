@@ -8,7 +8,7 @@
 
     <Button
         android:id="@+id/taskMenuUpdateNameButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Update Name"
         app:layout_constraintEnd_toEndOf="parent"
@@ -17,7 +17,7 @@
 
     <Button
         android:id="@+id/taskMenuUpdateDescriptionButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Update Description"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,7 +26,7 @@
 
     <Button
         android:id="@+id/taskMenuUpdateDueDateButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Update Due Date"
         app:layout_constraintEnd_toEndOf="parent"
