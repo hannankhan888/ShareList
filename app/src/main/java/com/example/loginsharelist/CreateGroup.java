@@ -138,7 +138,9 @@ public class CreateGroup extends AppCompatActivity {
                         // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
                         // How to use putExtra() and getExtra() for string data
                         // https://stackoverflow.com/questions/5265913/how-to-use-putextra-and-getextra-for-string-data
-                        intent.putExtra("EXTRA_GROUP_NAME", model.getGroupName());
+                        // It is the name of group that you click
+                        String groupNameStr = model.getGroupName();
+                        intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
                         startActivity(intent);
 //                        startActivity(new Intent(CreateGroup.this, CreateTask.class));
                     }

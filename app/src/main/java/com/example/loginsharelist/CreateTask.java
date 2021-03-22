@@ -33,7 +33,12 @@ public class CreateTask extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
     private FirebaseUser user;
-    private String onlineUserID;
+
+    private String prevTaskName;
+    private String prevTaskDescription;
+    private String prevTaskID;
+    private String prevCreationDate;
+    private String prevDueDate;
 
 
     @Override
@@ -43,7 +48,6 @@ public class CreateTask extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-        onlineUserID = user.getUid();
         // How do I pass data between Activities in Android application
         // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
         // How to use putExtra() and getExtra() for string data
@@ -102,7 +106,7 @@ public class CreateTask extends AppCompatActivity {
             String taskDescriptionStr = taskDescription.getText().toString().trim();
             String id = databaseReference.push().getKey();
             String creationDate = DateFormat.getDateInstance().format(new Date());
-            String dueDate = taskDueDate.getText().toString().trim();
+            String dueDateStr = taskDueDate.getText().toString().trim();
 
             // Validate that everything is not empty
             if (taskNameStr.isEmpty()) {
@@ -111,8 +115,11 @@ public class CreateTask extends AppCompatActivity {
             } else if (taskDescriptionStr.isEmpty()) {
                 taskDescription.setError("It should not be empty. ");
                 return;
+            } else if (dueDateStr.isEmpty()) {
+                taskDueDate.setError("It should not be empty. ");
+                return;
             } else {
-                Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDate);
+                Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr);
                 databaseReference.child(id).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
@@ -161,12 +168,91 @@ public class CreateTask extends AppCompatActivity {
                 holder.setTaskName(model.getTaskName());
                 holder.setTaskDescription(model.getTaskDescription());
                 holder.setTaskDueDate(model.getTaskDueDate());
+
+                // If you click the task, it will open the task menu
+                holder.view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        prevTaskName = model.getTaskName();
+                        prevTaskDescription = model.getTaskDescription();
+                        prevTaskID = getRef(position).getKey();
+                        prevCreationDate = model.getTaskCreationDate();
+                        prevDueDate = model.getTaskDueDate();
+                        TaskMenuActivity();
+                    }
+                });
             }
         };
 
         // Attach the adapter
         recyclerViewTask.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
+    }
+
+    private void TaskMenuActivity() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.activity_task_menu, null);
+        alertDialog.setView(view);
+
+        AlertDialog dialog = alertDialog.create();
+
+        Button taskUpdateNameButton = view.findViewById(R.id.taskMenuUpdateNameButton);
+        taskUpdateNameButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UpdateTaskNameActivity();
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void UpdateTaskNameActivity() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.activity_update_task_name, null);
+        alertDialog.setView(view);
+
+        AlertDialog dialog = alertDialog.create();
+
+        EditText taskUpdateNameInput = view.findViewById(R.id.taskUpdateNameInput);
+
+        taskUpdateNameInput.setText(prevTaskName);
+        taskUpdateNameInput.setSelection(prevTaskName.length());
+
+        Button taskUpdateNameInputButton = view.findViewById(R.id.taskUpdateNameInputButton);
+        taskUpdateNameInputButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // everything is converted to string
+                String taskStr = taskUpdateNameInput.getText().toString().trim();
+
+                // Validate everything that is not empty
+                if (taskStr.isEmpty()) {
+                    taskUpdateNameInput.setError("It should not be empty. ");
+                    return;
+                }
+
+                Task task = new Task(taskStr, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate);
+
+                databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
+                            dialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
+
+        dialog.show();
     }
 }
 
