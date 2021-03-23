@@ -78,5 +78,6 @@
         android:text="@string/create_account"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/createPassword"
+        style="?attr/materialButtonOutlinedStyle"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

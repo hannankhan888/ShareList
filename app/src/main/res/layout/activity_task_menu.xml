@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="5dp"
     tools:context=".TaskMenu">
 
     <Button
@@ -13,7 +14,8 @@
         android:text="Update Name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
     <Button
         android:id="@+id/taskMenuUpdateDescriptionButton"
@@ -22,7 +24,8 @@
         android:text="Update Description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateNameButton" />
+        app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateNameButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
     <Button
         android:id="@+id/taskMenuUpdateDueDateButton"
@@ -31,5 +34,6 @@
         android:text="Update Due Date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateDescriptionButton" />
+        app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateDescriptionButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

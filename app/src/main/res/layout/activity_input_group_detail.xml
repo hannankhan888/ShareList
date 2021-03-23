@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
     tools:context=".InputGroupDetail">
 
     <EditText
@@ -27,7 +28,8 @@
         android:layout_marginRight="50dp"
         android:text="Save"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addGroupName" />
+        app:layout_constraintTop_toBottomOf="@+id/addGroupName"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
     <Button
         android:id="@+id/groupCancelButton"
@@ -38,5 +40,6 @@
         android:layout_marginTop="10dp"
         android:text="Cancel"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addGroupName" />
+        app:layout_constraintTop_toBottomOf="@+id/addGroupName"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
