@@ -23,7 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import android.util.Patterns;
 
-public class RegisterUser extends AppCompatActivity implements View.OnClickListener {
+public class RegisterUser extends AppCompatActivity {
     private EditText createUserName;
     private EditText createPhoneNumber;
     private EditText createEmail;
@@ -48,16 +48,10 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
         // If the user click the create account button,
         // it will create account on the firebase
         createAccountButton = (Button) findViewById(R.id.createAccountButton);
-        createAccountButton.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.createAccountButton) {
-            // If the user click the create account button
-            // it will start the create account activity
+        // We can use the statement lambda to make the code easier to understand
+        createAccountButton.setOnClickListener((view) -> {
             createAccountActivity();
-        }
+        });
     }
 
     private void createAccountActivity() {
@@ -82,7 +76,7 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
             createEmail.setError("It should not be empty. ");
             createEmail.requestFocus();
             return;
-        }else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             createEmail.setError("Invalid email");
             createEmail.requestFocus();
             return;

@@ -32,7 +32,6 @@ public class CreateTask extends AppCompatActivity {
 
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
-    private FirebaseUser user;
 
     private String prevTaskName;
     private String prevTaskDescription;
@@ -47,7 +46,6 @@ public class CreateTask extends AppCompatActivity {
         setContentView(R.layout.activity_create_task);
 
         auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
         // How do I pass data between Activities in Android application
         // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
         // How to use putExtra() and getExtra() for string data
@@ -77,11 +75,9 @@ public class CreateTask extends AppCompatActivity {
         recyclerViewTask.setLayoutManager(linearLayoutManager);
 
         addTaskButton = (FloatingActionButton) findViewById(R.id.addTaskButton);
-        addTaskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addTaskActivity();
-            }
+        // We can use the statement lambda to make the code easier to understand
+        addTaskButton.setOnClickListener((view) -> {
+            addTaskActivity();
         });
     }
 
@@ -103,6 +99,7 @@ public class CreateTask extends AppCompatActivity {
 
         // Task save button
         Button taskSaveButton = view.findViewById(R.id.taskSaveButton);
+        // We can use the statement lambda to make the code easier to understand
         taskSaveButton.setOnClickListener((v) -> {
             // Everything is converted to string
             String taskNameStr = taskName.getText().toString().trim();
@@ -173,16 +170,13 @@ public class CreateTask extends AppCompatActivity {
                 holder.setTaskDueDate(model.getTaskDueDate());
 
                 // If you click the task, it will open the task menu
-                holder.view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        prevTaskName = model.getTaskName();
-                        prevTaskDescription = model.getTaskDescription();
-                        prevTaskID = getRef(position).getKey();
-                        prevCreationDate = model.getTaskCreationDate();
-                        prevDueDate = model.getTaskDueDate();
-                        TaskMenuActivity();
-                    }
+                holder.view.setOnClickListener((view) -> {
+                    prevTaskName = model.getTaskName();
+                    prevTaskDescription = model.getTaskDescription();
+                    prevTaskID = getRef(position).getKey();
+                    prevCreationDate = model.getTaskCreationDate();
+                    prevDueDate = model.getTaskDueDate();
+                    TaskMenuActivity();
                 });
             }
         };
@@ -201,13 +195,15 @@ public class CreateTask extends AppCompatActivity {
         AlertDialog dialog = alertDialog.create();
 
         Button taskUpdateNameButton = view.findViewById(R.id.taskMenuUpdateNameButton);
-        taskUpdateNameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                UpdateTaskNameActivity();
-                dialog.dismiss();
-            }
+        // We can use the statement lambda to make the code easier to understand
+        taskUpdateNameButton.setOnClickListener((v) -> {
+            UpdateTaskNameActivity();
+            dialog.dismiss();
         });
+
+        // taskUpdateDescriptionButton goes here
+
+        // taskDueDateButton goes here
 
         dialog.show();
     }
@@ -226,33 +222,31 @@ public class CreateTask extends AppCompatActivity {
         taskUpdateNameInput.setSelection(prevTaskName.length());
 
         Button taskUpdateNameInputButton = view.findViewById(R.id.taskUpdateNameInputButton);
-        taskUpdateNameInputButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // everything is converted to string
-                String taskStr = taskUpdateNameInput.getText().toString().trim();
+        // We can use the statement lambda to make the code easier to understand
+        taskUpdateNameInputButton.setOnClickListener((v) -> {
+            // everything is converted to string
+            String taskStr = taskUpdateNameInput.getText().toString().trim();
 
-                // Validate everything that is not empty
-                if (taskStr.isEmpty()) {
-                    taskUpdateNameInput.setError("It should not be empty. ");
-                    return;
-                }
-
-                Task task = new Task(taskStr, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate);
-
-                databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
-                            dialog.dismiss();
-                        } else {
-                            Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
-                            dialog.dismiss();
-                        }
-                    }
-                });
+            // Validate everything that is not empty
+            if (taskStr.isEmpty()) {
+                taskUpdateNameInput.setError("It should not be empty. ");
+                return;
             }
+
+            Task task = new Task(taskStr, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate);
+
+            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                    }
+                }
+            });
         });
 
         dialog.show();

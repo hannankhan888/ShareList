@@ -14,7 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class ForgetPassword extends AppCompatActivity implements View.OnClickListener {
+public class ForgetPassword extends AppCompatActivity {
     private EditText resetEmail;
     private Button resetPasswordButton;
 
@@ -32,16 +32,10 @@ public class ForgetPassword extends AppCompatActivity implements View.OnClickLis
         // If the user click the reset password button,
         // it will reset the password
         resetPasswordButton = (Button) findViewById(R.id.resetPasswordButton);
-        resetPasswordButton.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.resetPasswordButton) {
-            // If the user click the create account button
-            // it will start the reset password activity
+        // We can use the statement lambda to make the code easier to understand
+        resetPasswordButton.setOnClickListener((view) -> {
             resetPasswordActivity();
-        }
+        });
     }
 
     private void resetPasswordActivity() {

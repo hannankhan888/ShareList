@@ -52,11 +52,8 @@ public class CreateGroup extends AppCompatActivity {
         recyclerViewGroup.setLayoutManager(linearLayoutManager);
 
         addGroupButton = (FloatingActionButton) findViewById(R.id.addGroupButton);
-        addGroupButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addGroupActivity();
-            }
+        addGroupButton.setOnClickListener((view) -> {
+            addGroupActivity();
         });
     }
 
@@ -131,20 +128,16 @@ public class CreateGroup extends AppCompatActivity {
                 holder.setGroupName(model.getGroupName());
 
                 // If you click the group, it will open the create task activity
-                holder.view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(CreateGroup.this, CreateTask.class);
-                        // How do I pass data between Activities in Android application
-                        // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
-                        // How to use putExtra() and getExtra() for string data
-                        // https://stackoverflow.com/questions/5265913/how-to-use-putextra-and-getextra-for-string-data
-                        // It is the name of group that you click
-                        String groupNameStr = model.getGroupName();
-                        intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
-                        startActivity(intent);
-//                        startActivity(new Intent(CreateGroup.this, CreateTask.class));
-                    }
+                holder.view.setOnClickListener((view) -> {
+                    Intent intent = new Intent(CreateGroup.this, CreateTask.class);
+                    // How do I pass data between Activities in Android application
+                    // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
+                    // How to use putExtra() and getExtra() for string data
+                    // https://stackoverflow.com/questions/5265913/how-to-use-putextra-and-getextra-for-string-data
+                    // It is the name of group that you click
+                    String groupNameStr = model.getGroupName();
+                    intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+                    startActivity(intent);
                 });
             }
         };

@@ -17,7 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
     private EditText loginEmail;
     private EditText loginPassword;
     private Button loginButton;
@@ -38,17 +38,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         loginPassword = (EditText) findViewById(R.id.loginPassword);
 
         // After user is done typing, edit text will scroll back to start.
-        loginEmail.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+        loginEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus){
+            public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
                     loginEmail.setSelection(0);
                 }
             }
         });
-        loginPassword.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+        loginPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus){
+            public void onFocusChange(View v, boolean hasFocus) {
                 if (!hasFocus) {
                     loginEmail.setSelection(0);
                 }
@@ -56,36 +56,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         // If the user click the login button,
-        // the user will go to the edit task and edit group activity
+        // the user will go to the group activity
         loginButton = (Button) findViewById(R.id.loginButton);
-        loginButton.setOnClickListener(this);
+        // We can use the statement lambda to make the code easier to understand
+        loginButton.setOnClickListener((view) -> {
+            loginActivity();
+        });
 
         // If the user click the register link,
         // the user will go to the RegisterUser activity to create the account
         registerLink = (TextView) findViewById(R.id.registerLink);
-        registerLink.setOnClickListener(this);
+        // We can use the statement lambda to make the code easier to understand
+        registerLink.setOnClickListener((view) -> {
+            startActivity(new Intent(this, RegisterUser.class));
+        });
 
         // If the user click the forget password link,
         // the user will go to the ForgetPassword activity to reset the password
         forgetPasswordLink = (TextView) findViewById(R.id.forgetPasswordLink);
-        forgetPasswordLink.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.registerLink) {
-            // If the user click the register link,
-            // the user will go to the RegisterUser activity to create the account
-            startActivity(new Intent(this, RegisterUser.class));
-        } else if (v.getId() == R.id.loginButton) {
-            // If the user click the create login button
-            // start the login activity
-            loginActivity();
-        } else if (v.getId() == R.id.forgetPasswordLink) {
-            // If the user click the forget password link
-            // start the forget password activity to reset the password
+        // We can use the statement lambda to make the code easier to understand
+        forgetPasswordLink.setOnClickListener((view) -> {
             startActivity(new Intent(this, ForgetPassword.class));
-        }
+        });
     }
 
     private void loginActivity() {
