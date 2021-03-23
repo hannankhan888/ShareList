@@ -103,12 +103,12 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
                             if (task.isSuccessful()) {
                                 Toast.makeText(RegisterUser.this, "The account has been created successfully. ", Toast.LENGTH_LONG).show();
                             } else {
-                                Toast.makeText(RegisterUser.this, "The account has not been created successfully. ", Toast.LENGTH_LONG).show();
+                                Toast.makeText(RegisterUser.this, "The account creation failed!", Toast.LENGTH_LONG).show();
                             }
                         }
                     });
                 } else {
-                    Toast.makeText(RegisterUser.this, "The account has not been created successfully. ", Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterUser.this, "The account creation failed!", Toast.LENGTH_LONG).show();
                 }
             }
         });
