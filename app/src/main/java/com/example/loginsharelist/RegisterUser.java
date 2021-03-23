@@ -21,6 +21,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
+import android.util.Patterns;
+
 public class RegisterUser extends AppCompatActivity implements View.OnClickListener {
     private EditText createUserName;
     private EditText createPhoneNumber;
@@ -80,7 +82,12 @@ public class RegisterUser extends AppCompatActivity implements View.OnClickListe
             createEmail.setError("It should not be empty. ");
             createEmail.requestFocus();
             return;
+        }else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+            createEmail.setError("Invalid email");
+            createEmail.requestFocus();
+            return;
         }
+
         if (password.isEmpty()) {
             createPassword.setError("It should not be empty. ");
             createPassword.requestFocus();
