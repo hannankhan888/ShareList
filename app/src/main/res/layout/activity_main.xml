@@ -10,16 +10,16 @@
         android:id="@+id/loginTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="130dp"
         android:fontFamily="@font/roboto_light"
         android:text="@string/sharelist"
-        android:textSize="36sp"
+        android:textSize="50sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/loginpPassword"
+        android:id="@+id/loginPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -28,10 +28,13 @@
         android:inputType="textPassword"
         android:ellipsize="start"
         android:gravity="center_horizontal"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginEmail"
-        android:autofillHints="" />
+        android:autofillHints=""
+        android:background="@null"/>
 
     <EditText
         android:id="@+id/loginEmail"
@@ -42,11 +45,12 @@
         android:hint="@string/email_address"
         android:inputType="textEmailAddress"
         android:ellipsize="start"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginTitle"
-        android:autofillHints="" />
+        android:autofillHints=""
+        android:background="@null"/>
 
     <Button
         android:id="@+id/loginButton"
@@ -56,7 +60,7 @@
         android:text="@string/login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginpPassword"
+        app:layout_constraintTop_toBottomOf="@+id/loginPassword"
         style="?attr/materialButtonOutlinedStyle"/>
 
     <TextView
