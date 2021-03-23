@@ -65,6 +65,9 @@ public class CreateTask extends AppCompatActivity {
         // ---------task3
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Task").child(groupNameStr);
 
+        // Rename app bar to GROUP_NAME - Tasks
+        getSupportActionBar().setTitle(groupNameStr + " - Tasks");
+
 
         recyclerViewTask = (RecyclerView) findViewById(R.id.recyclerViewTask);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

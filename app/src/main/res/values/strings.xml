@@ -4,15 +4,15 @@
     <string name="password">Password</string>
     <string name="email_address">Email Address</string>
     <string name="login">Login</string>
-    <string name="forget_password">Forget Password</string>
-    <string name="register">Register</string>
-    <string name="create_account">Create Account</string>
-    <string name="create_email_address">Create Email Address</string>
-    <string name="create_password">Create Password</string>
-    <string name="create_phonenumber">Create Phone Number</string>
-    <string name="create_user_name">Create User Name</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="Register">Register</string>
+    <string name="Account">Account</string>
+    <string name="Create_Account">Create Account</string>
+    <string name="Password">Password</string>
+    <string name="Phone_number">Phone Number</string>
+    <string name="User_name">User Name</string>
     <string name="the_edit_task_and_edit_group_goes_here">The edit task and edit group goes here</string>
     <string name="reset_password">Reset Password</string>
-    <string name="resetEmail">Email</string>
+    <string name="reset_Email">Email</string>
     <string name="add_group">Add Group</string>
 </resources>

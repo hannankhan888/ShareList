@@ -38,6 +38,7 @@ public class CreateGroup extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
+        getSupportActionBar().setTitle("Your Groups");
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -79,7 +80,7 @@ public class CreateGroup extends AppCompatActivity {
 
             // Validate everything is not empty
             if (groupNameStr.isEmpty()) {
-                groupName.setError("It should not be empty. ");
+                groupName.setError("Group name cannot be empty. ");
                 return;
             } else {
                 Group group = new Group(groupNameStr, id);
