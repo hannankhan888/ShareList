@@ -11,19 +11,19 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addGroupButton"
-        android:layout_width="89dp"
-        android:layout_height="50dp"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="60dp"
-        android:contentDescription="TODO"
-        android:src="@drawable/ic_baseline_add_24" />
-
-    <TextView
-        android:id="@+id/addGroupFloatButtonNotification"
-        android:layout_width="81dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="40dp"
-        android:text="@string/add_group" />
+        android:layout_margin="16dp"
+        android:contentDescription="TODO"
+        android:src="@drawable/ic_group_add_56px" />
+
+<!--    <TextView-->
+<!--        android:id="@+id/addGroupFloatButtonNotification"-->
+<!--        android:layout_width="89dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom|end"-->
+<!--        android:layout_margin="20dp"-->
+<!--        android:text="@string/add_group" />-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

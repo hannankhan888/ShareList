@@ -35,7 +35,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         auth = FirebaseAuth.getInstance();
 
         loginEmail = (EditText) findViewById(R.id.loginEmail);
-        loginPassword = (EditText) findViewById(R.id.loginpPassword);
+        loginPassword = (EditText) findViewById(R.id.loginPassword);
+
+        // After user is done typing, edit text will scroll back to start.
+        loginEmail.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            @Override
+            public void onFocusChange(View v, boolean hasFocus){
+                if (!hasFocus) {
+                    loginEmail.setSelection(0);
+                }
+            }
+        });
+        loginPassword.setOnFocusChangeListener(new View.OnFocusChangeListener(){
+            @Override
+            public void onFocusChange(View v, boolean hasFocus){
+                if (!hasFocus) {
+                    loginEmail.setSelection(0);
+                }
+            }
+        });
 
         // If the user click the login button,
         // the user will go to the edit task and edit group activity
