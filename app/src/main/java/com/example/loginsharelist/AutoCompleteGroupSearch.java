@@ -1,6 +1,7 @@
 package com.example.loginsharelist;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,10 +13,15 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -24,6 +30,7 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private RecyclerView autoGroupSearchList;
     private EditText autoGroupSearchInput;
+    private FloatingActionButton autoCompleteCreateGroupButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +42,12 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
         autoGroupSearchList = (RecyclerView) findViewById(R.id.autoCompleteGroupSearchList);
         autoGroupSearchList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         autoGroupSearchList.setHasFixedSize(true);
+
+        autoCompleteCreateGroupButton = (FloatingActionButton) findViewById(R.id.autoCompleteCreateGroupButton);
+        autoCompleteCreateGroupButton.setOnClickListener((view) -> {
+            addGroupActivity();
+        });
+
 
         GroupSearch("");
 
@@ -70,6 +83,51 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    // Add Group Button
+    private void addGroupActivity() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+
+        View view = layoutInflater.inflate(R.layout.activity_input_group_detail, null);
+        alertDialog.setView(view);
+
+        AlertDialog dialog = alertDialog.create();
+        dialog.setCancelable(false);
+
+        EditText groupName = view.findViewById(R.id.addGroupName);
+        Button groupSaveButton = view.findViewById(R.id.groupSaveButton);
+        groupSaveButton.setOnClickListener((v) -> {
+            // Everything is converted to string
+            String groupNameStr = groupName.getText().toString().trim();
+            String id = databaseReference.push().getKey();
+
+            // Validate everything is not empty
+            if (groupNameStr.isEmpty()) {
+                groupName.setError("Group name cannot be empty. ");
+                return;
+            } else {
+                Group group = new Group(groupNameStr, id);
+                databaseReference.child(databaseReference.push().getKey()).setValue(group).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(AutoCompleteGroupSearch.this, "The group has been added. ", Toast.LENGTH_LONG).show();
+                            dialog.dismiss();
+                        } else {
+                            Toast.makeText(AutoCompleteGroupSearch.this, "The group has not been added. ", Toast.LENGTH_LONG).show();
+                            dialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
+
+        Button cancelGroupButton = view.findViewById(R.id.groupCancelButton);
+        cancelGroupButton.setOnClickListener((v -> dialog.dismiss()));
+
+        dialog.show();
     }
 
     private void GroupSearch(String data) {
