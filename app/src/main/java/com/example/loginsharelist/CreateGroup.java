@@ -29,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class CreateGroup extends AppCompatActivity {
     private RecyclerView recyclerViewGroup;
     private FloatingActionButton addGroupButton;
+    private FloatingActionButton groupSearchButton;
 
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
@@ -54,6 +55,11 @@ public class CreateGroup extends AppCompatActivity {
         addGroupButton = (FloatingActionButton) findViewById(R.id.addGroupButton);
         addGroupButton.setOnClickListener((view) -> {
             addGroupActivity();
+        });
+
+        groupSearchButton = (FloatingActionButton) findViewById(R.id.groupSearchButton);
+        groupSearchButton.setOnClickListener((view) -> {
+            groupSearchActivity();
         });
     }
 
@@ -101,6 +107,12 @@ public class CreateGroup extends AppCompatActivity {
 
         dialog.show();
     }
+
+    // Add group search button
+    private void groupSearchActivity() {
+        startActivity(new Intent(CreateGroup.this, GroupSearch.class));
+    }
+
 
     @Override
     protected void onStart() {
