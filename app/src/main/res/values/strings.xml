@@ -15,4 +15,10 @@
     <string name="reset_password">Reset Password</string>
     <string name="reset_Email">Email</string>
     <string name="add_group">Add Group</string>
+    <string name="update_name">Update Name</string>
+    <string name="update_description">Update Description</string>
+    <string name="update_due_date">Update Due Date</string>
+    <string name="update_assigned_users">Update Assigned Users</string>
+    <string name="search_groups">Search Groups</string>
+    <string name="add_task">Add Task</string>
 </resources>

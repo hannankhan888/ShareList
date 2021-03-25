@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 // If the user login, the user will go to the create group activity
                 if (task.isSuccessful()) {
-                    startActivity(new Intent(MainActivity.this, AutoCompleteGroupSearch.class));
+                    startActivity(new Intent(MainActivity.this, CreateGroup.class));
                 } else {
                     Toast.makeText(MainActivity.this, "The email and the password is wrong. ", Toast.LENGTH_LONG).show();
                 }
@@ -110,12 +110,3 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 }
-
-
-
-
-
-
-
-
-
