@@ -178,6 +178,9 @@ public class CreateTask extends AppCompatActivity {
                 } else {
                     // It is mark is true
                     // Inflate the task card view
+                    // It is going to show you the same layout if you mark the task
+                    // If you are going to use the more beautiful layout you can put it here
+                    // Then you have to update the onBindViewHolder
                     View view = LayoutInflater
                             .from(parent.getContext())
                             .inflate(R.layout.activity_display_task_database, parent, false);
