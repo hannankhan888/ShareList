@@ -256,11 +256,10 @@ public class CreateTask extends AppCompatActivity {
             dialog.dismiss();
         });
 
-        // taskUpdateDescriptionButton goes here
-//        taskUpdateDescriptionButton.setOnClickListener((v) -> {
-//            UpdateTaskDescriptionActivity();
-//            dialog.dismiss();
-//        });
+        taskUpdateDescriptionButton.setOnClickListener((v) -> {
+            UpdateTaskDescriptionActivity();
+            dialog.dismiss();
+        });
 
         // taskUpdateDueDateButton goes here
 //        taskUpdateDueDateButton.setOnClickListener((v) -> {
@@ -328,6 +327,50 @@ public class CreateTask extends AppCompatActivity {
         dialog.show();
     }
 
+    private void UpdateTaskDescriptionActivity(){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.activity_update_task_description, null);
+        alertDialog.setView(view);
+
+        AlertDialog dialog = alertDialog.create();
+
+        EditText taskUpdateDescriptionInput = view.findViewById(R.id.taskUpdateDescriptionInput);
+
+        taskUpdateDescriptionInput.setText(prevTaskDescription);
+        taskUpdateDescriptionInput.setSelection(prevTaskDescription.length());
+
+        Button taskUpdateDescriptionButton = view.findViewById(R.id.taskUpdateDescriptionButton);
+
+        taskUpdateDescriptionButton.setOnClickListener((v) -> {
+            // everything is converted to string
+            String updateTaskDescriptionStr = taskUpdateDescriptionInput.getText().toString().trim();
+
+            // Validate everything that is not empty
+            if (updateTaskDescriptionStr.isEmpty()) {
+                taskUpdateDescriptionInput.setError("It should not be empty.");
+                return;
+            }
+
+            Task task = new Task(prevTaskName, updateTaskDescriptionStr, prevTaskID, prevCreationDate, prevDueDate, prevMark);
+
+            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                    }
+                }
+            });
+        });
+
+        dialog.show();
+    }
+
     private void UpdateTaskMarkActivity() {
         Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, true);
 
@@ -364,10 +407,6 @@ public class CreateTask extends AppCompatActivity {
         datePickerDialog.show();
     }
 }
-
-//private void UpdateTaskDescriptionActivity(){
-//
-//}
 
 //private void UpdateTaskDueDateActivity(){
 //

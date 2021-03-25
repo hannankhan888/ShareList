@@ -41,7 +41,7 @@
         android:autofillHints=""
         android:ems="10"
         android:hint="@string/Phone_number"
-        android:inputType="textPersonName"
+        android:inputType="phone"
         android:ellipsize="start"
         android:gravity="center_horizontal"
         app:layout_constraintEnd_toEndOf="parent"

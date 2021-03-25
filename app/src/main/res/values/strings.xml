@@ -29,4 +29,6 @@
     <string name="due_date">Due Date</string>
     <string name="name">Name</string>
     <string name="enter_name">Enter Name</string>
+    <string name="mark_as_completed">Mark as Completed</string>
+    <string name="description">Description</string>
 </resources>

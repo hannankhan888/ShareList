@@ -8,11 +8,11 @@
     tools:context=".UpdateTaskName">
 
     <EditText
-        android:id="@+id/taskUpdateNameInput"
+        android:id="@+id/taskUpdateDescriptionInput"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="@string/name"
+        android:hint="@string/description"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,14 +20,14 @@
         android:importantForAutofill="no"/>
 
     <Button
-        android:id="@+id/taskUpdateNameInputButton"
+        android:id="@+id/taskUpdateDescriptionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/update_name"
+        android:text="@string/update_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskUpdateNameInput"
+        app:layout_constraintTop_toBottomOf="@+id/taskUpdateDescriptionInput"
         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
