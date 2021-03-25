@@ -29,7 +29,6 @@
 
     <Button
         android:id="@+id/taskMenuUpdateDueDateButton"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/update_due_date"
@@ -37,6 +36,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateDescriptionButton"
         style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
   <Button
         android:id="@+id/taskMenuUpdateAssignedUsersButton"
         style="@style/Widget.MaterialComponents.Button.TextButton"

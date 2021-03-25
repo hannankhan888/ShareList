@@ -56,17 +56,15 @@
         app:layout_constraintTop_toBottomOf="@+id/addTaskDueDate"
         style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
-    <EditText
+    <Button
         android:id="@+id/addTaskDueDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:ems="10"
-        android:hint="@string/due_date"
-        android:inputType="textPersonName"
+        android:text="@string/due_date"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addTaskDescription"
-        android:importantForAutofill="no"/>
+        app:layout_constraintTop_toBottomOf="@+id/addTaskDescription" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

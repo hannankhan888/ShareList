@@ -6,11 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -23,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class CreateTask extends AppCompatActivity {
@@ -76,11 +79,9 @@ public class CreateTask extends AppCompatActivity {
         recyclerViewTask.setHasFixedSize(true);
         recyclerViewTask.setLayoutManager(linearLayoutManager);
 
-        addTaskButton = (FloatingActionButton) findViewById(R.id.addTaskButton);
+        addTaskButton = findViewById(R.id.addTaskButton);
         // We can use the statement lambda to make the code easier to understand
-        addTaskButton.setOnClickListener((view) -> {
-            addTaskActivity();
-        });
+        addTaskButton.setOnClickListener((view) -> addTaskActivity());
     }
 
     // Add Task Button
@@ -96,8 +97,10 @@ public class CreateTask extends AppCompatActivity {
         dialog.setCancelable(false);
 
         EditText taskName = view.findViewById(R.id.addTaskName);
-        EditText taskDescription = view.findViewById(R.id.addTaskDescription);
-        EditText taskDueDate = view.findViewById(R.id.addTaskDueDate);
+        EditText taskDescription= view.findViewById(R.id.addTaskDescription);
+        Button taskDueDate = view.findViewById(R.id.addTaskDueDate);
+
+        taskDueDate.setOnClickListener((v) -> ShowDatePickerDialog(taskDueDate));
 
         // Task save button
         Button taskSaveButton = view.findViewById(R.id.taskSaveButton);
@@ -340,6 +343,26 @@ public class CreateTask extends AppCompatActivity {
         });
     }
 
+    private void ShowDatePickerDialog(Button taskDueDate){
+        Calendar calendar = Calendar.getInstance();
+
+        // I didn't replace the OnDateSetListener with a lambda because lambda is too confusing.
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        String correct_month = String.valueOf(month + 1);
+                        String date = correct_month + "/" + dayOfMonth + "/" + year;
+                        taskDueDate.setText(date);
+                    }
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+        );
+        datePickerDialog.show();
+    }
 }
 
 //private void UpdateTaskDescriptionActivity(){
@@ -357,57 +380,3 @@ public class CreateTask extends AppCompatActivity {
 
 // Citation Source
 // https://www.youtube.com/watch?v=IVT-XVV4cBk&list=PLlkSO32XQLGpF9HzRulWLpMbU3mWZYlJS&index=2&ab_channel=WilltekSoftwares
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
