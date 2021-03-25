@@ -12,12 +12,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="Group Name"
+        android:hint="@string/group_name"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:importantForAutofill="no"/>
 
     <Button
         android:id="@+id/groupSaveButton"
@@ -26,7 +27,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="50dp"
         android:layout_marginRight="50dp"
-        android:text="Save"
+        android:text="@string/save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addGroupName"
         style="@style/Widget.MaterialComponents.Button.TextButton"/>
@@ -38,7 +39,7 @@
         android:layout_marginStart="50dp"
         android:layout_marginLeft="50dp"
         android:layout_marginTop="10dp"
-        android:text="Cancel"
+        android:text="@string/cancel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addGroupName"
         style="@style/Widget.MaterialComponents.Button.TextButton"/>

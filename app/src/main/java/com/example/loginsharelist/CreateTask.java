@@ -244,6 +244,9 @@ public class CreateTask extends AppCompatActivity {
         AlertDialog dialog = alertDialog.create();
 
         Button taskUpdateNameButton = view.findViewById(R.id.taskMenuUpdateNameButton);
+        Button taskUpdateDescriptionButton = view.findViewById(R.id.taskMenuUpdateDescriptionButton);
+        Button taskUpdateDueDateButton = view.findViewById(R.id.taskMenuUpdateDueDateButton);
+        Button taskUpdateAssignedUsersButton = view.findViewById(R.id.taskMenuUpdateAssignedUsersButton);
         // We can use the statement lambda to make the code easier to understand
         taskUpdateNameButton.setOnClickListener((v) -> {
             UpdateTaskNameActivity();
@@ -251,8 +254,22 @@ public class CreateTask extends AppCompatActivity {
         });
 
         // taskUpdateDescriptionButton goes here
+//        taskUpdateDescriptionButton.setOnClickListener((v) -> {
+//            UpdateTaskDescriptionActivity();
+//            dialog.dismiss();
+//        });
 
-        // taskDueDateButton goes here
+        // taskUpdateDueDateButton goes here
+//        taskUpdateDueDateButton.setOnClickListener((v) -> {
+//            UpdateTaskDueDateActivity();
+//            dialog.dismiss();
+//        });
+
+        // taskMenuUpdateAssignedUsersButton goes here
+//        taskUpdateAssignedUsersButton.setOnClickListener((v) -> {
+//            UpdateTaskAssignedUsersActivity();
+//            dialog.dismiss();
+//        });
 
         Button taskMenuMarkButton = view.findViewById(R.id.taskMenuMarkButton);
         // We can use the statement lambda to make the code easier to understand
@@ -324,6 +341,18 @@ public class CreateTask extends AppCompatActivity {
     }
 
 }
+
+//private void UpdateTaskDescriptionActivity(){
+//
+//}
+
+//private void UpdateTaskDueDateActivity(){
+//
+//}
+
+//private void UpdateTaskAssignedUsersActivity(){
+//
+//}
 
 
 // Citation Source

@@ -9,33 +9,43 @@
 
     <Button
         android:id="@+id/taskMenuUpdateNameButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Update Name"
+        android:text="@string/update_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/Widget.MaterialComponents.Button.TextButton"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/taskMenuUpdateDescriptionButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Update Description"
+        android:text="@string/update_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateNameButton"
-        style="@style/Widget.MaterialComponents.Button.TextButton"/>
+        app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateNameButton" />
 
     <Button
         android:id="@+id/taskMenuUpdateDueDateButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Update Due Date"
+        android:text="@string/update_due_date"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateDescriptionButton"
         style="@style/Widget.MaterialComponents.Button.TextButton"/>
+  <Button
+        android:id="@+id/taskMenuUpdateAssignedUsersButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/update_assigned_users"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateDueDateButton"/>
 
     <Button
         android:id="@+id/taskMenuMarkButton"
@@ -45,5 +55,5 @@
         android:text="Mark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateDueDateButton" />
+        app:layout_constraintTop_toBottomOf="@+id/taskMenuUpdateAssignedUsersButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>
