@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,46 +22,66 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
-
-public class CreateGroup extends AppCompatActivity {
-    private RecyclerView recyclerViewGroup;
-    private FloatingActionButton addGroupButton;
-    private FloatingActionButton groupSearchButton;
-
+public class AutoCompleteGroupSearch extends AppCompatActivity {
     private DatabaseReference databaseReference;
-    private FirebaseAuth auth;
-    private FirebaseUser user;
+    private RecyclerView autoGroupSearchList;
+    private EditText autoGroupSearchInput;
+    private FloatingActionButton autoCompleteCreateGroupButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_group);
-        getSupportActionBar().setTitle("Your Groups");
+        setContentView(R.layout.activity_auto_complete_group_search);
 
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Group");
 
-        recyclerViewGroup = (RecyclerView) findViewById(R.id.recyclerViewGroup);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerViewGroup.setHasFixedSize(true);
-        recyclerViewGroup.setLayoutManager(linearLayoutManager);
+        autoGroupSearchList = (RecyclerView) findViewById(R.id.autoCompleteGroupSearchList);
+        autoGroupSearchList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        autoGroupSearchList.setHasFixedSize(true);
 
-        addGroupButton = (FloatingActionButton) findViewById(R.id.addGroupButton);
-        addGroupButton.setOnClickListener((view) -> {
+        autoCompleteCreateGroupButton = (FloatingActionButton) findViewById(R.id.autoCompleteCreateGroupButton);
+        autoCompleteCreateGroupButton.setOnClickListener((view) -> {
             addGroupActivity();
         });
 
-        groupSearchButton = (FloatingActionButton) findViewById(R.id.groupSearchButton);
-        groupSearchButton.setOnClickListener((view) -> {
-            groupSearchActivity();
+
+        GroupSearch("");
+
+        autoGroupSearchInput = (EditText) findViewById(R.id.autoCompleteGroupNameSearchInput);
+        // Citation Source
+        // https://www.youtube.com/watch?v=b_tz8kbFUsU&ab_channel=TVACStudio
+        // https://www.youtube.com/watch?v=_nIoEAC3kLg&ab_channel=TechnicalSkillz
+        // It shows you how to search data in the firebase realtime database
+        // One video teach you how to use auto complete search
+        // Another video teach you how to search it manually
+        // One video is outdated, so the syntax has changed
+        // So you have to change several line of code to make it work
+        autoGroupSearchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            // It is waiting for the text to be changed
+            // https://developer.android.com/reference/android/text/TextWatcher.html
+            // https://stackoverflow.com/questions/26992407/ontextchanged-vs-aftertextchanged-in-android-live-examples-needed
+            public void afterTextChanged(Editable s) {
+                if (s.toString() != null) {
+                    GroupSearch(s.toString());
+                } else {
+                    GroupSearch("");
+                }
+            }
         });
     }
 
@@ -91,10 +113,10 @@ public class CreateGroup extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(CreateGroup.this, "The group has been added. ", Toast.LENGTH_LONG).show();
+                            Toast.makeText(AutoCompleteGroupSearch.this, "The group has been added. ", Toast.LENGTH_LONG).show();
                             dialog.dismiss();
                         } else {
-                            Toast.makeText(CreateGroup.this, "The group has not been added. ", Toast.LENGTH_LONG).show();
+                            Toast.makeText(AutoCompleteGroupSearch.this, "The group has not been added. ", Toast.LENGTH_LONG).show();
                             dialog.dismiss();
                         }
                     }
@@ -108,19 +130,12 @@ public class CreateGroup extends AppCompatActivity {
         dialog.show();
     }
 
-    // Add group search button
-    private void groupSearchActivity() {
-        startActivity(new Intent(CreateGroup.this, GroupSearch.class));
-    }
+    private void GroupSearch(String data) {
+        Query query = databaseReference.orderByChild("groupName").startAt(data).endAt(data + "\uf8ff");
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        FirebaseRecyclerOptions<Group> firebaseRecyclerOptions = new FirebaseRecyclerOptions
+        FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<Group>()
-                .setQuery(databaseReference, Group.class)
+                .setQuery(query, Group.class)
                 .build();
 
         FirebaseRecyclerAdapter<Group, GroupDisplay> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Group, GroupDisplay>(firebaseRecyclerOptions) {
@@ -136,12 +151,11 @@ public class CreateGroup extends AppCompatActivity {
 
             @Override
             protected void onBindViewHolder(@NonNull GroupDisplay holder, int position, @NonNull Group model) {
-                // It is what is going to display on the group card view
                 holder.setGroupName(model.getGroupName());
 
                 // If you click the group, it will open the create task activity
                 holder.view.setOnClickListener((view) -> {
-                    Intent intent = new Intent(CreateGroup.this, CreateTask.class);
+                    Intent intent = new Intent(AutoCompleteGroupSearch.this, CreateTask.class);
                     // How do I pass data between Activities in Android application
                     // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
                     // How to use putExtra() and getExtra() for string data
@@ -155,9 +169,49 @@ public class CreateGroup extends AppCompatActivity {
         };
 
         // Attach the adapter
-        recyclerViewGroup.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
+        autoGroupSearchList.setAdapter(firebaseRecyclerAdapter);
+
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

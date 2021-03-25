@@ -9,16 +9,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LoginShareList">
-        <activity android:name=".UpdateTaskName"></activity>
+        <activity android:name=".UpdateTaskName" />
         <activity android:name=".TaskMenu" />
         <activity android:name=".ReceiveGroupDatabase" />
         <activity android:name=".InputGroupDetail" />
-        <activity android:name=".CreateGroup" />
         <activity android:name=".Receive_Task_Database_Activity" />
         <activity android:name=".InputTaskDetail" />
         <activity android:name=".ForgetPassword" />
         <activity android:name=".CreateTask" />
         <activity android:name=".RegisterUser" />
+        <activity android:name=".GroupSearch" />
+        <activity android:name=".AutoCompleteGroupSearch" />
+        <activity android:name=".CreateGroup" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
