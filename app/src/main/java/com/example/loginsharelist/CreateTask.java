@@ -19,7 +19,6 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -38,6 +37,9 @@ public class CreateTask extends AppCompatActivity {
     private String prevTaskID;
     private String prevCreationDate;
     private String prevDueDate;
+    private boolean prevMark;
+
+    public static boolean status = false;
 
 
     @Override
@@ -118,21 +120,21 @@ public class CreateTask extends AppCompatActivity {
             } else if (dueDateStr.isEmpty()) {
                 taskDueDate.setError("It should not be empty. ");
                 return;
-            } else {
-                Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr);
-                databaseReference.child(id).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(CreateTask.this, "The task has been added. ", Toast.LENGTH_LONG).show();
-                            dialog.dismiss();
-                        } else {
-                            Toast.makeText(CreateTask.this, "The task has not been added. ", Toast.LENGTH_LONG).show();
-                            dialog.dismiss();
-                        }
-                    }
-                });
             }
+
+            Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr, false);
+            databaseReference.child(id).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(CreateTask.this, "The task has been added. ", Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(CreateTask.this, "The task has not been added. ", Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                    }
+                }
+            });
         });
 
         Button cancelTaskButton = view.findViewById(R.id.taskCancelButton);
@@ -151,23 +153,66 @@ public class CreateTask extends AppCompatActivity {
                 .build();
 
         FirebaseRecyclerAdapter<Task, TaskDisplay> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Task, TaskDisplay>(firebaseRecyclerOptions) {
+            @Override
+            public int getItemViewType(int position) {
+                // Multiple view in the RecyclerView
+                // https://stackoverflow.com/questions/46216540/getting-two-different-views-in-single-recyclerview-using-firebase-in-android
+                Task task = getItem(position);
+                if (task.isMark() == false) {
+                    return 0;
+                } else {
+                    return 1;
+                }
+            }
 
             @NonNull
             @Override
             public TaskDisplay onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                // Inflate the task card view
-                View view = LayoutInflater
-                        .from(parent.getContext())
-                        .inflate(R.layout.activity_display_task_database, parent, false);
-                return new TaskDisplay(view);
+                if (viewType == 0) {
+                    // It is mark is false
+                    // Inflate the task card view
+                    View view = LayoutInflater
+                            .from(parent.getContext())
+                            .inflate(R.layout.activity_display_task_database, parent, false);
+                    return new TaskDisplay(view);
+                } else {
+                    // It is mark is true
+                    // Inflate the task card view
+                    View view = LayoutInflater
+                            .from(parent.getContext())
+                            .inflate(R.layout.activity_display_task_database, parent, false);
+                    return new TaskDisplay(view);
+                }
             }
 
             @Override
             protected void onBindViewHolder(@NonNull TaskDisplay holder, int position, @NonNull Task model) {
-                // It is what is going to display on the task card view
-                holder.setTaskName(model.getTaskName());
-                holder.setTaskDescription(model.getTaskDescription());
-                holder.setTaskDueDate(model.getTaskDueDate());
+                if (holder.getItemViewType() == 0) {
+                    // It is mark is false
+                    // It is what is going to display on the task card view
+                    holder.setTaskName(model.getTaskName());
+                    holder.setTaskDescription(model.getTaskDescription());
+                    holder.setTaskDueDate(model.getTaskDueDate());
+                } else if (holder.getItemViewType() == 1) {
+                    // It is mark is true
+                    // It is what is going to display on the task card view
+                    holder.setCrossTaskName(model.getTaskName());
+                    holder.setCrossTaskDescription(model.getTaskDescription());
+                    holder.setCrossTaskDueDate(model.getTaskDueDate());
+                }
+
+
+//                if (status) {
+//                    // It is what is going to display on the task card view
+//                    holder.setCrossTaskName(model.getTaskName());
+//                    holder.setCrossTaskDescription(model.getTaskDescription());
+//                    holder.setCrossTaskDueDate(model.getTaskDueDate());
+//                } else {
+//                    // It is what is going to display on the task card view
+//                    holder.setTaskName(model.getTaskName());
+//                    holder.setTaskDescription(model.getTaskDescription());
+//                    holder.setTaskDueDate(model.getTaskDueDate());
+//                }
 
                 // If you click the task, it will open the task menu
                 holder.view.setOnClickListener((view) -> {
@@ -176,6 +221,7 @@ public class CreateTask extends AppCompatActivity {
                     prevTaskID = getRef(position).getKey();
                     prevCreationDate = model.getTaskCreationDate();
                     prevDueDate = model.getTaskDueDate();
+                    prevMark = model.isMark();
                     TaskMenuActivity();
                 });
             }
@@ -205,6 +251,13 @@ public class CreateTask extends AppCompatActivity {
 
         // taskDueDateButton goes here
 
+        Button taskMenuMarkButton = view.findViewById(R.id.taskMenuMarkButton);
+        // We can use the statement lambda to make the code easier to understand
+        taskMenuMarkButton.setOnClickListener((v) -> {
+            UpdateTaskMarkActivity();
+            dialog.dismiss();
+        });
+
         dialog.show();
     }
 
@@ -225,15 +278,15 @@ public class CreateTask extends AppCompatActivity {
         // We can use the statement lambda to make the code easier to understand
         taskUpdateNameInputButton.setOnClickListener((v) -> {
             // everything is converted to string
-            String taskStr = taskUpdateNameInput.getText().toString().trim();
+            String updateTaskNameStr = taskUpdateNameInput.getText().toString().trim();
 
             // Validate everything that is not empty
-            if (taskStr.isEmpty()) {
+            if (updateTaskNameStr.isEmpty()) {
                 taskUpdateNameInput.setError("It should not be empty. ");
                 return;
             }
 
-            Task task = new Task(taskStr, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate);
+            Task task = new Task(updateTaskNameStr, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, prevMark);
 
             databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
@@ -251,6 +304,22 @@ public class CreateTask extends AppCompatActivity {
 
         dialog.show();
     }
+
+    private void UpdateTaskMarkActivity() {
+        Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, true);
+
+        databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
 }
 
 

@@ -9,6 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LoginShareList">
+        <activity android:name=".DisplayTaskMark"></activity>
         <activity android:name=".UpdateTaskName" />
         <activity android:name=".TaskMenu" />
         <activity android:name=".ReceiveGroupDatabase" />
