@@ -34,50 +34,38 @@ public class MainActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        loginEmail = (EditText) findViewById(R.id.loginEmail);
-        loginPassword = (EditText) findViewById(R.id.loginPassword);
+        loginEmail = findViewById(R.id.loginEmail);
+        loginPassword = findViewById(R.id.loginPassword);
 
         // After user is done typing, edit text will scroll back to start.
-        loginEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    loginEmail.setSelection(0);
-                }
+        loginEmail.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                loginEmail.setSelection(0);
             }
         });
-        loginPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    loginEmail.setSelection(0);
-                }
+        loginPassword.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                loginEmail.setSelection(0);
             }
         });
 
         // If the user click the login button,
         // the user will go to the group activity
-        loginButton = (Button) findViewById(R.id.loginButton);
+        loginButton = findViewById(R.id.loginButton);
         // We can use the statement lambda to make the code easier to understand
-        loginButton.setOnClickListener((view) -> {
-            loginActivity();
-        });
+        loginButton.setOnClickListener((view) -> loginActivity());
 
         // If the user click the register link,
         // the user will go to the RegisterUser activity to create the account
-        registerLink = (TextView) findViewById(R.id.registerLink);
+        registerLink = findViewById(R.id.registerLink);
         // We can use the statement lambda to make the code easier to understand
-        registerLink.setOnClickListener((view) -> {
-            startActivity(new Intent(this, RegisterUser.class));
-        });
+        registerLink.setOnClickListener((view) -> startActivity(new Intent(this, RegisterUser.class)));
 
         // If the user click the forget password link,
         // the user will go to the ForgetPassword activity to reset the password
-        forgetPasswordLink = (TextView) findViewById(R.id.forgetPasswordLink);
+        forgetPasswordLink = findViewById(R.id.forgetPasswordLink);
         // We can use the statement lambda to make the code easier to understand
-        forgetPasswordLink.setOnClickListener((view) -> {
-            startActivity(new Intent(this, ForgetPassword.class));
-        });
+        forgetPasswordLink.setOnClickListener((view) -> startActivity(new Intent(this, ForgetPassword.class)));
     }
 
     private void loginActivity() {
