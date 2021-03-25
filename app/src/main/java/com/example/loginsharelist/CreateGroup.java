@@ -25,6 +25,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class CreateGroup extends AppCompatActivity {
     private RecyclerView recyclerViewGroup;
@@ -34,6 +37,8 @@ public class CreateGroup extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
     private FirebaseUser user;
+
+    private List<Group> groupList = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
