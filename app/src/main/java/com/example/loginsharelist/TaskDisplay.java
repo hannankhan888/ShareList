@@ -30,6 +30,7 @@ public class TaskDisplay extends RecyclerView.ViewHolder {
         taskDueDateDisplay.setText(taskDueDate);
     }
 
+    // TODO: Perhaps we can combine all of these into one setCrossTask() function?
     public void setCrossTaskName(String taskName) {
         TextView taskNameDisplay = view.findViewById(R.id.taskNameDisplay);
         taskNameDisplay.setText(taskName);

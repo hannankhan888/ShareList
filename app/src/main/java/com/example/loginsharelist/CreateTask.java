@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,10 +26,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class CreateTask extends AppCompatActivity {
+    private static final String TAG = "CreateTask";
+
     private RecyclerView recyclerViewTask;
     private FloatingActionButton addTaskButton;
 
@@ -100,7 +106,7 @@ public class CreateTask extends AppCompatActivity {
         EditText taskDescription= view.findViewById(R.id.addTaskDescription);
         Button taskDueDate = view.findViewById(R.id.addTaskDueDate);
 
-        taskDueDate.setOnClickListener((v) -> ShowDatePickerDialog(taskDueDate));
+        taskDueDate.setOnClickListener((v) -> ShowDatePickerDialog(taskDueDate, true));
 
         // Task save button
         Button taskSaveButton = view.findViewById(R.id.taskSaveButton);
@@ -262,10 +268,10 @@ public class CreateTask extends AppCompatActivity {
         });
 
         // taskUpdateDueDateButton goes here
-//        taskUpdateDueDateButton.setOnClickListener((v) -> {
-//            UpdateTaskDueDateActivity();
-//            dialog.dismiss();
-//        });
+        taskUpdateDueDateButton.setOnClickListener((v) -> {
+            UpdateTaskDueDateActivity();
+            dialog.dismiss();
+        });
 
         // taskMenuUpdateAssignedUsersButton goes here
 //        taskUpdateAssignedUsersButton.setOnClickListener((v) -> {
@@ -371,6 +377,50 @@ public class CreateTask extends AppCompatActivity {
         dialog.show();
     }
 
+
+    private void UpdateTaskDueDateActivity(){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.activity_update_task_due_date, null);
+        alertDialog.setView(view);
+
+        AlertDialog dialog = alertDialog.create();
+
+        Button taskUpdateDueDateInputButton = view.findViewById(R.id.taskUpdateDueDateInputButton);
+        taskUpdateDueDateInputButton.setText(prevDueDate);
+        taskUpdateDueDateInputButton.setOnClickListener((v) -> ShowDatePickerDialog(taskUpdateDueDateInputButton, false));
+
+        Button taskUpdateDueDateSubmitButton = view.findViewById(R.id.taskUpdateDueDateSubmitButton);
+        taskUpdateDueDateSubmitButton.setOnClickListener((v) -> {
+            // By now, the taskUpdateDueDateInputButton has the value for chosen date.
+            // everything is converted to string
+            String updateTaskDueDateStr = taskUpdateDueDateInputButton.getText().toString().trim();
+
+            // Validate everything that is not empty
+            if (updateTaskDueDateStr.isEmpty()) {
+                taskUpdateDueDateInputButton.setError("It should not be empty.");
+                return;
+            }
+
+            Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, updateTaskDueDateStr, prevMark);
+
+            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(CreateTask.this, "The task has been updated.", Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                    } else {
+                        Toast.makeText(CreateTask.this, "The task has not been updated.", Toast.LENGTH_LONG).show();
+                        dialog.dismiss();
+                    }
+                }
+            });
+        });
+
+        dialog.show();
+    }
+
     private void UpdateTaskMarkActivity() {
         Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, true);
 
@@ -386,8 +436,19 @@ public class CreateTask extends AppCompatActivity {
         });
     }
 
-    private void ShowDatePickerDialog(Button taskDueDate){
+    private void ShowDatePickerDialog(Button taskDueDate, Boolean setToToday){
         Calendar calendar = Calendar.getInstance();
+
+        if (!setToToday) {
+            try{
+                // We parse the date from the selected task.
+                Date date = new SimpleDateFormat("MM/dd/yyyy", Locale.US).parse(prevDueDate);
+                // We set the calendar to match the prevDueDate.
+                calendar.setTime(date);
+            } catch (ParseException e){
+                Log.d(TAG, "Date was not able to be parsed: " + prevDueDate);
+            }
+        }
 
         // I didn't replace the OnDateSetListener with a lambda because lambda is too confusing.
         DatePickerDialog datePickerDialog = new DatePickerDialog(
@@ -408,9 +469,6 @@ public class CreateTask extends AppCompatActivity {
     }
 }
 
-//private void UpdateTaskDueDateActivity(){
-//
-//}
 
 //private void UpdateTaskAssignedUsersActivity(){
 //
