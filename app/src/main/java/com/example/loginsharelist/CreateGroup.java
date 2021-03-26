@@ -81,18 +81,19 @@ public class CreateGroup extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    // Here we handle what happens when a corner menu item gets pressed.
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
 
         // its not recommended to use switch statement according to gradle.
-        if (id == R.id.createGroupMenuAccountButton) {
+        if (id == R.id.createGroupMenuAccountItem) {
             // insert code to show User Account Description Activity HERE.
             // TODO: add a user account description activity.
             Log.d(TAG, "Account option pressed.");
-        } else if (id == R.id.createGroupMenuLogoutButton){
+        } else if (id == R.id.createGroupMenuLogoutItem){
             // We do the logout stuff here.
-            // TODO: add the logout stuff. Make sure to signout using Firebase specifically,
+            // TODO: add the logout stuff. Make sure to sign out using Firebase specifically,
             // TODO: and return to the login activity. (make sure the password field is empty then).
             Log.d(TAG, "Logout option pressed.");
         }

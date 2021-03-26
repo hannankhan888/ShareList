@@ -34,4 +34,6 @@
     <string name="description">Description</string>
     <string name="create_group_corner_menu">createGroupCornerMenu</string>
     <string name="account">Account</string>
+    <string name="group_info">Group Info</string>
+    <string name="leave_group">Leave Group</string>
 </resources>

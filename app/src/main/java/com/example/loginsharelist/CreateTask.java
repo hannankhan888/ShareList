@@ -10,6 +10,8 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -90,6 +92,32 @@ public class CreateTask extends AppCompatActivity {
         addTaskButton = findViewById(R.id.addTaskButton);
         // We can use the statement lambda to make the code easier to understand
         addTaskButton.setOnClickListener((view) -> addTaskActivity());
+    }
+
+    // add the corner menu layout for create task.
+    // the buttons get created and checked for in onOptionsItemSelected(MenuItem item)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.corner_menu_for_create_task, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // Here we handle what happens when a corner menu item gets pressed.
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+
+        // its not recommended to use switch statement according to gradle.
+        if (id == R.id.createTaskCornerMenuGroupInfoItem) {
+            // insert code to show group info Activity HERE.
+            // TODO: add a group info activity.
+            Log.d(TAG, "Group Info option pressed.");
+        } else if (id == R.id.createTaskCornerMenuLeaveGroupItem){
+            // We do the Leave Group stuff here.
+            // TODO: add the Leave Group stuff.
+            Log.d(TAG, "Leave Group option pressed.");
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     // Add Task Button

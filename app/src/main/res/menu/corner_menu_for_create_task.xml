@@ -3,20 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/createGroupCornerMenu"
+        android:id="@+id/createTaskCornerMenu"
         android:icon="@drawable/ic_more_vert_56px"
         app:showAsAction="always"
         android:title="@string/create_group_corner_menu">
 
         <menu>
             <item
-                android:id="@+id/createGroupMenuAccountItem"
-                android:title="@string/account"
+                android:id="@+id/createTaskCornerMenuGroupInfoItem"
+                android:title="@string/group_info"
                 app:showAsAction="ifRoom"/>
             <item
-                android:id="@+id/createGroupMenuLogoutItem"
-                android:title="@string/logout"
-                app:showAsAction="ifRoom"/>
+                android:id="@+id/createTaskCornerMenuLeaveGroupItem"
+                android:title="@string/leave_group"
+                app:showAsAction="ifRoom" />
         </menu>
     </item>
 
