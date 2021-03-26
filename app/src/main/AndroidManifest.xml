@@ -9,12 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LoginShareList">
-        <activity android:name=".DisplayTaskMark"></activity>
-        <activity android:name=".TaskMenu" />
-        <activity android:name=".ReceiveGroupDatabase" />
-        <activity android:name=".InputGroupDetail" />
-        <activity android:name=".Receive_Task_Database_Activity" />
-        <activity android:name=".InputTaskDetail" />
+        <activity android:name=".DisplayTaskMark" />
         <activity android:name=".ForgetPassword" />
         <activity android:name=".CreateTask" />
         <activity android:name=".RegisterUser" />
