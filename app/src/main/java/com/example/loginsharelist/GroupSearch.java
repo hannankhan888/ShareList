@@ -53,6 +53,7 @@ public class GroupSearch extends AppCompatActivity {
     }
 
     private void GroupSearchActivity(String groupNameStr) {
+        // TODO: here is an example of a query:
         Query query = databaseReference.orderByChild("groupName").startAt(groupNameStr).endAt(groupNameStr + "\uf8ff");
 
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions

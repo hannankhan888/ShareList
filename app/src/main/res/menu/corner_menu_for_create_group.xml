@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/createGroupCornerMenu"
+        android:icon="@drawable/ic_more_vert_56px"
+        app:showAsAction="always"
+        android:title="@string/create_group_corner_menu">
+
+        <menu>
+            <item
+                android:id="@+id/createGroupMenuAccountButton"
+                android:title="@string/account"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/createGroupMenuLogoutButton"
+                android:title="@string/logout"
+                app:showAsAction="ifRoom"/>
+        </menu>
+    </item>
+
+</menu>

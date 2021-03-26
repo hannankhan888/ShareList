@@ -72,6 +72,8 @@ public class CreateTask extends AppCompatActivity {
         // ---------task1
         // ---------task2
         // ---------task3
+        // TODO: remove child(groupNAmeStr) to store tasks correctly.
+        // TODO: make sure to delete the relative database on firebase.com
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Task").child(groupNameStr);
 
         // Rename app bar to GROUP_NAME - Tasks
@@ -115,6 +117,7 @@ public class CreateTask extends AppCompatActivity {
             // Everything is converted to string
             String taskNameStr = taskName.getText().toString().trim();
             String taskDescriptionStr = taskDescription.getText().toString().trim();
+            // TODO: find out what id this refers to and log it. or comment it.
             String id = databaseReference.push().getKey();
             String creationDate = DateFormat.getDateInstance().format(new Date());
             String dueDateStr = taskDueDate.getText().toString().trim();
@@ -154,6 +157,7 @@ public class CreateTask extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        // TODO: update what content gets displayed for the group. Update the setQuery(databaseReference.
         super.onStart();
 
         FirebaseRecyclerOptions<Task> firebaseRecyclerOptions = new FirebaseRecyclerOptions

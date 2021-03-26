@@ -8,7 +8,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -30,6 +33,8 @@ import java.util.List;
 
 
 public class CreateGroup extends AppCompatActivity {
+    private static final String TAG = "CreateGroup";
+
     private RecyclerView recyclerViewGroup;
     private FloatingActionButton addGroupButton;
     private FloatingActionButton groupSearchButton;
@@ -66,6 +71,33 @@ public class CreateGroup extends AppCompatActivity {
         groupSearchButton.setOnClickListener((view) -> {
             groupSearchActivity();
         });
+    }
+
+    // add the corner menu layout for create group.
+    // the buttons get created and checked for in onOptionsItemSelected(MenuItem item)
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        getMenuInflater().inflate(R.menu.corner_menu_for_create_group, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+
+        // its not recommended to use switch statement according to gradle.
+        if (id == R.id.createGroupMenuAccountButton) {
+            // insert code to show User Account Description Activity HERE.
+            // TODO: add a user account description activity.
+            Log.d(TAG, "Account option pressed.");
+        } else if (id == R.id.createGroupMenuLogoutButton){
+            // We do the logout stuff here.
+            // TODO: add the logout stuff. Make sure to signout using Firebase specifically,
+            // TODO: and return to the login activity. (make sure the password field is empty then).
+            Log.d(TAG, "Logout option pressed.");
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     // Add Group Button

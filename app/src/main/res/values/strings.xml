@@ -4,6 +4,7 @@
     <string name="password">Password</string>
     <string name="email_address">Email Address</string>
     <string name="login">Login</string>
+    <string name="logout">Logout</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="Register">Register</string>
     <string name="Create_Account">Create Account</string>
@@ -31,4 +32,6 @@
     <string name="enter_name">Enter Name</string>
     <string name="mark_as_completed">Mark as Completed</string>
     <string name="description">Description</string>
+    <string name="create_group_corner_menu">createGroupCornerMenu</string>
+    <string name="account">Account</string>
 </resources>
