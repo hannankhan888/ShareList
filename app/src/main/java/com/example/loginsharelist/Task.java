@@ -1,12 +1,17 @@
 package com.example.loginsharelist;
 
+import java.util.ArrayList;
+
 public class Task {
     private String taskName;
     private String taskDescription;
     private String taskId;
     private String taskCreationDate;
     private String taskDueDate;
+    private String taskBelongsToGroupID;
     private boolean mark;
+
+    private ArrayList<String> taskAssignedUsers = new ArrayList<>();
 
     public boolean isMark() {
         return mark;
@@ -56,13 +61,35 @@ public class Task {
         return taskCreationDate;
     }
 
-    public Task(String taskName, String taskDescription, String taskId, String taskCreationDate, String taskDueDate, boolean mark) {
+    public String getTaskBelongsToGroupID() {
+        return taskBelongsToGroupID;
+    }
+
+    public void setTaskBelongsToGroupID(String groupID){
+        this.taskBelongsToGroupID = groupID;
+    }
+
+    public void addAssignedUser(String userID){
+        this.taskAssignedUsers.add(userID);
+    }
+
+    public ArrayList<String> getTaskAssignedUsers(){
+        return this.taskAssignedUsers;
+    }
+
+    public void removeAssignedUser(String userID){
+        this.taskAssignedUsers.remove(userID);
+    }
+
+    public Task(String taskName, String taskDescription, String taskId, String taskCreationDate,
+                String taskDueDate, boolean mark, String taskBelongsToGroupID) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
         this.taskId = taskId;
         this.taskCreationDate = taskCreationDate;
         this.taskDueDate = taskDueDate;
         this.mark = mark;
+        this.taskBelongsToGroupID = taskBelongsToGroupID;
     }
 
     public Task() {

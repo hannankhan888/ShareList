@@ -23,6 +23,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import android.util.Patterns;
 
+import java.util.ArrayList;
+
 public class RegisterUser extends AppCompatActivity {
     private EditText createUserName;
     private EditText createPhoneNumber;
@@ -49,9 +51,7 @@ public class RegisterUser extends AppCompatActivity {
         // it will create account on the firebase
         createAccountButton = (Button) findViewById(R.id.createAccountButton);
         // We can use the statement lambda to make the code easier to understand
-        createAccountButton.setOnClickListener((view) -> {
-            createAccountActivity();
-        });
+        createAccountButton.setOnClickListener((view) -> createAccountActivity());
     }
 
     private void createAccountActivity() {
@@ -60,6 +60,7 @@ public class RegisterUser extends AppCompatActivity {
         String phoneNumber = createPhoneNumber.getText().toString().trim();
         String email = createEmail.getText().toString().trim();
         String password = createPassword.getText().toString().trim();
+
 
         // Validate that the entry should not be empty
         if (userName.isEmpty()) {
@@ -89,28 +90,22 @@ public class RegisterUser extends AppCompatActivity {
         }
 
         // connect to the firebase
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
-                    User user = new User(userName, phoneNumber, email, password);
-                    // We will send everything in user to the firebase database
-                    FirebaseDatabase.getInstance()
-                            .getReference("User")
-                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                User user = new User(userName, phoneNumber, email, password);
+                // We will send everything in user to the firebase database
+                FirebaseDatabase.getInstance()
+                        .getReference("User")
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .setValue(user).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
                                 Toast.makeText(RegisterUser.this, "The account has been created successfully. ", Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(RegisterUser.this, "The account creation failed!", Toast.LENGTH_LONG).show();
                             }
-                        }
-                    });
-                } else {
-                    Toast.makeText(RegisterUser.this, "The account creation failed!", Toast.LENGTH_LONG).show();
-                }
+                        });
+            } else {
+                Toast.makeText(RegisterUser.this, "The account creation failed!", Toast.LENGTH_LONG).show();
             }
         });
     }

@@ -30,6 +30,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -48,6 +49,8 @@ public class CreateTask extends AppCompatActivity {
     private String prevTaskID;
     private String prevCreationDate;
     private String prevDueDate;
+    private String groupNameStr;
+    private String groupIDStr;
     private boolean prevMark;
 
     public static boolean status = false;
@@ -63,8 +66,8 @@ public class CreateTask extends AppCompatActivity {
         // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
         // How to use putExtra() and getExtra() for string data
         // https://stackoverflow.com/questions/5265913/how-to-use-putextra-and-getextra-for-string-data
-        String groupNameStr = getIntent().getStringExtra("EXTRA_GROUP_NAME");
-        String groupIDStr = getIntent().getStringExtra("EXTRA_GROUP_ID");
+        groupNameStr = getIntent().getStringExtra("EXTRA_GROUP_NAME");
+        groupIDStr = getIntent().getStringExtra("EXTRA_GROUP_ID");
         // The task in the database is like
         // ---Task
         // -------task1
@@ -144,7 +147,7 @@ public class CreateTask extends AppCompatActivity {
             // Everything is converted to string
             String taskNameStr = taskName.getText().toString().trim();
             String taskDescriptionStr = taskDescription.getText().toString().trim();
-            // TODO: find out what id this refers to and log it. or comment it.
+            // This ID is a new ID created for the task we are about to store in the database.
             String id = databaseReference.push().getKey();
             String creationDate = DateFormat.getDateInstance().format(new Date());
             String dueDateStr = taskDueDate.getText().toString().trim();
@@ -161,17 +164,16 @@ public class CreateTask extends AppCompatActivity {
                 return;
             }
 
-            Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr, false);
-            databaseReference.child(id).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(CreateTask.this, "The task has been added. ", Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
-                    } else {
-                        Toast.makeText(CreateTask.this, "The task has not been added. ", Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
-                    }
+            Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr, false, groupIDStr);
+            // TODO: Do we need to add the creator of the task as an Assigned User?
+            // TODO: Here is where we would add them.
+            databaseReference.child(id).setValue(task).addOnCompleteListener(task1 -> {
+                if (task1.isSuccessful()) {
+                    Toast.makeText(CreateTask.this, "The task has been added. ", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(CreateTask.this, "The task has not been added. ", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
                 }
             });
         });
@@ -184,12 +186,15 @@ public class CreateTask extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        // TODO: update what content gets displayed for the group. Update the setQuery(databaseReference.
         super.onStart();
 
+        // The query within SetQuery does the following:
+        // gets the database reference (the TASKS table), and orders it by the taskBelongsToGroupID
+        // ID stored in each task. Then it checks which ones are equal to the current groupIDStr,
+        // and returns those only.
         FirebaseRecyclerOptions<Task> firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<Task>()
-                .setQuery(databaseReference, Task.class)
+                .setQuery(databaseReference.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr), Task.class)
                 .build();
 
         FirebaseRecyclerAdapter<Task, TaskDisplay> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Task, TaskDisplay>(firebaseRecyclerOptions) {
@@ -198,7 +203,7 @@ public class CreateTask extends AppCompatActivity {
                 // Multiple view in the RecyclerView
                 // https://stackoverflow.com/questions/46216540/getting-two-different-views-in-single-recyclerview-using-firebase-in-android
                 Task task = getItem(position);
-                if (task.isMark() == false) {
+                if (!task.isMark()) {
                     return 0;
                 } else {
                     return 1;
@@ -298,7 +303,6 @@ public class CreateTask extends AppCompatActivity {
             dialog.dismiss();
         });
 
-        // taskUpdateDueDateButton goes here
         taskUpdateDueDateButton.setOnClickListener((v) -> {
             UpdateTaskDueDateActivity();
             dialog.dismiss();
@@ -345,18 +349,15 @@ public class CreateTask extends AppCompatActivity {
                 return;
             }
 
-            Task task = new Task(updateTaskNameStr, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, prevMark);
+            Task task = new Task(updateTaskNameStr, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, prevMark, groupIDStr);
 
-            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
-                    } else {
-                        Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
-                    }
+            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
+                if (task1.isSuccessful()) {
+                    Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
                 }
             });
         });
@@ -389,18 +390,15 @@ public class CreateTask extends AppCompatActivity {
                 return;
             }
 
-            Task task = new Task(prevTaskName, updateTaskDescriptionStr, prevTaskID, prevCreationDate, prevDueDate, prevMark);
+            Task task = new Task(prevTaskName, updateTaskDescriptionStr, prevTaskID, prevCreationDate, prevDueDate, prevMark, groupNameStr);
 
-            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
-                    } else {
-                        Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
-                    }
+            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
+                if (task1.isSuccessful()) {
+                    Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
                 }
             });
         });
@@ -433,18 +431,15 @@ public class CreateTask extends AppCompatActivity {
                 return;
             }
 
-            Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, updateTaskDueDateStr, prevMark);
+            Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, updateTaskDueDateStr, prevMark, groupNameStr);
 
-            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(CreateTask.this, "The task has been updated.", Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
-                    } else {
-                        Toast.makeText(CreateTask.this, "The task has not been updated.", Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
-                    }
+            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
+                if (task1.isSuccessful()) {
+                    Toast.makeText(CreateTask.this, "The task has been updated.", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(CreateTask.this, "The task has not been updated.", Toast.LENGTH_LONG).show();
+                    dialog.dismiss();
                 }
             });
         });
@@ -453,16 +448,13 @@ public class CreateTask extends AppCompatActivity {
     }
 
     private void UpdateTaskMarkActivity() {
-        Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, true);
+        Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, true, groupNameStr);
 
-        databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
-                }
+        databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
+            if (task1.isSuccessful()) {
+                Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
             }
         });
     }

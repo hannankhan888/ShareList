@@ -1,5 +1,7 @@
 package com.example.loginsharelist;
 
+import java.util.ArrayList;
+
 public class User {
     public String userName;
     public String phoneNumber;
@@ -17,8 +19,3 @@ public class User {
         this.password = password;
     }
 }
-
-
-
-
-
