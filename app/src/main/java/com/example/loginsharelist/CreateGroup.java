@@ -53,7 +53,7 @@ public class CreateGroup extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Group");
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Groups");
 
         recyclerViewGroup = (RecyclerView) findViewById(R.id.recyclerViewGroup);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -117,6 +117,7 @@ public class CreateGroup extends AppCompatActivity {
         groupSaveButton.setOnClickListener((v) -> {
             // Everything is converted to string
             String groupNameStr = groupName.getText().toString().trim();
+            String currUserID = auth.getUid();
             String id = databaseReference.push().getKey();
 
             // Validate everything is not empty
@@ -125,6 +126,9 @@ public class CreateGroup extends AppCompatActivity {
                 return;
             } else {
                 Group group = new Group(groupNameStr, id);
+                group.addGroupMember(currUserID);
+                // groups creator is set as admin initially:
+                group.addGroupAdmin(currUserID);
                 databaseReference.child(databaseReference.push().getKey()).setValue(group).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -187,6 +191,7 @@ public class CreateGroup extends AppCompatActivity {
                     // It is the name of group that you click
                     String groupNameStr = model.getGroupName();
                     intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+                    intent.putExtra("EXTRA_GROUP_ID", model.getGroupId());
                     startActivity(intent);
                 });
             }

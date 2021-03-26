@@ -64,19 +64,18 @@ public class CreateTask extends AppCompatActivity {
         // How to use putExtra() and getExtra() for string data
         // https://stackoverflow.com/questions/5265913/how-to-use-putextra-and-getextra-for-string-data
         String groupNameStr = getIntent().getStringExtra("EXTRA_GROUP_NAME");
+        String groupIDStr = getIntent().getStringExtra("EXTRA_GROUP_ID");
         // The task in the database is like
         // ---Task
-        // ------group1
-        // ---------task1
-        // ---------task2
-        // ---------task3
-        // ------group2
-        // ---------task1
-        // ---------task2
-        // ---------task3
+        // -------task1
+        // -------task2
+        // -------task3
+        // -------task1
+        // -------task2
+        // -------task3
         // TODO: remove child(groupNAmeStr) to store tasks correctly.
         // TODO: make sure to delete the relative database on firebase.com
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Task").child(groupNameStr);
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Tasks");
 
         // Rename app bar to GROUP_NAME - Tasks
         getSupportActionBar().setTitle(groupNameStr + " - Tasks");
