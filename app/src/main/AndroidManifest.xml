@@ -9,7 +9,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LoginShareList">
-        <activity android:name=".DisplayTaskMark" />
         <activity android:name=".ForgetPassword" />
         <activity android:name=".CreateTask" />
         <activity android:name=".RegisterUser" />

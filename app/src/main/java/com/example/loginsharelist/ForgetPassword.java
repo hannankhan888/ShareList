@@ -3,9 +3,7 @@ package com.example.loginsharelist;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -33,9 +31,7 @@ public class ForgetPassword extends AppCompatActivity {
         // it will reset the password
         resetPasswordButton = (Button) findViewById(R.id.resetPasswordButton);
         // We can use the statement lambda to make the code easier to understand
-        resetPasswordButton.setOnClickListener((view) -> {
-            resetPasswordActivity();
-        });
+        resetPasswordButton.setOnClickListener((view) -> resetPasswordActivity());
     }
 
     private void resetPasswordActivity() {

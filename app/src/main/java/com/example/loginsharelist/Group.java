@@ -2,7 +2,6 @@ package com.example.loginsharelist;
 
 import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,7 +73,7 @@ public class Group {
 
     public void printGroupData(){
         for (String groupMember: this.groupMembers.keySet()) {
-            String val = this.groupMembers.get(groupMember).toString();
+            String val = this.groupMembers.get(groupMember);
             Log.d("TAGG",groupMember + ":DUEDATE" + val);
         }
     }
