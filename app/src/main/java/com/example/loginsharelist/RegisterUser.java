@@ -103,16 +103,3 @@ public class RegisterUser extends AppCompatActivity {
         });
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

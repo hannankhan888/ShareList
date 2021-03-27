@@ -11,7 +11,7 @@ public class Task {
     private String taskBelongsToGroupID;
     private boolean mark;
 
-    private ArrayList<String> taskAssignedUsers = new ArrayList<>();
+    private final ArrayList<String> taskAssignedUsers = new ArrayList<>();
 
     public boolean isMark() {
         return mark;
