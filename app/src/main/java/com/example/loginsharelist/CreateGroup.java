@@ -20,17 +20,16 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class CreateGroup extends AppCompatActivity {
@@ -42,10 +41,7 @@ public class CreateGroup extends AppCompatActivity {
 
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
-    private FirebaseUser user;
     String currUserID;
-
-    private List<Group> groupList = new ArrayList();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +50,6 @@ public class CreateGroup extends AppCompatActivity {
         getSupportActionBar().setTitle("Your Groups");
 
         auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
         currUserID = auth.getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Groups");
 
@@ -118,24 +113,30 @@ public class CreateGroup extends AppCompatActivity {
             String groupNameStr = groupName.getText().toString().trim();
             // The id generated here is an ID for the group we will create.
             String id = databaseReference.push().getKey();
+            Map<String, String> groupMembers = new HashMap<>();
+            Map<String, String> groupAdmins = new HashMap<>();
+
 
             // Validate everything is not empty
             if (groupNameStr.isEmpty()) {
                 groupName.setError("Group name cannot be empty. ");
                 return;
             } else {
-                Group group = new Group(groupNameStr, id);
+                Group group = new Group(groupNameStr, id, groupMembers, groupAdmins);
                 group.addGroupMember(currUserID);
-                // groups creator is set as admin initially:
                 group.addGroupAdmin(currUserID);
+//                src: https://stackoverflow.com/questions/39815117/add-an-item-to-a-list-in-firebase-database
+//                I have started re-iterating to myself: whenever you find yourself doing
+//                array.contains("xyz"), you should probably be using a set instead of an array.
+//                The above mapping with "key": true is an implementation of a set on Firebase.
+
                 databaseReference.child(id).setValue(group).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(CreateGroup.this, "The group has been added. ", Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
                     } else {
                         Toast.makeText(CreateGroup.this, "The group has not been added. ", Toast.LENGTH_LONG).show();
-                        dialog.dismiss();
                     }
+                    dialog.dismiss();
                 });
             }
         });
@@ -155,18 +156,15 @@ public class CreateGroup extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // TODO: Maybe consider doing UserGroups table instead of Groups? That way you can sort by user.
-        // by doing: databaseReference.child(currUid) (contains all the groups to display).
 
-        // TODO: easier solution: add user groups as attr to USER class.
-        // that way you can get a new databaseReference to User, then use
-        // .child(currUid).orderByChild("/inGroupIDs") maybe? lol.
+        // NOT ALLOWED: using multiple `orderBy` statements in the same line.
+        Log.d(TAG, currUserID);
+        Query query = databaseReference.orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
 
         FirebaseRecyclerOptions<Group> firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<Group>()
-                .setQuery(databaseReference, Group.class)
+                .setQuery(query, Group.class)
                 .build();
-        // NOT ALLOWED: using multiple `orderBy` statements in the same line.
 
         FirebaseRecyclerAdapter<Group, GroupDisplay> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Group, GroupDisplay>(firebaseRecyclerOptions) {
             @NonNull
@@ -181,6 +179,7 @@ public class CreateGroup extends AppCompatActivity {
 
             @Override
             protected void onBindViewHolder(@NonNull GroupDisplay holder, int position, @NonNull Group model) {
+                model.printGroupData();
                 // It is what is going to display on the group card view
                 holder.setGroupName(model.getGroupName());
 

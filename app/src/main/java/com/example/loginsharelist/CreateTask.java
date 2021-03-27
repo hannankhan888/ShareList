@@ -167,6 +167,7 @@ public class CreateTask extends AppCompatActivity {
             Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr, false, groupIDStr);
             // TODO: Do we need to add the creator of the task as an Assigned User?
             // TODO: Here is where we would add them.
+            Log.d(TAG, "groupIDStr is " + groupIDStr);
             databaseReference.child(id).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
                     Toast.makeText(CreateTask.this, "The task has been added. ", Toast.LENGTH_LONG).show();

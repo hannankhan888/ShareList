@@ -26,6 +26,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class AutoCompleteGroupSearch extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private RecyclerView autoGroupSearchList;
@@ -102,13 +106,15 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
             // Everything is converted to string
             String groupNameStr = groupName.getText().toString().trim();
             String id = databaseReference.push().getKey();
+            Map<String, String> groupMembers = new HashMap<>();
+            Map<String, String> groupAdmins = new HashMap<>();
 
             // Validate everything is not empty
             if (groupNameStr.isEmpty()) {
                 groupName.setError("Group name cannot be empty. ");
                 return;
             } else {
-                Group group = new Group(groupNameStr, id);
+                Group group = new Group(groupNameStr, id, groupMembers, groupAdmins);
                 databaseReference.child(databaseReference.push().getKey()).setValue(group).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
