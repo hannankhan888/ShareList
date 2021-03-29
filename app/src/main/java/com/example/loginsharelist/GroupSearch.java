@@ -34,7 +34,7 @@ public class GroupSearch extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_search);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Group");
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Groups");
 
         recyclerView = (RecyclerView) findViewById(R.id.autoCompletegroupSearchList);
         recyclerView.setHasFixedSize(true);
@@ -95,6 +95,7 @@ public class GroupSearch extends AppCompatActivity {
                     // It is the name of group that you click
                     String groupNameStr = model.getGroupName();
                     intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+                    intent.putExtra("EXTRA_GROUP_ID", model.getGroupId());
                     startActivity(intent);
                 });
             }
