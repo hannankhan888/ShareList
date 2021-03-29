@@ -72,6 +72,7 @@ public class GroupSearch extends AppCompatActivity {
     private void GroupSearchActivity(String groupNameStr) {
         // TODO: update this to only search the users current groups.
 //        Query query = databaseReference.orderByChild("groupName").startAt(groupNameStr).endAt(groupNameStr + "\uf8ff");
+        groupNameStr = groupNameStr.trim();
 
         Query query = databaseReference.orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
 
