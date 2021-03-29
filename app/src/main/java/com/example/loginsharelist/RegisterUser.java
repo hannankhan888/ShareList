@@ -101,6 +101,7 @@ public class RegisterUser extends AppCompatActivity {
                         .setValue(user).addOnCompleteListener(task1 -> {
                             if (task1.isSuccessful()) {
                                 Toast.makeText(RegisterUser.this, "The account has been created successfully. ", Toast.LENGTH_LONG).show();
+                                finish(); //basically same as clicking back button
                             } else {
                                 Toast.makeText(RegisterUser.this, "The account creation failed!", Toast.LENGTH_LONG).show();
                             }

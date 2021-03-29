@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -29,10 +31,16 @@ public class GroupSearch extends AppCompatActivity {
     private RecyclerView recyclerView;
     private DatabaseReference databaseReference;
 
+    private FirebaseAuth auth;
+    String currUserID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_search);
+
+        auth = FirebaseAuth.getInstance();
+        currUserID = auth.getUid();
 
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Groups");
 
@@ -63,7 +71,10 @@ public class GroupSearch extends AppCompatActivity {
      * */
     private void GroupSearchActivity(String groupNameStr) {
         // TODO: update this to only search the users current groups.
-        Query query = databaseReference.orderByChild("groupName").startAt(groupNameStr).endAt(groupNameStr + "\uf8ff");
+//        Query query = databaseReference.orderByChild("groupName").startAt(groupNameStr).endAt(groupNameStr + "\uf8ff");
+        groupNameStr = groupNameStr.trim();
+
+        Query query = databaseReference.orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
 
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<Group>()
@@ -95,7 +106,6 @@ public class GroupSearch extends AppCompatActivity {
                     // It is the name of group that you click
                     String groupNameStr = model.getGroupName();
                     intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
-                    intent.putExtra("EXTRA_GROUP_ID", model.getGroupId());
                     startActivity(intent);
                 });
             }
