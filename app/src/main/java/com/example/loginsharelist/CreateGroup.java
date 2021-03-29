@@ -166,7 +166,7 @@ public class CreateGroup extends AppCompatActivity {
      * Starts the group search activity.
      */
     private void groupSearchActivity() {
-        startActivity(new Intent(CreateGroup.this, GroupSearch.class));
+        startActivity(new Intent(CreateGroup.this, AutoCompleteGroupSearch.class));
     }
 
 

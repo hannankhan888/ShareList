@@ -19,13 +19,19 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,12 +43,20 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
     private EditText autoGroupSearchInput;
     private FloatingActionButton autoCompleteCreateGroupButton;
 
+    FirebaseRecyclerAdapter<Group, GroupDisplay> firebaseRecyclerAdapter;
+
+    private FirebaseAuth auth;
+    String currUserID;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_complete_group_search);
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Group");
+        auth = FirebaseAuth.getInstance();
+        currUserID = auth.getUid();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Groups");
 
         autoGroupSearchList = (RecyclerView) findViewById(R.id.autoCompleteGroupSearchList);
         autoGroupSearchList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -52,7 +66,7 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
         autoCompleteCreateGroupButton.setOnClickListener((view) -> addGroupActivity());
 
 
-        GroupSearch("");
+//        GroupSearch("");
 
         autoGroupSearchInput = (EditText) findViewById(R.id.autoCompleteGroupNameSearchInput);
         // Citation Source
@@ -80,7 +94,7 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
             // https://stackoverflow.com/questions/26992407/ontextchanged-vs-aftertextchanged-in-android-live-examples-needed
             public void afterTextChanged(Editable s) {
                 if (s.toString() != null) {
-                    GroupSearch(s.toString());
+                    GroupSearch(s.toString().trim());
                 } else {
                     GroupSearch("");
                 }
@@ -89,7 +103,8 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
     }
 
     /**
-     * This method implements the addGroupActivity as described in CreateGroup.java.*/
+     * This method implements the addGroupActivity as described in CreateGroup.java.
+     * */
     private void addGroupActivity() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
@@ -141,15 +156,29 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
      * for the group name (data). It also has the option to start the particular CreateTask activity
      * for the group selected.
      * */
-    private void GroupSearch(String data) {
-        Query query = databaseReference.orderByChild("groupName").startAt(data).endAt(data + "\uf8ff");
+    private void GroupSearch(String groupNameStr) {
+        ArrayList<Group> matchingGroups = new ArrayList<Group>();
+//        Query query = databaseReference.orderByChild("groupName").startAt(groupNameStr).endAt(groupNameStr + "\uf8ff");
+        Query query = databaseReference.orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
 
+        //https://stackoverflow.com/questions/52041870/does-using-snapshotparser-while-querying-firestore-an-expensive-operation
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<Group>()
-                .setQuery(query, Group.class)
+                .setQuery(query, new SnapshotParser<Group>() {
+                    @NonNull
+                    @Override
+                    public Group parseSnapshot(@NonNull DataSnapshot snapshot) {
+                        Group tempGroup = snapshot.getValue(Group.class);
+                        if (tempGroup.getGroupName().equals(groupNameStr)){
+                            return tempGroup;
+                        } else {
+                            return new Group();
+                        }
+                    }
+                })
                 .build();
 
-        FirebaseRecyclerAdapter<Group, GroupDisplay> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Group, GroupDisplay>(firebaseRecyclerOptions) {
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Group, GroupDisplay>(firebaseRecyclerOptions) {
             @NonNull
             @Override
             public GroupDisplay onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -162,20 +191,30 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
 
             @Override
             protected void onBindViewHolder(@NonNull GroupDisplay holder, int position, @NonNull Group model) {
-                holder.setGroupName(model.getGroupName());
+                // https://stackoverflow.com/questions/41223413/how-to-hide-an-item-from-recycler-view-on-a-particular-condition
+                if (model.getGroupId() == null) {
+                    holder.itemView.setVisibility(View.GONE);
+                    holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+                } else {
+                    holder.itemView.setVisibility(View.VISIBLE);
+                    holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-                // If you click the group, it will open the create task activity
-                holder.view.setOnClickListener((view) -> {
-                    Intent intent = new Intent(AutoCompleteGroupSearch.this, CreateTask.class);
-                    // How do I pass data between Activities in Android application
-                    // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
-                    // How to use putExtra() and getExtra() for string data
-                    // https://stackoverflow.com/questions/5265913/how-to-use-putextra-and-getextra-for-string-data
-                    // It is the name of group that you click
-                    String groupNameStr = model.getGroupName();
-                    intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
-                    startActivity(intent);
-                });
+                    holder.setGroupName(model.getGroupName());
+
+                    // If you click the group, it will open the create task activity
+                    holder.view.setOnClickListener((view) -> {
+                        Intent intent = new Intent(AutoCompleteGroupSearch.this, CreateTask.class);
+                        // How do I pass data between Activities in Android application
+                        // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
+                        // How to use putExtra() and getExtra() for string data
+                        // https://stackoverflow.com/questions/5265913/how-to-use-putextra-and-getextra-for-string-data
+                        // It is the name of group that you click
+                        String groupNameStr = model.getGroupName();
+                        intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+                        intent.putExtra("EXTRA_GROUP_ID", model.getGroupId());
+                        startActivity(intent);
+                    });
+                }
             }
         };
 
