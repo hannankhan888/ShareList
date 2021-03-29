@@ -71,10 +71,10 @@ public class GroupSearch extends AppCompatActivity {
      * */
     private void GroupSearchActivity(String groupNameStr) {
         // TODO: update this to only search the users current groups.
-//        Query query = databaseReference.orderByChild("groupName").startAt(groupNameStr).endAt(groupNameStr + "\uf8ff");
-        groupNameStr = groupNameStr.trim();
+        Query query = databaseReference.orderByChild("groupName").startAt(groupNameStr).endAt(groupNameStr + "\uf8ff");
+//        groupNameStr = groupNameStr.trim();
 
-        Query query = databaseReference.orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
+//        Query query = databaseReference.orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
 
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<Group>()
@@ -106,6 +106,7 @@ public class GroupSearch extends AppCompatActivity {
                     // It is the name of group that you click
                     String groupNameStr = model.getGroupName();
                     intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+                    intent.putExtra("EXTRA_GROUP_ID", model.getGroupId());
                     startActivity(intent);
                 });
             }
