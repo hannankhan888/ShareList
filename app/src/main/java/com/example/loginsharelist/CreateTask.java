@@ -33,6 +33,17 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * This class implements the CreateTask activity for GROUP ADMINS ONLY. It gives admins multiple
+ * options such as:
+ *              add task
+ *              update task contents
+ *              mark task as completed
+ *              display group info
+ *              leave the group
+ *              delete the group
+ * Any data that is created/updated is also reflected in the database.
+ */
 public class CreateTask extends AppCompatActivity {
     private static final String TAG = "CreateTask";
 
@@ -54,6 +65,10 @@ public class CreateTask extends AppCompatActivity {
     public static boolean status = false;
 
 
+    /**
+     * This method sets all necessary vars for this activity. It also sets the app bar title to
+     * reflect to the user what group they are currently in.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,8 +89,6 @@ public class CreateTask extends AppCompatActivity {
         // -------task1
         // -------task2
         // -------task3
-        // TODO: remove child(groupNAmeStr) to store tasks correctly.
-        // TODO: make sure to delete the relative database on firebase.com
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Tasks");
 
         // Rename app bar to GROUP_NAME - Tasks
@@ -94,15 +107,21 @@ public class CreateTask extends AppCompatActivity {
         addTaskButton.setOnClickListener((view) -> addTaskActivity());
     }
 
-    // add the corner menu layout for create task.
-    // the buttons get created and checked for in onOptionsItemSelected(MenuItem item)
+    /**
+     * Adds the corner menu layout for create task.
+     * The buttons get created and checked for in onOptionsItemSelected(MenuItem item).
+     * @param menu - menu that gets the corner menu layout set.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.corner_menu_for_create_task, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
-    // Here we handle what happens when a corner menu item gets pressed.
+    /**
+     * Here we handle what happens when a corner menu item gets pressed.
+     * @param item - item that gets pressed.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
@@ -120,7 +139,12 @@ public class CreateTask extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Add Task Button
+    /**
+     * Deals with the Task Button. Creates an alert dialog to show the user fields to input the task
+     * details.
+     * When `save` is pressed, this method will create a task with the contents of the alert dialog
+     * and will update the database to match. A toast message is displayed on success.
+     */
     private void addTaskActivity() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
@@ -183,6 +207,9 @@ public class CreateTask extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * Creates the FirebaseRecyclerView to hold all tasks for a certain group (groupIDStr).
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -279,6 +306,14 @@ public class CreateTask extends AppCompatActivity {
         firebaseRecyclerAdapter.startListening();
     }
 
+    /**
+     * This method deals with the Task Menu. This menu displays options for the GROUP ADMIN to take
+     * on the task that was selected. Options include:
+     *              update contents of task
+     *              update assigned users
+     *              mark task as completed
+     * This method directs the buttons to their respective activities when they are pressed.
+     */
     private void TaskMenuActivity() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
@@ -323,6 +358,13 @@ public class CreateTask extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * This method deals with updating the selected tasks name.
+     * It creates an alert dialog, inflates it to the correct layout.
+     * Upon pressing `update`, this method will create a new task, find the old task in the database
+     * via the prevTaskID, and update its contents to match.
+     * A toast message is displayed on success.
+     */
     private void UpdateTaskNameActivity() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
@@ -364,6 +406,13 @@ public class CreateTask extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * This method deals with updating the selected tasks description.
+     * It creates an alert dialog, inflates it to the correct layout.
+     * Upon pressing `update`, this method will create a new task, find the old task in the database
+     * via the prevTaskID, and update its contents to match.
+     * A toast message is displayed on success.
+     */
     private void UpdateTaskDescriptionActivity(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
@@ -405,7 +454,13 @@ public class CreateTask extends AppCompatActivity {
         dialog.show();
     }
 
-
+    /**
+     * This method deals with updating the selected tasks due date.
+     * It creates an alert dialog, inflates it to the correct layout.
+     * Upon pressing `update`, this method will create a new task, find the old task in the database
+     * via the prevTaskID, and update its contents to match.
+     * A toast message is displayed on success.
+     */
     private void UpdateTaskDueDateActivity(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
@@ -446,6 +501,13 @@ public class CreateTask extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * This method deals with updating the selected tasks mark.
+     * It creates an alert dialog, inflates it to the correct layout.
+     * Upon pressing `update`, this method will create a new task, find the old task in the database
+     * via the prevTaskID, and update its contents to match.
+     * A toast message is displayed on success.
+     */
     private void UpdateTaskMarkActivity() {
         Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, true, groupNameStr);
 
@@ -458,6 +520,13 @@ public class CreateTask extends AppCompatActivity {
         });
     }
 
+    /**
+     * This method shows a date picker.
+     * @param taskDueDate - the button that shows the tasks due date. If no previous due date is set
+     *                    the button will show the current date.
+     * @param setToToday - boolean, when set to true, it will show the taskDueDate button as today's
+     *                   date. Otherwise the button will show what the tasks due date originally is.
+     */
     private void ShowDatePickerDialog(Button taskDueDate, Boolean setToToday){
         Calendar calendar = Calendar.getInstance();
 

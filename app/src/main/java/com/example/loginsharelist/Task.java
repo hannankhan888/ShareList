@@ -2,6 +2,9 @@ package com.example.loginsharelist;
 
 import java.util.ArrayList;
 
+/**
+ * This class implements a Task object which stores information about a task.
+ */
 public class Task {
     private String taskName;
     private String taskDescription;
@@ -11,6 +14,7 @@ public class Task {
     private String taskBelongsToGroupID;
     private boolean mark;
 
+    // TODO: change this to a hash map <string, string> throughout the entire code.
     private final ArrayList<String> taskAssignedUsers = new ArrayList<>();
 
     public boolean isMark() {

@@ -7,6 +7,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+/**
+ * This class implements a TaskDisplay which the FirebaseRecyclerView will use to display the tasks
+ * associated with a certain group. The methods in this class are used to update the RecyclerView.
+ */
 public class TaskDisplay extends RecyclerView.ViewHolder {
     View view;
 

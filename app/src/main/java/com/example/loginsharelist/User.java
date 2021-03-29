@@ -1,6 +1,8 @@
 package com.example.loginsharelist;
 
-
+/**
+ * This class implements a User object which stores information about a user.
+ */
 public class User {
     public String userName;
     public String phoneNumber;

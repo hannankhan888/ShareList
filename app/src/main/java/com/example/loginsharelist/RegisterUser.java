@@ -17,7 +17,10 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import android.util.Patterns;
 
-
+/**
+ * This activity is used to register users. It can be accessed from the MainActivity.
+ * It creates a User object, and updates the database to match.
+ */
 public class RegisterUser extends AppCompatActivity {
     private EditText createUserName;
     private EditText createPhoneNumber;
@@ -47,6 +50,11 @@ public class RegisterUser extends AppCompatActivity {
         createAccountButton.setOnClickListener((view) -> createAccountActivity());
     }
 
+    /**
+     * Gathers info about users new account. Multiple accounts with the SAME EMAIL are not allowed.
+     * Uses the firebase current authentication to create a user and update the database.
+     * Displays toasts in both success and failure.
+     */
     private void createAccountActivity() {
         // everything is converted to string
         String userName = createUserName.getText().toString().trim();

@@ -29,7 +29,12 @@ import com.google.firebase.database.Query;
 import java.util.HashMap;
 import java.util.Map;
 
-
+/**
+ * This class implements the CreateGroup activity. This activity is available to ALL USERS, and is
+ * the first thing they see after signing in. It has options to create group, search for group.
+ *
+ * Its corner menu implements options such as account info, logout.
+ * */
 public class CreateGroup extends AppCompatActivity {
     private static final String TAG = "CreateGroup";
 
@@ -65,15 +70,21 @@ public class CreateGroup extends AppCompatActivity {
         groupSearchButton.setOnClickListener((view) -> groupSearchActivity());
     }
 
-    // add the corner menu layout for create group.
-    // the buttons get created and checked for in onOptionsItemSelected(MenuItem item)
+    /**
+     * Adds the corner menu layout for create group.
+     * The buttons get created and checked for in onOptionsItemSelected(MenuItem item)
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.corner_menu_for_create_group, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
-    // Here we handle what happens when a corner menu item gets pressed.
+    /** Here we handle what happens when a corner menu item gets pressed.
+     *
+     * @param item - item that is selected.
+     * @return boolean
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
@@ -93,7 +104,13 @@ public class CreateGroup extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Add Group Button
+    /**
+     * Creates an alert dialog to get information about what group to create. This method will then
+     * create the group and set the group admin as the current user. It will also add the current
+     * user to the group members hash map.
+     *
+     * All of this info gets updated in the database, with a toast message signaling success.
+     */
     private void addGroupActivity() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
@@ -145,12 +162,18 @@ public class CreateGroup extends AppCompatActivity {
         dialog.show();
     }
 
-    // Add group search button
+    /**
+     * Starts the group search activity.
+     */
     private void groupSearchActivity() {
         startActivity(new Intent(CreateGroup.this, GroupSearch.class));
     }
 
 
+    /**
+     * This method creates a query based on the current userID. This gets the groups that the user
+     * is part of. These groups are displayed via a FirebaseRecycler and Adapter.
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -202,5 +225,3 @@ public class CreateGroup extends AppCompatActivity {
         firebaseRecyclerAdapter.startListening();
     }
 }
-
-

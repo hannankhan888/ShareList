@@ -29,6 +29,8 @@ import com.google.firebase.database.Query;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class implements an autocomplete search for groups.*/
 public class AutoCompleteGroupSearch extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private RecyclerView autoGroupSearchList;
@@ -86,7 +88,8 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
         });
     }
 
-    // Add Group Button
+    /**
+     * This method implements the addGroupActivity as described in CreateGroup.java.*/
     private void addGroupActivity() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
@@ -133,6 +136,11 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * This method implements the actual group search. It does this by using a query, that searches
+     * for the group name (data). It also has the option to start the particular CreateTask activity
+     * for the group selected.
+     * */
     private void GroupSearch(String data) {
         Query query = databaseReference.orderByChild("groupName").startAt(data).endAt(data + "\uf8ff");
 
@@ -177,44 +185,3 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

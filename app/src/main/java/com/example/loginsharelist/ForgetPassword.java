@@ -12,6 +12,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
+/**
+ * This class implements a ForgetPassword activity. This is used when a USER forgot their password.
+ * It works by using Firebase to send a password reset email to the users email address.
+ */
 public class ForgetPassword extends AppCompatActivity {
     private EditText resetEmail;
     private Button resetPasswordButton;

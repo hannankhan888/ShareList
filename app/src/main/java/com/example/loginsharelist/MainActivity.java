@@ -16,6 +16,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+/**
+ * This class implements the MainActivity, which for our app ShareList is just the login page.
+ */
 public class MainActivity extends AppCompatActivity {
     private EditText loginEmail;
     private EditText loginPassword;
@@ -67,6 +70,10 @@ public class MainActivity extends AppCompatActivity {
         forgetPasswordLink.setOnClickListener((view) -> startActivity(new Intent(this, ForgetPassword.class)));
     }
 
+    /**
+     * This method gets the email and password and uses Firebase to sign-in the user.
+     * Displays a toast if it fails.
+     */
     private void loginActivity() {
         // everything will be converted to string
         String email = loginEmail.getText().toString().trim();

@@ -5,6 +5,10 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Implements a class Group for holding a single groups data.
+ * Allows for getters/setters.
+ */
 public class Group {
 
     private String groupName;
@@ -71,6 +75,9 @@ public class Group {
         this.groupAdmins.remove(userID);
     }
 
+    /**
+     * Prints the groupMembers hash map by the group members IDs.
+     */
     public void printGroupData(){
         for (String groupMember: this.groupMembers.keySet()) {
             String val = this.groupMembers.get(groupMember);

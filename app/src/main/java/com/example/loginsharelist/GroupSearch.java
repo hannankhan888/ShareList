@@ -19,6 +19,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+/**
+ * This class implements a search activity for searching for groups.
+ * TODO: update so that it only searches for groups that the user is currently part of.
+ */
 public class GroupSearch extends AppCompatActivity {
     private EditText groupNameSearchInput;
     private Button groupNameSearchButton;
@@ -52,8 +56,13 @@ public class GroupSearch extends AppCompatActivity {
         });
     }
 
+    /**
+     * This method implements the actual group search. It does this by using a query, that searches
+     * for the group name (data). It also has the option to start the particular CreateTask activity
+     * for the group selected.
+     * */
     private void GroupSearchActivity(String groupNameStr) {
-        // TODO: here is an example of a query:
+        // TODO: update this to only search the users current groups.
         Query query = databaseReference.orderByChild("groupName").startAt(groupNameStr).endAt(groupNameStr + "\uf8ff");
 
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
