@@ -25,11 +25,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -203,7 +201,7 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
 
                     // If you click the group, it will open the create task activity
                     holder.view.setOnClickListener((view) -> {
-                        Intent intent = new Intent(AutoCompleteGroupSearch.this, CreateTask.class);
+                        Intent intent = new Intent(AutoCompleteGroupSearch.this, CreateTaskAdmin.class);
                         // How do I pass data between Activities in Android application
                         // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
                         // How to use putExtra() and getExtra() for string data

@@ -9,9 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LoginShareList">
-        <activity android:name=".AccountInfo"></activity>
+        <activity android:name=".CreateTaskUser"></activity>
+        <activity android:name=".TaskMenuUser" />
+        <activity android:name=".AccountInfo" />
         <activity android:name=".ForgetPassword" />
-        <activity android:name=".CreateTask" />
+        <activity android:name=".CreateTaskAdmin" />
         <activity android:name=".RegisterUser" />
         <activity android:name=".GroupSearch" />
         <activity android:name=".AutoCompleteGroupSearch" />

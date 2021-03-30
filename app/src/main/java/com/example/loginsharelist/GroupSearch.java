@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,7 +97,7 @@ public class GroupSearch extends AppCompatActivity {
 
                 // If you click the group, it will open the create task activity
                 holder.view.setOnClickListener((view) -> {
-                    Intent intent = new Intent(GroupSearch.this, CreateTask.class);
+                    Intent intent = new Intent(GroupSearch.this, CreateTaskAdmin.class);
                     // How do I pass data between Activities in Android application
                     // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
                     // How to use putExtra() and getExtra() for string data

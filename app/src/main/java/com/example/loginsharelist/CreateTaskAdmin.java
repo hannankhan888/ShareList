@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -36,15 +37,15 @@ import java.util.Locale;
 /**
  * This class implements the CreateTask activity for GROUP ADMINS ONLY. It gives admins multiple
  * options such as:
- *              add task
- *              update task contents
- *              mark task as completed
- *              display group info
- *              leave the group
- *              delete the group
+ * add task
+ * update task contents
+ * mark task as completed
+ * display group info
+ * leave the group
+ * delete the group
  * Any data that is created/updated is also reflected in the database.
  */
-public class CreateTask extends AppCompatActivity {
+public class CreateTaskAdmin extends AppCompatActivity {
     private static final String TAG = "CreateTask";
 
     private RecyclerView recyclerViewTask;
@@ -72,7 +73,7 @@ public class CreateTask extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_task);
+        setContentView(R.layout.activity_create_task_admin);
 
         auth = FirebaseAuth.getInstance();
         // How do I pass data between Activities in Android application
@@ -110,20 +111,22 @@ public class CreateTask extends AppCompatActivity {
     /**
      * Adds the corner menu layout for create task.
      * The buttons get created and checked for in onOptionsItemSelected(MenuItem item).
+     *
      * @param menu - menu that gets the corner menu layout set.
      */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.corner_menu_for_create_task, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     /**
      * Here we handle what happens when a corner menu item gets pressed.
+     *
      * @param item - item that gets pressed.
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         // its not recommended to use switch statement according to gradle.
@@ -131,9 +134,14 @@ public class CreateTask extends AppCompatActivity {
             // insert code to show group info Activity HERE.
             // TODO: add a group info activity.
             Log.d(TAG, "Group Info option pressed.");
-        } else if (id == R.id.createTaskCornerMenuLeaveGroupItem){
+        } else if (id == R.id.createTaskCornerMenuLeaveGroupItem) {
             // We do the Leave Group stuff here.
             // TODO: add the Leave Group stuff.
+            item.setOnMenuItemClickListener((v) -> {
+                startActivity(new Intent(CreateTaskAdmin.this, CreateGroup.class));
+                finish();
+                return true;
+            });
             Log.d(TAG, "Leave Group option pressed.");
         }
         return super.onOptionsItemSelected(item);
@@ -157,7 +165,7 @@ public class CreateTask extends AppCompatActivity {
         dialog.setCancelable(false);
 
         EditText taskName = view.findViewById(R.id.addTaskName);
-        EditText taskDescription= view.findViewById(R.id.addTaskDescription);
+        EditText taskDescription = view.findViewById(R.id.addTaskDescription);
         Button taskDueDate = view.findViewById(R.id.addTaskDueDate);
 
         taskDueDate.setOnClickListener((v) -> ShowDatePickerDialog(taskDueDate, true));
@@ -187,15 +195,13 @@ public class CreateTask extends AppCompatActivity {
             }
 
             Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr, false, groupIDStr);
-            // TODO: Do we need to add the creator of the task as an Assigned User?
-            // TODO: Here is where we would add them.
             Log.d(TAG, "groupIDStr is " + groupIDStr);
             databaseReference.child(id).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
-                    Toast.makeText(CreateTask.this, "The task has been added. ", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateTaskAdmin.this, "The task has been added. ", Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(CreateTask.this, "The task has not been added. ", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateTaskAdmin.this, "The task has not been added. ", Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 }
             });
@@ -309,15 +315,15 @@ public class CreateTask extends AppCompatActivity {
     /**
      * This method deals with the Task Menu. This menu displays options for the GROUP ADMIN to take
      * on the task that was selected. Options include:
-     *              update contents of task
-     *              update assigned users
-     *              mark task as completed
+     * update contents of task
+     * update assigned users
+     * mark task as completed
      * This method directs the buttons to their respective activities when they are pressed.
      */
     private void TaskMenuActivity() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View view = layoutInflater.inflate(R.layout.activity_task_menu, null);
+        View view = layoutInflater.inflate(R.layout.activity_task_menu_admin, null);
         alertDialog.setView(view);
 
         AlertDialog dialog = alertDialog.create();
@@ -394,10 +400,10 @@ public class CreateTask extends AppCompatActivity {
 
             databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
-                    Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateTaskAdmin.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateTaskAdmin.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 }
             });
@@ -413,7 +419,7 @@ public class CreateTask extends AppCompatActivity {
      * via the prevTaskID, and update its contents to match.
      * A toast message is displayed on success.
      */
-    private void UpdateTaskDescriptionActivity(){
+    private void UpdateTaskDescriptionActivity() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         View view = layoutInflater.inflate(R.layout.activity_update_task_description, null);
@@ -442,10 +448,10 @@ public class CreateTask extends AppCompatActivity {
 
             databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
-                    Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateTaskAdmin.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateTaskAdmin.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 }
             });
@@ -461,7 +467,7 @@ public class CreateTask extends AppCompatActivity {
      * via the prevTaskID, and update its contents to match.
      * A toast message is displayed on success.
      */
-    private void UpdateTaskDueDateActivity(){
+    private void UpdateTaskDueDateActivity() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         View view = layoutInflater.inflate(R.layout.activity_update_task_due_date, null);
@@ -489,10 +495,10 @@ public class CreateTask extends AppCompatActivity {
 
             databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
-                    Toast.makeText(CreateTask.this, "The task has been updated.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateTaskAdmin.this, "The task has been updated.", Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 } else {
-                    Toast.makeText(CreateTask.this, "The task has not been updated.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateTaskAdmin.this, "The task has not been updated.", Toast.LENGTH_LONG).show();
                     dialog.dismiss();
                 }
             });
@@ -513,30 +519,31 @@ public class CreateTask extends AppCompatActivity {
 
         databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
             if (task1.isSuccessful()) {
-                Toast.makeText(CreateTask.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
+                Toast.makeText(CreateTaskAdmin.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(CreateTask.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
+                Toast.makeText(CreateTaskAdmin.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
             }
         });
     }
 
     /**
      * This method shows a date picker.
+     *
      * @param taskDueDate - the button that shows the tasks due date. If no previous due date is set
      *                    the button will show the current date.
-     * @param setToToday - boolean, when set to true, it will show the taskDueDate button as today's
-     *                   date. Otherwise the button will show what the tasks due date originally is.
+     * @param setToToday  - boolean, when set to true, it will show the taskDueDate button as today's
+     *                    date. Otherwise the button will show what the tasks due date originally is.
      */
-    private void ShowDatePickerDialog(Button taskDueDate, Boolean setToToday){
+    private void ShowDatePickerDialog(Button taskDueDate, Boolean setToToday) {
         Calendar calendar = Calendar.getInstance();
 
         if (!setToToday) {
-            try{
+            try {
                 // We parse the date from the selected task.
                 Date date = new SimpleDateFormat("MM/dd/yyyy", Locale.US).parse(prevDueDate);
                 // We set the calendar to match the prevDueDate.
                 calendar.setTime(date);
-            } catch (ParseException e){
+            } catch (ParseException e) {
                 Log.d(TAG, "Date was not able to be parsed: " + prevDueDate);
             }
         }
