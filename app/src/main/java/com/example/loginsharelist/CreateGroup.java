@@ -32,9 +32,9 @@ import java.util.Map;
 /**
  * This class implements the CreateGroup activity. This activity is available to ALL USERS, and is
  * the first thing they see after signing in. It has options to create group, search for group.
- *
+ * <p>
  * Its corner menu implements options such as account info, logout.
- * */
+ */
 public class CreateGroup extends AppCompatActivity {
     private static final String TAG = "CreateGroup";
 
@@ -75,18 +75,19 @@ public class CreateGroup extends AppCompatActivity {
      * The buttons get created and checked for in onOptionsItemSelected(MenuItem item)
      */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu){
+    public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.corner_menu_for_create_group, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
-    /** Here we handle what happens when a corner menu item gets pressed.
+    /**
+     * Here we handle what happens when a corner menu item gets pressed.
      *
      * @param item - item that is selected.
      * @return boolean
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         // its not recommended to use switch statement according to gradle.
@@ -95,10 +96,16 @@ public class CreateGroup extends AppCompatActivity {
             // TODO: add a user account description activity.
             Log.d(TAG, "Account option pressed.");
             startActivity(new Intent(CreateGroup.this, AccountInfo.class));
-        } else if (id == R.id.createGroupMenuLogoutItem){
+        } else if (id == R.id.createGroupMenuLogoutItem) {
             // We do the logout stuff here.
             // TODO: add the logout stuff. Make sure to sign out using Firebase specifically,
             // TODO: and return to the login activity. (make sure the password field is empty then).
+            item.setOnMenuItemClickListener((v) -> {
+                FirebaseAuth.getInstance().signOut();
+                startActivity(new Intent(CreateGroup.this, MainActivity.class));
+                finish();
+                return true;
+            });
             Log.d(TAG, "Logout option pressed.");
         }
 
@@ -109,7 +116,7 @@ public class CreateGroup extends AppCompatActivity {
      * Creates an alert dialog to get information about what group to create. This method will then
      * create the group and set the group admin as the current user. It will also add the current
      * user to the group members hash map.
-     *
+     * <p>
      * All of this info gets updated in the database, with a toast message signaling success.
      */
     private void addGroupActivity() {
@@ -207,7 +214,7 @@ public class CreateGroup extends AppCompatActivity {
 
                 // If you click the group, it will open the create task activity
                 holder.view.setOnClickListener((view) -> {
-                    Intent intent = new Intent(CreateGroup.this, CreateTask.class);
+                    Intent intent = new Intent(CreateGroup.this, CreateTaskAdmin.class);
                     // How do I pass data between Activities in Android application
                     // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
                     // How to use putExtra() and getExtra() for string data
