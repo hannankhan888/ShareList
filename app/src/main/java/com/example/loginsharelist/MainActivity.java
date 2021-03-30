@@ -82,10 +82,12 @@ public class MainActivity extends AppCompatActivity {
         // validate that everything is not empty
         if (email.isEmpty()) {
             loginEmail.setError("It should not be empty. ");
+            loginEmail.requestFocus();
             return;
         }
         if (password.isEmpty()) {
             loginPassword.setError("It should not be empty. ");
+            loginPassword.requestFocus();
             return;
         }
 
@@ -98,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     startActivity(new Intent(MainActivity.this, CreateGroup.class));
                 } else {
-                    Toast.makeText(MainActivity.this, "The email and the password is wrong. ", Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "Incorrect Email or Password!", Toast.LENGTH_LONG).show();
                 }
             }
         });
