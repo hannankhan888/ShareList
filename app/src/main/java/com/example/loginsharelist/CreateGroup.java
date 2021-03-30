@@ -94,6 +94,7 @@ public class CreateGroup extends AppCompatActivity {
             // insert code to show User Account Description Activity HERE.
             // TODO: add a user account description activity.
             Log.d(TAG, "Account option pressed.");
+            startActivity(new Intent(CreateGroup.this, AccountInfo.class));
         } else if (id == R.id.createGroupMenuLogoutItem){
             // We do the logout stuff here.
             // TODO: add the logout stuff. Make sure to sign out using Firebase specifically,
