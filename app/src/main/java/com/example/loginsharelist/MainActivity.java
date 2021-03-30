@@ -104,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 // If the user login, the user will go to the create group activity
                 if (task.isSuccessful()) {
+                    // Clears the password for if you logout.
+                    loginPassword.setText("");
                     startActivity(new Intent(MainActivity.this, CreateGroup.class));
                 } else {
                     Toast.makeText(MainActivity.this, "Incorrect Email or Password!", Toast.LENGTH_LONG).show();

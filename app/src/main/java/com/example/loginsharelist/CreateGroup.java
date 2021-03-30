@@ -98,14 +98,8 @@ public class CreateGroup extends AppCompatActivity {
             startActivity(new Intent(CreateGroup.this, AccountInfo.class));
         } else if (id == R.id.createGroupMenuLogoutItem) {
             // We do the logout stuff here.
-            // TODO: add the logout stuff. Make sure to sign out using Firebase specifically,
-            // TODO: and return to the login activity. (make sure the password field is empty then).
-            item.setOnMenuItemClickListener((v) -> {
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(CreateGroup.this, MainActivity.class));
-                finish();
-                return true;
-            });
+            FirebaseAuth.getInstance().signOut();
+            finish();
             Log.d(TAG, "Logout option pressed.");
         }
 
