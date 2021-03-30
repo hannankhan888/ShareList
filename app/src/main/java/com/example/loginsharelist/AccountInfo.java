@@ -63,8 +63,6 @@ public class AccountInfo extends AppCompatActivity {
             }
         });
 
-
-
         resetPassBt.setOnClickListener((view) -> startActivity(new Intent(this, ForgetPassword.class)));
 
 
