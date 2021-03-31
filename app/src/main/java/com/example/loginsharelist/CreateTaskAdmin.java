@@ -195,8 +195,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
             }
 
             Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr, false, groupIDStr);
-            // TODO: Do we need to add the creator of the task as an Assigned User?
-            // TODO: Here is where we would add them.
             Log.d(TAG, "groupIDStr is " + groupIDStr);
             databaseReference.child(id).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
@@ -446,7 +444,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 return;
             }
 
-            Task task = new Task(prevTaskName, updateTaskDescriptionStr, prevTaskID, prevCreationDate, prevDueDate, prevMark, groupNameStr);
+            Task task = new Task(prevTaskName, updateTaskDescriptionStr, prevTaskID, prevCreationDate, prevDueDate, prevMark, groupIDStr);
 
             databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
@@ -493,7 +491,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 return;
             }
 
-            Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, updateTaskDueDateStr, prevMark, groupNameStr);
+            Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, updateTaskDueDateStr, prevMark, groupIDStr);
 
             databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
@@ -517,7 +515,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
      * A toast message is displayed on success.
      */
     private void UpdateTaskMarkActivity() {
-        Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, true, groupNameStr);
+        Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, true, groupIDStr);
 
         databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
             if (task1.isSuccessful()) {
