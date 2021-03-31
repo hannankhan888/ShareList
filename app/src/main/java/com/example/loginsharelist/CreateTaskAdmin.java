@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -133,6 +134,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         if (id == R.id.createTaskCornerMenuGroupInfoItem) {
             // insert code to show group info Activity HERE.
             // TODO: add a group info activity.
+            TaskInfoActivity();
             Log.d(TAG, "Group Info option pressed.");
         } else if (id == R.id.createTaskCornerMenuLeaveGroupItem) {
             // We do the Leave Group stuff here.
@@ -145,6 +147,33 @@ public class CreateTaskAdmin extends AppCompatActivity {
             Log.d(TAG, "Leave Group option pressed.");
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void TaskInfoActivity() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.activity_task_info, null);
+        alertDialog.setView(view);
+
+        AlertDialog dialog = alertDialog.create();
+
+        Button taskInfoOKButton = view.findViewById(R.id.taskInfoOKButton);
+
+        taskInfoOKButton.setOnClickListener((v) -> {
+            dialog.dismiss();
+        });
+
+        // It will receive the number of user in the create group activity and show it in the task info view
+        TextView taskUserCount = view.findViewById(R.id.taskUserCount);
+        String countUser = getIntent().getStringExtra("EXTRA_MEMBER_COUNT");
+        taskUserCount.setText(countUser);
+
+        // It will receive the number of admin in the create group activity and show it in the task info view
+        TextView taskAdminCount = view.findViewById(R.id.taskAdminCount);
+        String countAdmin = getIntent().getStringExtra("EXTRA_ADMIN_COUNT");
+        taskAdminCount.setText(countAdmin);
+
+        dialog.show();
     }
 
     /**
@@ -280,19 +309,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
                     holder.setCrossTaskDescription(model.getTaskDescription());
                     holder.setCrossTaskDueDate(model.getTaskDueDate());
                 }
-
-
-//                if (status) {
-//                    // It is what is going to display on the task card view
-//                    holder.setCrossTaskName(model.getTaskName());
-//                    holder.setCrossTaskDescription(model.getTaskDescription());
-//                    holder.setCrossTaskDueDate(model.getTaskDueDate());
-//                } else {
-//                    // It is what is going to display on the task card view
-//                    holder.setTaskName(model.getTaskName());
-//                    holder.setTaskDescription(model.getTaskDescription());
-//                    holder.setTaskDueDate(model.getTaskDueDate());
-//                }
 
                 // If you click the task, it will open the task menu
                 holder.view.setOnClickListener((view) -> {
