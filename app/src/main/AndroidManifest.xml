@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LoginShareList">
-        <activity android:name=".TaskInfo"></activity>
+        <activity android:name=".TaskInfo" />
         <activity android:name=".CreateTaskUser" />
         <activity android:name=".TaskMenuUser" />
         <activity android:name=".AccountInfo" />
