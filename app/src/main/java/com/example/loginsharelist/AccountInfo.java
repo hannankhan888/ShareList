@@ -47,19 +47,16 @@ public class AccountInfo extends AppCompatActivity {
         resetPassBt = findViewById(R.id.resetpassbutton);
 
 
-        query.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                }
-                else {
-                    User user = task.getResult().getValue(User.class);
-                    usernameText.setText(user.userName);
-                    emailText.setText(user.emailAddress);
-                    phoneText.setText(user.phoneNumber);
-                    Log.e("firebase_account_user",user.userName);
-                }
+        query.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e("firebase", "Error getting data", task.getException());
+            }
+            else {
+                User user = task.getResult().getValue(User.class);
+                usernameText.setText(user.userName);
+                emailText.setText(user.emailAddress);
+                phoneText.setText(user.phoneNumber);
+                Log.e("firebase_account_user",user.userName);
             }
         });
 
