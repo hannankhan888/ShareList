@@ -216,7 +216,17 @@ public class CreateGroup extends AppCompatActivity {
                     // It is the name of group that you click
                     String groupNameStr = model.getGroupName();
                     intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+
+                    // Count user and admin
+                    Map<String, String> groupMembersMap = model.getGroupMembers();
+                    int groupMembersCount = groupMembersMap.size();
+                    intent.putExtra("EXTRA_MEMBER_COUNT", Integer.toString(groupMembersCount));
+                    Map<String, String> groupAdminsMap = model.getGroupAdmins();
+                    int groupAdminsCount = groupMembersMap.size();
+                    intent.putExtra("EXTRA_ADMIN_COUNT", Integer.toString(groupAdminsCount));
+
                     intent.putExtra("EXTRA_GROUP_ID", model.getGroupId());
+
                     startActivity(intent);
                 });
             }
