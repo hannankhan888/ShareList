@@ -22,10 +22,14 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +47,7 @@ public class CreateGroup extends AppCompatActivity {
     private FloatingActionButton groupSearchButton;
 
     private DatabaseReference databaseReference;
+    private DatabaseReference databaseReferenceGroup;
     private FirebaseAuth auth;
     String currUserID;
 
@@ -54,7 +59,8 @@ public class CreateGroup extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         currUserID = auth.getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Groups");
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReferenceGroup = FirebaseDatabase.getInstance().getReference().child("Groups");
 
         recyclerViewGroup = (RecyclerView) findViewById(R.id.recyclerViewGroup);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -93,7 +99,6 @@ public class CreateGroup extends AppCompatActivity {
         // its not recommended to use switch statement according to gradle.
         if (id == R.id.createGroupMenuAccountItem) {
             // insert code to show User Account Description Activity HERE.
-            // TODO: add a user account description activity.
             Log.d(TAG, "Account option pressed.");
             startActivity(new Intent(CreateGroup.this, AccountInfo.class));
         } else if (id == R.id.createGroupMenuLogoutItem) {
@@ -110,7 +115,6 @@ public class CreateGroup extends AppCompatActivity {
      * Creates an alert dialog to get information about what group to create. This method will then
      * create the group and set the group admin as the current user. It will also add the current
      * user to the group members hash map.
-     * <p>
      * All of this info gets updated in the database, with a toast message signaling success.
      */
     private void addGroupActivity() {
@@ -129,7 +133,7 @@ public class CreateGroup extends AppCompatActivity {
             // Everything is converted to string
             String groupNameStr = groupName.getText().toString().trim();
             // The id generated here is an ID for the group we will create.
-            String id = databaseReference.push().getKey();
+            String id = databaseReferenceGroup.push().getKey();
             Map<String, String> groupMembers = new HashMap<>();
             Map<String, String> groupAdmins = new HashMap<>();
 
@@ -147,7 +151,7 @@ public class CreateGroup extends AppCompatActivity {
 //                array.contains("xyz"), you should probably be using a set instead of an array.
 //                The above mapping with "key": true is an implementation of a set on Firebase.
 
-                databaseReference.child(id).setValue(group).addOnCompleteListener(task -> {
+                databaseReferenceGroup.child(id).setValue(group).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(CreateGroup.this, "The group has been added. ", Toast.LENGTH_LONG).show();
                     } else {
@@ -182,7 +186,7 @@ public class CreateGroup extends AppCompatActivity {
 
         // NOT ALLOWED: using multiple `orderBy` statements in the same line.
         Log.d(TAG, currUserID);
-        Query query = databaseReference.orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
+        Query query = databaseReferenceGroup.orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
 
         FirebaseRecyclerOptions<Group> firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<Group>()
@@ -205,6 +209,29 @@ public class CreateGroup extends AppCompatActivity {
                 model.printGroupData();
                 // It is what is going to display on the group card view
                 holder.setGroupName(model.getGroupName());
+                Map<String, String> groupMembersMap = model.getGroupMembers();
+                if (groupMembersMap.size() > 1){
+                    for (String userID : groupMembersMap.keySet()){
+                        ArrayList<String> groupMembersNames = new ArrayList<>();
+                        Query queryToGetMemberName = databaseReference.child("User").child(userID).child("userName");
+                        queryToGetMemberName.addListenerForSingleValueEvent(new ValueEventListener(){
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot){
+                                String memberName = dataSnapshot.getValue(String.class);
+                                holder.addMemberToGroupMembersStr(memberName);
+                                groupMembersNames.add(memberName);
+                                Log.d(TAG, "Member Name: " + memberName);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.d(TAG, "Unable to get groupMemberName: " + error);
+                            }
+                        });
+                    }
+                } else {
+                    holder.setGroupMembersStr("Only You");
+                }
 
                 // If you click the group, it will open the create task activity
                 holder.view.setOnClickListener((view) -> {
@@ -218,7 +245,6 @@ public class CreateGroup extends AppCompatActivity {
                     intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
 
                     // Count user and admin
-                    Map<String, String> groupMembersMap = model.getGroupMembers();
                     int groupMembersCount = groupMembersMap.size();
                     intent.putExtra("EXTRA_MEMBER_COUNT", Integer.toString(groupMembersCount));
                     Map<String, String> groupAdminsMap = model.getGroupAdmins();
