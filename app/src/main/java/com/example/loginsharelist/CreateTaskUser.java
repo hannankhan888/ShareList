@@ -26,6 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -33,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This class implements the CreateTask activity for GROUP ADMINS ONLY. It gives admins multiple
@@ -518,16 +520,33 @@ public class CreateTaskUser extends AppCompatActivity {
      * A toast message is displayed on success.
      */
     private void UpdateTaskMarkActivity() {
-        Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, true, groupNameStr);
+        Query q = databaseReference.child(prevTaskID);
+        AtomicReference<Boolean> stat = new AtomicReference<>(true);
+        Log.e("task_statusa", String.valueOf(stat.get()));
+        q.get().addOnCompleteListener(task -> {
+            if (!task.isSuccessful()) {
+                Log.e("CreateTasK_updateMark", "Error getting data", task.getException());
+            }
+            else {
+                Task t = task.getResult().getValue(Task.class);
+                stat.set(!(t.isMark()));
+                Log.e("task_statusb", String.valueOf(stat.get()));
+                Task t2 = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, stat.get(), groupIDStr);
 
-        databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(t -> {
-            if (t.isSuccessful()) {
-                Toast.makeText(CreateTaskUser.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(CreateTaskUser.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
+                databaseReference.child(prevTaskID).setValue(t2).addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        Toast.makeText(CreateTaskUser.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(CreateTaskUser.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
+                    }
+                    Log.e("task_statusc", String.valueOf(stat.get()));
+                });
             }
         });
+
+
     }
+
 
     /**
      * This method shows a date picker.
