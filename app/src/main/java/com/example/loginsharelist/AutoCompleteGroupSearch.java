@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,9 +26,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +39,10 @@ import java.util.Map;
 /**
  * This class implements an autocomplete search for groups.*/
 public class AutoCompleteGroupSearch extends AppCompatActivity {
+    public static final String TAG = "AutoCompleteGroupSearch";
+
     private DatabaseReference databaseReference;
+    private DatabaseReference databaseReferenceGroup;
     private RecyclerView autoGroupSearchList;
     private EditText autoGroupSearchInput;
     private FloatingActionButton autoCompleteCreateGroupButton;
@@ -54,7 +60,8 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         currUserID = auth.getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Groups");
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReferenceGroup = FirebaseDatabase.getInstance().getReference().child("Groups");
 
         autoGroupSearchList = (RecyclerView) findViewById(R.id.autoCompleteGroupSearchList);
         autoGroupSearchList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -118,7 +125,7 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
         groupSaveButton.setOnClickListener((v) -> {
             // Everything is converted to string
             String groupNameStr = groupName.getText().toString().trim();
-            String id = databaseReference.push().getKey();
+            String id = databaseReferenceGroup.push().getKey();
             Map<String, String> groupMembers = new HashMap<>();
             Map<String, String> groupAdmins = new HashMap<>();
 
@@ -128,7 +135,7 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
                 return;
             } else {
                 Group group = new Group(groupNameStr, id, groupMembers, groupAdmins);
-                databaseReference.child(databaseReference.push().getKey()).setValue(group).addOnCompleteListener(new OnCompleteListener<Void>() {
+                databaseReferenceGroup.child(databaseReferenceGroup.push().getKey()).setValue(group).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
@@ -157,7 +164,7 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
     private void GroupSearch(String groupNameStr) {
         ArrayList<Group> matchingGroups = new ArrayList<Group>();
 //        Query query = databaseReference.orderByChild("groupName").startAt(groupNameStr).endAt(groupNameStr + "\uf8ff");
-        Query query = databaseReference.orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
+        Query query = databaseReferenceGroup.orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
 
         //https://stackoverflow.com/questions/52041870/does-using-snapshotparser-while-querying-firestore-an-expensive-operation
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
@@ -198,6 +205,27 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
                     holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
                     holder.setGroupName(model.getGroupName());
+                    Map<String, String> groupMembersMap = model.getGroupMembers();
+                    if (groupMembersMap.size() > 1){
+                        for (String userID : groupMembersMap.keySet()){
+                            Query queryToGetMemberName = databaseReference.child("User").child(userID).child("userName");
+                            queryToGetMemberName.addListenerForSingleValueEvent(new ValueEventListener(){
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot){
+                                    String memberName = dataSnapshot.getValue(String.class);
+                                    holder.addMemberToGroupMembersStr(memberName);
+                                    Log.d(TAG, "Member Name: " + memberName);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.d(TAG, "Unable to get groupMemberName: " + error);
+                                }
+                            });
+                        }
+                    } else {
+                        holder.setGroupMembersStr("Only You");
+                    }
 
                     // If you click the group, it will open the create task activity
                     holder.view.setOnClickListener((view) -> {

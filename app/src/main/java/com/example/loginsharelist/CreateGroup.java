@@ -212,14 +212,12 @@ public class CreateGroup extends AppCompatActivity {
                 Map<String, String> groupMembersMap = model.getGroupMembers();
                 if (groupMembersMap.size() > 1){
                     for (String userID : groupMembersMap.keySet()){
-                        ArrayList<String> groupMembersNames = new ArrayList<>();
                         Query queryToGetMemberName = databaseReference.child("User").child(userID).child("userName");
                         queryToGetMemberName.addListenerForSingleValueEvent(new ValueEventListener(){
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot){
                                 String memberName = dataSnapshot.getValue(String.class);
                                 holder.addMemberToGroupMembersStr(memberName);
-                                groupMembersNames.add(memberName);
                                 Log.d(TAG, "Member Name: " + memberName);
                             }
 
