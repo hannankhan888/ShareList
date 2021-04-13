@@ -23,10 +23,10 @@ Add your firebase configuration via AndroidStudio>Tools>Firebase.
 
 ## Authors
 
-* **Khan Hanan** - *Initial work* - [Hannan Khan](https://github.com/hannankhan888)
-* **Yanzi Wang** - *Initial work* - [Yanzhi Wang](https://github.com/yxw1001827416)
+* **Hannan Khan** - *Initial work* - [Hannan Khan](https://github.com/hannankhan888)
+* **Yanzhi Wang** - *Initial work* - [Yanzhi Wang](https://github.com/yxw1001827416)
 * **Furkhan Shaikh** - *Initial work* - [Furkhan Shaikh](https://github.com/FurkhanShaikh)
-* **Khan Anum** - *Initial work* - [Anum Khan](https://github.com/anumkhan94)
+* **Anum Khan** - *Initial work* - [Anum Khan](https://github.com/anumkhan94)
 * **Yu Zhao** - *Initial work* - [Yu Zhao](https://github.com/zhaoyufrank)
 
 ## License
