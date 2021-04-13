@@ -37,4 +37,5 @@
     <string name="leave_group">Leave Group</string>
     <string name="share_list">Share List</string>
     <string name="assigned_to">Assigned to:</string>
+    <string name="enter_user_email">Enter User Email</string>
 </resources>

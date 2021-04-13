@@ -18,6 +18,7 @@
         <activity android:name=".RegisterUser" />
         <activity android:name=".GroupSearch" />
         <activity android:name=".AutoCompleteGroupSearch" />
+        <activity android:name=".AutoCompleteUserSearch" />
         <activity android:name=".CreateGroup" />
         <activity android:name=".SplashActivity">
             <intent-filter>
