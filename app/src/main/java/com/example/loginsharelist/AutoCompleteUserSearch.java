@@ -76,22 +76,6 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
     private void UserSearch(String userEmailStr){
         Query query = databaseReferenceUser.orderByChild("/emailAddress").equalTo(userEmailStr);
 
-//        FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
-//                .Builder<User>()
-//                .setQuery(query, new SnapshotParser<User>() {
-//                    @NonNull
-//                    @Override
-//                    public User parseSnapshot(@NonNull DataSnapshot snapshot) {
-//                        User tempUser = snapshot.getValue(User.class);
-//                        if (tempUser.getUserName().equals(userEmailStr)){
-//                            return tempUser;
-//                        } else {
-//                            return new User();
-//                        }
-//                    }
-//                })
-//                .build();
-
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<User>()
                 .setQuery(query, User.class)
