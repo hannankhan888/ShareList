@@ -215,13 +215,13 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
             // Validate that everything is not empty
             if (taskNameStr.isEmpty()) {
-                taskName.setError("It should not be empty. ");
+                taskName.setError("Task name should not be empty. ");
                 return;
             } else if (taskDescriptionStr.isEmpty()) {
-                taskDescription.setError("It should not be empty. ");
+                taskDescription.setError("Description should not be empty. ");
                 return;
             } else if (dueDateStr.isEmpty()) {
-                taskDueDate.setError("It should not be empty. ");
+                taskDueDate.setError("Due date should not be empty. ");
                 return;
             }
 
@@ -346,23 +346,11 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
         AlertDialog dialog = alertDialog.create();
 
-        Button taskUpdateNameButton = view.findViewById(R.id.taskMenuUpdateNameButton);
-        Button taskUpdateDescriptionButton = view.findViewById(R.id.taskMenuUpdateDescriptionButton);
-        Button taskUpdateDueDateButton = view.findViewById(R.id.taskMenuUpdateDueDateButton);
-        Button taskUpdateAssignedUsersButton = view.findViewById(R.id.taskMenuUpdateAssignedUsersButton);
+        Button taskUpdateTaskContentsButton = view.findViewById(R.id.taskMenuUpdateTaskContentsButton);
+
         // We can use the statement lambda to make the code easier to understand
-        taskUpdateNameButton.setOnClickListener((v) -> {
-            UpdateTaskNameActivity();
-            dialog.dismiss();
-        });
-
-        taskUpdateDescriptionButton.setOnClickListener((v) -> {
-            UpdateTaskDescriptionActivity();
-            dialog.dismiss();
-        });
-
-        taskUpdateDueDateButton.setOnClickListener((v) -> {
-            UpdateTaskDueDateActivity();
+        taskUpdateTaskContentsButton.setOnClickListener((v) -> {
+            UpdateTaskContentsActivity();
             dialog.dismiss();
         });
 
@@ -383,142 +371,61 @@ public class CreateTaskAdmin extends AppCompatActivity {
     }
 
     /**
-     * This method deals with updating the selected tasks name.
+     * This method deals with updating the selected tasks contents.
      * It creates an alert dialog, inflates it to the correct layout.
      * Upon pressing `update`, this method will create a new task, find the old task in the database
      * via the prevTaskID, and update its contents to match.
      * A toast message is displayed on success.
      */
-    private void UpdateTaskNameActivity() {
+    private void UpdateTaskContentsActivity(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View view = layoutInflater.inflate(R.layout.activity_update_task_name, null);
+        View view = layoutInflater.inflate(R.layout.activity_input_task_detail, null);
         alertDialog.setView(view);
 
         AlertDialog dialog = alertDialog.create();
 
-        EditText taskUpdateNameInput = view.findViewById(R.id.taskUpdateNameInput);
+        EditText newTaskNameInput = view.findViewById(R.id.addTaskName);
+        EditText newTaskDescriptionInput = view.findViewById(R.id.addTaskDescription);
+        Button newTaskDueDateButtonInput = view.findViewById(R.id.addTaskDueDate);
+        Button saveButton = view.findViewById(R.id.taskSaveButton);
+        Button cancelButton = view.findViewById(R.id.taskCancelButton);
 
-        taskUpdateNameInput.setText(prevTaskName);
-        taskUpdateNameInput.setSelection(prevTaskName.length());
+        newTaskNameInput.setText(prevTaskName);
+        newTaskDescriptionInput.setText(prevTaskDescription);
+        newTaskDueDateButtonInput.setText(prevDueDate);
+        saveButton.setText(R.string.update);
 
-        Button taskUpdateNameInputButton = view.findViewById(R.id.taskUpdateNameInputButton);
-        // We can use the statement lambda to make the code easier to understand
-        taskUpdateNameInputButton.setOnClickListener((v) -> {
-            // everything is converted to string
-            String updateTaskNameStr = taskUpdateNameInput.getText().toString().trim();
+        newTaskDueDateButtonInput.setOnClickListener((v) -> ShowDatePickerDialog(newTaskDueDateButtonInput, false));
+        cancelButton.setOnClickListener((v) -> dialog.dismiss());
 
-            // Validate everything that is not empty
-            if (updateTaskNameStr.isEmpty()) {
-                taskUpdateNameInput.setError("It should not be empty. ");
+        saveButton.setOnClickListener((v) -> {
+            // Everything is converted to string
+            String taskNameStr = newTaskNameInput.getText().toString().trim();
+            String taskDescriptionStr = newTaskDescriptionInput.getText().toString().trim();
+            String dueDateStr = newTaskDueDateButtonInput.getText().toString().trim();
+
+            // Validate that everything is not empty
+            if (taskNameStr.isEmpty()) {
+                newTaskNameInput.setError("Task name should not be empty. ");
+                return;
+            } else if (taskDescriptionStr.isEmpty()) {
+                newTaskDescriptionInput.setError("Description should not be empty. ");
+                return;
+            } else if (dueDateStr.isEmpty()) {
+                newTaskDueDateButtonInput.setError("Due date should not be empty. ");
                 return;
             }
 
-            Task task = new Task(updateTaskNameStr, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, prevMark, groupIDStr);
-
-            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
-                if (task1.isSuccessful()) {
-                    Toast.makeText(CreateTaskAdmin.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
-                    dialog.dismiss();
-                } else {
-                    Toast.makeText(CreateTaskAdmin.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
-                    dialog.dismiss();
-                }
-            });
-        });
-
-        dialog.show();
-    }
-
-    /**
-     * This method deals with updating the selected tasks description.
-     * It creates an alert dialog, inflates it to the correct layout.
-     * Upon pressing `update`, this method will create a new task, find the old task in the database
-     * via the prevTaskID, and update its contents to match.
-     * A toast message is displayed on success.
-     */
-    private void UpdateTaskDescriptionActivity() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View view = layoutInflater.inflate(R.layout.activity_update_task_description, null);
-        alertDialog.setView(view);
-
-        AlertDialog dialog = alertDialog.create();
-
-        EditText taskUpdateDescriptionInput = view.findViewById(R.id.taskUpdateDescriptionInput);
-
-        taskUpdateDescriptionInput.setText(prevTaskDescription);
-        taskUpdateDescriptionInput.setSelection(prevTaskDescription.length());
-
-        Button taskUpdateDescriptionButton = view.findViewById(R.id.taskUpdateDescriptionButton);
-
-        taskUpdateDescriptionButton.setOnClickListener((v) -> {
-            // everything is converted to string
-            String updateTaskDescriptionStr = taskUpdateDescriptionInput.getText().toString().trim();
-
-            // Validate everything that is not empty
-            if (updateTaskDescriptionStr.isEmpty()) {
-                taskUpdateDescriptionInput.setError("It should not be empty.");
-                return;
-            }
-
-            Task task = new Task(prevTaskName, updateTaskDescriptionStr, prevTaskID, prevCreationDate, prevDueDate, prevMark, groupIDStr);
-
-            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
-                if (task1.isSuccessful()) {
-                    Toast.makeText(CreateTaskAdmin.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
-                    dialog.dismiss();
-                } else {
-                    Toast.makeText(CreateTaskAdmin.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
-                    dialog.dismiss();
-                }
-            });
-        });
-
-        dialog.show();
-    }
-
-    /**
-     * This method deals with updating the selected tasks due date.
-     * It creates an alert dialog, inflates it to the correct layout.
-     * Upon pressing `update`, this method will create a new task, find the old task in the database
-     * via the prevTaskID, and update its contents to match.
-     * A toast message is displayed on success.
-     */
-    private void UpdateTaskDueDateActivity() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View view = layoutInflater.inflate(R.layout.activity_update_task_due_date, null);
-        alertDialog.setView(view);
-
-        AlertDialog dialog = alertDialog.create();
-
-        Button taskUpdateDueDateInputButton = view.findViewById(R.id.taskUpdateDueDateInputButton);
-        taskUpdateDueDateInputButton.setText(prevDueDate);
-        taskUpdateDueDateInputButton.setOnClickListener((v) -> ShowDatePickerDialog(taskUpdateDueDateInputButton, false));
-
-        Button taskUpdateDueDateSubmitButton = view.findViewById(R.id.taskUpdateDueDateSubmitButton);
-        taskUpdateDueDateSubmitButton.setOnClickListener((v) -> {
-            // By now, the taskUpdateDueDateInputButton has the value for chosen date.
-            // everything is converted to string
-            String updateTaskDueDateStr = taskUpdateDueDateInputButton.getText().toString().trim();
-
-            // Validate everything that is not empty
-            if (updateTaskDueDateStr.isEmpty()) {
-                taskUpdateDueDateInputButton.setError("It should not be empty.");
-                return;
-            }
-
-            Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, updateTaskDueDateStr, prevMark, groupIDStr);
+            Task task = new Task(taskNameStr, taskDescriptionStr, prevTaskID, prevCreationDate, dueDateStr, prevMark, groupIDStr);
 
             databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
                     Toast.makeText(CreateTaskAdmin.this, "The task has been updated.", Toast.LENGTH_LONG).show();
-                    dialog.dismiss();
                 } else {
                     Toast.makeText(CreateTaskAdmin.this, "The task has not been updated.", Toast.LENGTH_LONG).show();
-                    dialog.dismiss();
                 }
+                dialog.dismiss();
             });
         });
 
@@ -535,7 +442,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
     private void UpdateTaskMarkActivity() {
         Query q = databaseReference.child(prevTaskID);
         AtomicReference<Boolean> stat = new AtomicReference<>(true);
-        Log.e("task_statusa", String.valueOf(stat.get()));
+        Log.e("task_status", String.valueOf(stat.get()));
         q.get().addOnCompleteListener(task -> {
                 if (!task.isSuccessful()) {
                     Log.e("CreateTasK_updateMark", "Error getting data", task.getException());
@@ -556,8 +463,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
                     });
                 }
         });
-
-
     }
 
     /**
