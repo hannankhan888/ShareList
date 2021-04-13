@@ -26,23 +26,22 @@
                 android:id="@+id/taskNameDisplay"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:paddingEnd="5dp"
+                android:paddingRight="5dp"
                 android:ellipsize="end"
                 android:fontFamily="@font/roboto_medium"
                 android:lines="1"
-                android:text="task titley"
                 android:textSize="30sp"
                 card_view:layout_constraintBottom_toBottomOf="parent"
                 card_view:layout_constraintEnd_toStartOf="@+id/taskDueDateDisplay"
                 card_view:layout_constraintStart_toStartOf="parent"
-                android:paddingRight="5dp" />
+                android:paddingEnd="5dp" />
 
             <TextView
                 android:id="@+id/taskDueDateDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
                 android:fontFamily="@font/roboto_condensed_light"
-                android:text="due datey"
                 android:textSize="20sp"
                 card_view:layout_constraintBottom_toBottomOf="parent"
                 card_view:layout_constraintEnd_toEndOf="parent" />
@@ -52,40 +51,46 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="left"
-            android:orientation="horizontal"
-            android:padding="2dp">
+            android:gravity="start"
+            android:orientation="vertical"
+            android:padding="3dp">
 
             <TextView
                 android:id="@+id/taskDescriptionDisplay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_condensed_light"
-                android:textSize="20sp"
+                android:textSize="18sp"
                 android:ellipsize="end"
                 android:lines="1"
-                android:text="Task description"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/taskNameDisplay" />
 
-        </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="2dp">
+                <TextView
+                    android:id="@+id/taskAssignedTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="5dp"
+                    android:paddingEnd="5dp"
+                    android:fontFamily="@font/roboto_condensed_light"
+                    android:text="@string/assigned_to"
+                    android:textSize="18sp" />
 
-            <TextView
-                android:id="@+id/taskAssignedUsersDisplay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto_condensed_light"
-                android:ellipsize="end"
-                android:lines="1"
-                android:text="Assigned to:"
-                android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/taskAssignedUsersDisplay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_condensed_light"
+                    android:ellipsize="end"
+                    android:lines="1"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

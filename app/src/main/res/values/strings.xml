@@ -36,4 +36,5 @@
     <string name="group_info">Group Info</string>
     <string name="leave_group">Leave Group</string>
     <string name="share_list">Share List</string>
+    <string name="assigned_to">Assigned to:</string>
 </resources>
