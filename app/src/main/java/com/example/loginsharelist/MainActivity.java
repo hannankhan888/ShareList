@@ -34,12 +34,8 @@ public class MainActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         // keep user logged in
-        // TODO: when i login, then logout, it works. But if i close the app and open it, the
-        // TODO: last person that was logged in, gets logged in. It does not take me to the login
-        // TODO: screen.
         if (auth.getCurrentUser() != null) {
             startActivity(new Intent(MainActivity.this, CreateGroup.class));
-            finish();
         }
 
         loginEmail = findViewById(R.id.loginEmail);
