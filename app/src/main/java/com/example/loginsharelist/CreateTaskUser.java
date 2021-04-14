@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,24 +15,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -51,7 +42,6 @@ public class CreateTaskUser extends AppCompatActivity {
     private static final String TAG = "CreateTask";
 
     private RecyclerView recyclerViewTask;
-//    private FloatingActionButton addTaskButton;
 
     private DatabaseReference databaseReference;
     private FirebaseAuth auth;
@@ -62,6 +52,9 @@ public class CreateTaskUser extends AppCompatActivity {
     private String prevCreationDate;
     private String prevDueDate;
     private boolean prevMark;
+    private String prevTaskBelongsToGroupID;
+    private Map<String, String> prevTaskAssignedUsers;
+
     private String groupNameStr;
     private String groupIDStr;
 
@@ -97,17 +90,12 @@ public class CreateTaskUser extends AppCompatActivity {
         // Rename app bar to GROUP_NAME - Tasks
         getSupportActionBar().setTitle(groupNameStr + " - Tasks");
 
-
         recyclerViewTask = (RecyclerView) findViewById(R.id.recyclerViewTask);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
         recyclerViewTask.setHasFixedSize(true);
         recyclerViewTask.setLayoutManager(linearLayoutManager);
-
-//        addTaskButton = findViewById(R.id.addTaskButton);
-//        // We can use the statement lambda to make the code easier to understand
-//        addTaskButton.setOnClickListener((view) -> addTaskActivity());
     }
 
     /**
@@ -148,74 +136,6 @@ public class CreateTaskUser extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    /**
-     * Deals with the Task Button. Creates an alert dialog to show the user fields to input the task
-     * details.
-     * When `save` is pressed, this method will create a task with the contents of the alert dialog
-     * and will update the database to match. A toast message is displayed on success.
-     */
-//    private void addTaskActivity() {
-//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-//        LayoutInflater layoutInflater = LayoutInflater.from(this);
-//
-//        // Inflate the input task activity
-//        View view = layoutInflater.inflate(R.layout.activity_input_task_detail, null);
-//        alertDialog.setView(view);
-//
-//        AlertDialog dialog = alertDialog.create();
-//        dialog.setCancelable(false);
-//
-//        EditText taskName = view.findViewById(R.id.addTaskName);
-//        EditText taskDescription= view.findViewById(R.id.addTaskDescription);
-//        Button taskDueDate = view.findViewById(R.id.addTaskDueDate);
-//
-//        taskDueDate.setOnClickListener((v) -> ShowDatePickerDialog(taskDueDate, true));
-//
-//        // Task save button
-//        Button taskSaveButton = view.findViewById(R.id.taskSaveButton);
-//        // We can use the statement lambda to make the code easier to understand
-//        taskSaveButton.setOnClickListener((v) -> {
-//            // Everything is converted to string
-//            String taskNameStr = taskName.getText().toString().trim();
-//            String taskDescriptionStr = taskDescription.getText().toString().trim();
-//            // This ID is a new ID created for the task we are about to store in the database.
-//            String id = databaseReference.push().getKey();
-//            String creationDate = DateFormat.getDateInstance().format(new Date());
-//            String dueDateStr = taskDueDate.getText().toString().trim();
-//
-//            // Validate that everything is not empty
-//            if (taskNameStr.isEmpty()) {
-//                taskName.setError("It should not be empty. ");
-//                return;
-//            } else if (taskDescriptionStr.isEmpty()) {
-//                taskDescription.setError("It should not be empty. ");
-//                return;
-//            } else if (dueDateStr.isEmpty()) {
-//                taskDueDate.setError("It should not be empty. ");
-//                return;
-//            }
-//
-//            Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr, false, groupIDStr);
-//            // TODO: Do we need to add the creator of the task as an Assigned User?
-//            // TODO: Here is where we would add them.
-//            Log.d(TAG, "groupIDStr is " + groupIDStr);
-//            databaseReference.child(id).setValue(task).addOnCompleteListener(task1 -> {
-//                if (task1.isSuccessful()) {
-//                    Toast.makeText(CreateTaskUser.this, "The task has been added. ", Toast.LENGTH_LONG).show();
-//                    dialog.dismiss();
-//                } else {
-//                    Toast.makeText(CreateTaskUser.this, "The task has not been added. ", Toast.LENGTH_LONG).show();
-//                    dialog.dismiss();
-//                }
-//            });
-//        });
-//
-//        Button cancelTaskButton = view.findViewById(R.id.taskCancelButton);
-//        cancelTaskButton.setOnClickListener((v -> dialog.dismiss()));
-//
-//        dialog.show();
-//    }
 
     /**
      * Creates the FirebaseRecyclerView to hold all tasks for a certain group (groupIDStr).
@@ -306,6 +226,8 @@ public class CreateTaskUser extends AppCompatActivity {
                     prevCreationDate = model.getTaskCreationDate();
                     prevDueDate = model.getTaskDueDate();
                     prevMark = model.isMark();
+                    prevTaskBelongsToGroupID = model.getTaskBelongsToGroupID();
+                    prevTaskAssignedUsers = model.getTaskAssignedUsers();
                     TaskMenuActivity();
                 });
             }
@@ -332,33 +254,6 @@ public class CreateTaskUser extends AppCompatActivity {
 
         AlertDialog dialog = alertDialog.create();
 
-
-//        Button taskUpdateNameButton = view.findViewById(R.id.taskMenuUpdateNameButton);
-//        Button taskUpdateDescriptionButton = view.findViewById(R.id.taskMenuUpdateDescriptionButton);
-//        Button taskUpdateDueDateButton = view.findViewById(R.id.taskMenuUpdateDueDateButton);
-//        Button taskUpdateAssignedUsersButton = view.findViewById(R.id.taskMenuUpdateAssignedUsersButton);
-//        // We can use the statement lambda to make the code easier to understand
-//        taskUpdateNameButton.setOnClickListener((v) -> {
-//            UpdateTaskNameActivity();
-//            dialog.dismiss();
-//        });
-//
-//        taskUpdateDescriptionButton.setOnClickListener((v) -> {
-//            UpdateTaskDescriptionActivity();
-//            dialog.dismiss();
-//        });
-//
-//        taskUpdateDueDateButton.setOnClickListener((v) -> {
-//            UpdateTaskDueDateActivity();
-//            dialog.dismiss();
-//        });
-
-        // taskMenuUpdateAssignedUsersButton goes here
-//        taskUpdateAssignedUsersButton.setOnClickListener((v) -> {
-//            UpdateTaskAssignedUsersActivity();
-//            dialog.dismiss();
-//        });
-
         Button taskMenuUserMarkButton = view.findViewById(R.id.taskMenuUserMarkButton);
         // We can use the statement lambda to make the code easier to understand
         taskMenuUserMarkButton.setOnClickListener((v) -> {
@@ -368,149 +263,6 @@ public class CreateTaskUser extends AppCompatActivity {
 
         dialog.show();
     }
-
-    /**
-     * This method deals with updating the selected tasks name.
-     * It creates an alert dialog, inflates it to the correct layout.
-     * Upon pressing `update`, this method will create a new task, find the old task in the database
-     * via the prevTaskID, and update its contents to match.
-     * A toast message is displayed on success.
-     */
-//    private void UpdateTaskNameActivity() {
-//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-//        LayoutInflater layoutInflater = LayoutInflater.from(this);
-//        View view = layoutInflater.inflate(R.layout.activity_update_task_name, null);
-//        alertDialog.setView(view);
-//
-//        AlertDialog dialog = alertDialog.create();
-//
-//        EditText taskUpdateNameInput = view.findViewById(R.id.taskUpdateNameInput);
-//
-//        taskUpdateNameInput.setText(prevTaskName);
-//        taskUpdateNameInput.setSelection(prevTaskName.length());
-//
-//        Button taskUpdateNameInputButton = view.findViewById(R.id.taskUpdateNameInputButton);
-//        // We can use the statement lambda to make the code easier to understand
-//        taskUpdateNameInputButton.setOnClickListener((v) -> {
-//            // everything is converted to string
-//            String updateTaskNameStr = taskUpdateNameInput.getText().toString().trim();
-//
-//            // Validate everything that is not empty
-//            if (updateTaskNameStr.isEmpty()) {
-//                taskUpdateNameInput.setError("It should not be empty. ");
-//                return;
-//            }
-//
-//            Task task = new Task(updateTaskNameStr, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, prevMark, groupIDStr);
-//
-//            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
-//                if (task1.isSuccessful()) {
-//                    Toast.makeText(CreateTaskUser.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
-//                    dialog.dismiss();
-//                } else {
-//                    Toast.makeText(CreateTaskUser.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
-//                    dialog.dismiss();
-//                }
-//            });
-//        });
-//
-//        dialog.show();
-//    }
-
-    /**
-     * This method deals with updating the selected tasks description.
-     * It creates an alert dialog, inflates it to the correct layout.
-     * Upon pressing `update`, this method will create a new task, find the old task in the database
-     * via the prevTaskID, and update its contents to match.
-     * A toast message is displayed on success.
-     */
-//    private void UpdateTaskDescriptionActivity() {
-//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-//        LayoutInflater layoutInflater = LayoutInflater.from(this);
-//        View view = layoutInflater.inflate(R.layout.activity_update_task_description, null);
-//        alertDialog.setView(view);
-//
-//        AlertDialog dialog = alertDialog.create();
-//
-//        EditText taskUpdateDescriptionInput = view.findViewById(R.id.taskUpdateDescriptionInput);
-//
-//        taskUpdateDescriptionInput.setText(prevTaskDescription);
-//        taskUpdateDescriptionInput.setSelection(prevTaskDescription.length());
-//
-//        Button taskUpdateDescriptionButton = view.findViewById(R.id.taskUpdateDescriptionButton);
-//
-//        taskUpdateDescriptionButton.setOnClickListener((v) -> {
-//            // everything is converted to string
-//            String updateTaskDescriptionStr = taskUpdateDescriptionInput.getText().toString().trim();
-//
-//            // Validate everything that is not empty
-//            if (updateTaskDescriptionStr.isEmpty()) {
-//                taskUpdateDescriptionInput.setError("It should not be empty.");
-//                return;
-//            }
-//
-//            Task task = new Task(prevTaskName, updateTaskDescriptionStr, prevTaskID, prevCreationDate, prevDueDate, prevMark, groupNameStr);
-//
-//            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
-//                if (task1.isSuccessful()) {
-//                    Toast.makeText(CreateTaskUser.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
-//                    dialog.dismiss();
-//                } else {
-//                    Toast.makeText(CreateTaskUser.this, "The task has not been updated. ", Toast.LENGTH_LONG).show();
-//                    dialog.dismiss();
-//                }
-//            });
-//        });
-//
-//        dialog.show();
-//    }
-
-    /**
-     * This method deals with updating the selected tasks due date.
-     * It creates an alert dialog, inflates it to the correct layout.
-     * Upon pressing `update`, this method will create a new task, find the old task in the database
-     * via the prevTaskID, and update its contents to match.
-     * A toast message is displayed on success.
-     */
-//    private void UpdateTaskDueDateActivity() {
-//        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-//        LayoutInflater layoutInflater = LayoutInflater.from(this);
-//        View view = layoutInflater.inflate(R.layout.activity_update_task_due_date, null);
-//        alertDialog.setView(view);
-//
-//        AlertDialog dialog = alertDialog.create();
-//
-//        Button taskUpdateDueDateInputButton = view.findViewById(R.id.taskUpdateDueDateInputButton);
-//        taskUpdateDueDateInputButton.setText(prevDueDate);
-//        taskUpdateDueDateInputButton.setOnClickListener((v) -> ShowDatePickerDialog(taskUpdateDueDateInputButton, false));
-//
-//        Button taskUpdateDueDateSubmitButton = view.findViewById(R.id.taskUpdateDueDateSubmitButton);
-//        taskUpdateDueDateSubmitButton.setOnClickListener((v) -> {
-//            // By now, the taskUpdateDueDateInputButton has the value for chosen date.
-//            // everything is converted to string
-//            String updateTaskDueDateStr = taskUpdateDueDateInputButton.getText().toString().trim();
-//
-//            // Validate everything that is not empty
-//            if (updateTaskDueDateStr.isEmpty()) {
-//                taskUpdateDueDateInputButton.setError("It should not be empty.");
-//                return;
-//            }
-//
-//            Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, updateTaskDueDateStr, prevMark, groupNameStr);
-//
-//            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
-//                if (task1.isSuccessful()) {
-//                    Toast.makeText(CreateTaskUser.this, "The task has been updated.", Toast.LENGTH_LONG).show();
-//                    dialog.dismiss();
-//                } else {
-//                    Toast.makeText(CreateTaskUser.this, "The task has not been updated.", Toast.LENGTH_LONG).show();
-//                    dialog.dismiss();
-//                }
-//            });
-//        });
-//
-//        dialog.show();
-//    }
 
     /**
      * This method deals with updating the selected tasks mark.
@@ -526,12 +278,11 @@ public class CreateTaskUser extends AppCompatActivity {
         q.get().addOnCompleteListener(task -> {
             if (!task.isSuccessful()) {
                 Log.e("CreateTasK_updateMark", "Error getting data", task.getException());
-            }
-            else {
+            } else {
                 Task t = task.getResult().getValue(Task.class);
                 stat.set(!(t.isMark()));
                 Log.e("task_statusb", String.valueOf(stat.get()));
-                Task t2 = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, stat.get(), groupIDStr);
+                Task t2 = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, groupIDStr, stat.get(), prevTaskAssignedUsers);
 
                 databaseReference.child(prevTaskID).setValue(t2).addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
@@ -543,57 +294,7 @@ public class CreateTaskUser extends AppCompatActivity {
                 });
             }
         });
-
-
     }
-
-
-    /**
-     * This method shows a date picker.
-     *
-     * @param taskDueDate - the button that shows the tasks due date. If no previous due date is set
-     *                    the button will show the current date.
-     * @param setToToday  - boolean, when set to true, it will show the taskDueDate button as today's
-     *                    date. Otherwise the button will show what the tasks due date originally is.
-     */
-//    private void ShowDatePickerDialog(Button taskDueDate, Boolean setToToday) {
-//        Calendar calendar = Calendar.getInstance();
-//
-//        if (!setToToday) {
-//            try {
-//                // We parse the date from the selected task.
-//                Date date = new SimpleDateFormat("MM/dd/yyyy", Locale.US).parse(prevDueDate);
-//                // We set the calendar to match the prevDueDate.
-//                calendar.setTime(date);
-//            } catch (ParseException e) {
-//                Log.d(TAG, "Date was not able to be parsed: " + prevDueDate);
-//            }
-//        }
-//
-//        // I didn't replace the OnDateSetListener with a lambda because lambda is too confusing.
-//        DatePickerDialog datePickerDialog = new DatePickerDialog(
-//                this,
-//                new DatePickerDialog.OnDateSetListener() {
-//                    @Override
-//                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-//                        String correct_month = String.valueOf(month + 1);
-//                        String date = correct_month + "/" + dayOfMonth + "/" + year;
-//                        taskDueDate.setText(date);
-//                    }
-//                },
-//                calendar.get(Calendar.YEAR),
-//                calendar.get(Calendar.MONTH),
-//                calendar.get(Calendar.DAY_OF_MONTH)
-//        );
-//        datePickerDialog.show();
-//    }
 }
-
-
-//private void UpdateTaskAssignedUsersActivity(){
-//
-//}
-
-
 // Citation Source
 // https://www.youtube.com/watch?v=IVT-XVV4cBk&list=PLlkSO32XQLGpF9HzRulWLpMbU3mWZYlJS&index=2&ab_channel=WilltekSoftwares

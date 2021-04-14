@@ -34,7 +34,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -62,9 +64,11 @@ public class CreateTaskAdmin extends AppCompatActivity {
     private String prevTaskID;
     private String prevCreationDate;
     private String prevDueDate;
+    private boolean prevMark;
+    private String prevTaskBelongsToGroupID;
+    private Map<String, String> prevTaskAssignedUsers;
     private String groupNameStr;
     private String groupIDStr;
-    private boolean prevMark;
 
     public static boolean status = false;
 
@@ -212,6 +216,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
             String id = databaseReference.push().getKey();
             String creationDate = DateFormat.getDateInstance().format(new Date());
             String dueDateStr = taskDueDate.getText().toString().trim();
+            Map<String, String> taskAssignedUsers = new HashMap<>();
 
             // Validate that everything is not empty
             if (taskNameStr.isEmpty()) {
@@ -225,7 +230,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 return;
             }
 
-            Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr, false, groupIDStr);
+            Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr, groupIDStr, false, taskAssignedUsers);
             Log.d(TAG, "groupIDStr is " + groupIDStr);
             databaseReference.child(id).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
@@ -320,6 +325,8 @@ public class CreateTaskAdmin extends AppCompatActivity {
                     prevCreationDate = model.getTaskCreationDate();
                     prevDueDate = model.getTaskDueDate();
                     prevMark = model.isMark();
+                    prevTaskBelongsToGroupID = model.getTaskBelongsToGroupID();
+                    prevTaskAssignedUsers = model.getTaskAssignedUsers();
                     TaskMenuActivity();
                 });
             }
@@ -417,7 +424,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 return;
             }
 
-            Task task = new Task(taskNameStr, taskDescriptionStr, prevTaskID, prevCreationDate, dueDateStr, prevMark, groupIDStr);
+            Task task = new Task(taskNameStr, taskDescriptionStr, prevTaskID, prevCreationDate, dueDateStr, groupIDStr, prevMark, prevTaskAssignedUsers);
 
             databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
@@ -451,7 +458,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                     Task t = task.getResult().getValue(Task.class);
                     stat.set(!(t.isMark()));
                     Log.e("task_statusb", String.valueOf(stat.get()));
-                    Task t2 = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, stat.get(), groupIDStr);
+                    Task t2 = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, groupIDStr, stat.get(), prevTaskAssignedUsers);
 
                     databaseReference.child(prevTaskID).setValue(t2).addOnCompleteListener(task1 -> {
                         if (task1.isSuccessful()) {

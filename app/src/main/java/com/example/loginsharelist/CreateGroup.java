@@ -211,6 +211,8 @@ public class CreateGroup extends AppCompatActivity {
                 // It is what is going to display on the group card view
                 holder.setGroupName(model.getGroupName());
                 Map<String, String> groupMembersMap = model.getGroupMembers();
+                Map<String, String> groupAdmins = model.getGroupAdmins();
+
                 if (groupMembersMap.size() > 1){
                     for (String userID : groupMembersMap.keySet()){
                         Query queryToGetMemberName = databaseReference.child("User").child(userID).child("userName");
@@ -234,22 +236,33 @@ public class CreateGroup extends AppCompatActivity {
 
                 // If you click the group, it will open the create task activity
                 holder.view.setOnClickListener((view) -> {
-                    Intent intent = new Intent(CreateGroup.this, CreateTaskAdmin.class);
+                    //TODO: check if the user is an admin or just a user, and launch the correct activity.
+                    Intent intent;
+
+                    //Here we check if the currUser is an Admin.
+                    if (groupAdmins.containsKey(currUserID)) {
+                        intent = new Intent(CreateGroup.this, CreateTaskAdmin.class);
+                    } else {
+                        intent = new Intent(CreateGroup.this, CreateTaskUser.class);
+                    }
+
                     // How do I pass data between Activities in Android application
                     // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
                     // How to use putExtra() and getExtra() for string data
                     // https://stackoverflow.com/questions/5265913/how-to-use-putextra-and-getextra-for-string-data
                     // It is the name of group that you click
+
                     String groupNameStr = model.getGroupName();
                     intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
 
                     // Count user and admin
                     int groupMembersCount = groupMembersMap.size();
                     intent.putExtra("EXTRA_MEMBER_COUNT", Integer.toString(groupMembersCount));
-                    Map<String, String> groupAdminsMap = model.getGroupAdmins();
-                    int groupAdminsCount = groupMembersMap.size();
+
+                    int groupAdminsCount = groupAdmins.size();
                     intent.putExtra("EXTRA_ADMIN_COUNT", Integer.toString(groupAdminsCount));
 
+                    // pass the groupID to the intent.
                     intent.putExtra("EXTRA_GROUP_ID", model.getGroupId());
 
                     startActivity(intent);

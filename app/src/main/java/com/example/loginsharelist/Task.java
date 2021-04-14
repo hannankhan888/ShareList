@@ -1,6 +1,7 @@
 package com.example.loginsharelist;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class implements a Task object which stores information about a task.
@@ -13,9 +14,7 @@ public class Task {
     private String taskDueDate;
     private String taskBelongsToGroupID;
     private boolean mark;
-
-    // TODO: change this to a hash map <string, string> throughout the entire code.
-    private final ArrayList<String> taskAssignedUsers = new ArrayList<>();
+    private Map<String, String> taskAssignedUsers = new HashMap<>();
 
     public boolean isMark() {
         return mark;
@@ -74,10 +73,10 @@ public class Task {
     }
 
     public void addAssignedUser(String userID){
-        this.taskAssignedUsers.add(userID);
+        this.taskAssignedUsers.put(userID, userID);
     }
 
-    public ArrayList<String> getTaskAssignedUsers(){
+    public Map<String, String> getTaskAssignedUsers(){
         return this.taskAssignedUsers;
     }
 
@@ -86,14 +85,15 @@ public class Task {
     }
 
     public Task(String taskName, String taskDescription, String taskId, String taskCreationDate,
-                String taskDueDate, boolean mark, String taskBelongsToGroupID) {
+                String taskDueDate, String taskBelongsToGroupID, boolean mark, Map<String, String> taskAssignedUsers) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
         this.taskId = taskId;
         this.taskCreationDate = taskCreationDate;
         this.taskDueDate = taskDueDate;
-        this.mark = mark;
         this.taskBelongsToGroupID = taskBelongsToGroupID;
+        this.mark = mark;
+        this.taskAssignedUsers = taskAssignedUsers;
     }
 
     public Task() {
