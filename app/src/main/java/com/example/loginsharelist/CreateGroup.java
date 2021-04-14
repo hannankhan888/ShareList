@@ -236,7 +236,6 @@ public class CreateGroup extends AppCompatActivity {
 
                 // If you click the group, it will open the create task activity
                 holder.view.setOnClickListener((view) -> {
-                    //TODO: check if the user is an admin or just a user, and launch the correct activity.
                     Intent intent;
 
                     //Here we check if the currUser is an Admin.

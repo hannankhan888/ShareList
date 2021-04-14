@@ -106,7 +106,7 @@ public class CreateTaskUser extends AppCompatActivity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.corner_menu_for_create_task, menu);
+        getMenuInflater().inflate(R.menu.corner_menu_for_create_task_user, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/createTaskAdminCornerMenu"
+        android:icon="@drawable/ic_more_vert_56px"
+        app:showAsAction="always"
+        android:title="@string/create_group_corner_menu">
+
+        <menu>
+            <item
+                android:id="@+id/createTaskAdminCornerMenuGroupInfo"
+                android:title="@string/group_info"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/createTaskAdminCornerMenuAddUser"
+                android:title="Add User"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/createTaskAdminCornerMenuRemoveUser"
+                android:title="Remove User"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/createTaskAdminCornerMenuAddAdmin"
+                android:title="Add Admin"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/createTaskAdminCornerMenuDeleteGroup"
+                android:title="Delete Group"
+                app:showAsAction="ifRoom"/>
+            <item
+                android:id="@+id/createTaskAdminCornerMenuLeaveGroup"
+                android:title="@string/leave_group"
+                app:showAsAction="ifRoom" />
+        </menu>
+    </item>
+
+</menu>

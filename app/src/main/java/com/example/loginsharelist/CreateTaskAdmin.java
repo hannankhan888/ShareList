@@ -65,7 +65,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
     private String prevCreationDate;
     private String prevDueDate;
     private boolean prevMark;
-    private String prevTaskBelongsToGroupID;
     private Map<String, String> prevTaskAssignedUsers;
     private String groupNameStr;
     private String groupIDStr;
@@ -123,7 +122,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.corner_menu_for_create_task, menu);
+        getMenuInflater().inflate(R.menu.corner_menu_for_create_task_admin, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -136,20 +135,24 @@ public class CreateTaskAdmin extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        // its not recommended to use switch statement according to gradle.
-        if (id == R.id.createTaskCornerMenuGroupInfoItem) {
+        // its NOT RECOMMENDED to use switch statement according to gradle.
+        if (id == R.id.createTaskAdminCornerMenuGroupInfo) {
             // insert code to show group info Activity HERE.
             // TODO: add a group info activity.
             TaskInfoActivity();
             Log.d(TAG, "Group Info option pressed.");
-        } else if (id == R.id.createTaskCornerMenuLeaveGroupItem) {
+        } else if (id == R.id.createTaskAdminCornerMenuAddUser){
+            Log.d(TAG, "Add User option pressed.");
+        } else if (id == R.id.createTaskAdminCornerMenuRemoveUser){
+            Log.d(TAG, "Remove User option pressed.");
+        } else if (id == R.id.createTaskAdminCornerMenuAddAdmin){
+            Log.d(TAG, "Add Admin option pressed.");
+        } else if (id == R.id.createTaskAdminCornerMenuDeleteGroup){
+            Log.d(TAG, "Delete Group option pressed.");
+        } else if (id == R.id.createTaskAdminCornerMenuLeaveGroup) {
             // We do the Leave Group stuff here.
-            // TODO: add the Leave Group stuff.
-            item.setOnMenuItemClickListener((v) -> {
-                startActivity(new Intent(CreateTaskAdmin.this, CreateGroup.class));
-                finish();
-                return true;
-            });
+            // TODO: add the Leave the Group stuff.
+            // TODO: this does NOT mean pressing the back button.
             Log.d(TAG, "Leave Group option pressed.");
         }
         return super.onOptionsItemSelected(item);
@@ -325,7 +328,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
                     prevCreationDate = model.getTaskCreationDate();
                     prevDueDate = model.getTaskDueDate();
                     prevMark = model.isMark();
-                    prevTaskBelongsToGroupID = model.getTaskBelongsToGroupID();
                     prevTaskAssignedUsers = model.getTaskAssignedUsers();
                     TaskMenuActivity();
                 });
@@ -373,6 +375,12 @@ public class CreateTaskAdmin extends AppCompatActivity {
             UpdateTaskMarkActivity();
             dialog.dismiss();
         });
+
+//        Button taskRemoveTaskButton = view.findViewById(R.id.taskRemoveTaskButton);
+//        taskRemoveTaskButton.setOnClickListener((v) -> {
+//            RemoveTaskActivity();
+//            dialog.dismiss();
+//        });
 
         dialog.show();
     }
@@ -512,12 +520,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
         datePickerDialog.show();
     }
 }
-
-
-//private void UpdateTaskAssignedUsersActivity(){
-//
-//}
-
 
 // Citation Source
 // https://www.youtube.com/watch?v=IVT-XVV4cBk&list=PLlkSO32XQLGpF9HzRulWLpMbU3mWZYlJS&index=2&ab_channel=WilltekSoftwares
