@@ -1,5 +1,6 @@
 package com.example.loginsharelist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -74,8 +75,9 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
     }
 
     private void UserSearch(String userEmailStr){
-        Query query = databaseReferenceUser.orderByChild("/emailAddress").startAt(userEmailStr).endAt(userEmailStr + "\uf8ff");
-//        Query query = databaseReferenceUser.orderByChild("/emailAddress").equalTo(userEmailStr);
+        // TODO: if we search all email addresses, it becomes a security concern.
+//        Query query = databaseReferenceUser.orderByChild("/emailAddress").startAt(userEmailStr).endAt(userEmailStr + "\uf8ff");
+        Query query = databaseReferenceUser.orderByChild("/emailAddress").equalTo(userEmailStr);
 
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<User>()
@@ -98,8 +100,16 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                 holder.setUserName(model.getUserName());
                 holder.setUserEmail(model.getEmailAddress());
 
-                // If you click the user name it should add it to the group HERE:
-                //TODO: add the user to the group as a group member HERE.
+                // here we handle what happens when we click on a user to select them.
+                holder.view.setOnClickListener((v) -> {
+                    String selectedUserEmail = model.getEmailAddress();
+                    Intent intent = new Intent();
+                    intent.putExtra("EXTRA_SELECTED_USER_EMAIL", selectedUserEmail);
+                    // we set the result of the intent to be ok, and pass the intent data back to
+                    // the previous activity.
+                    setResult(RESULT_OK, intent);
+                    finish();
+                });
             }
         };
 

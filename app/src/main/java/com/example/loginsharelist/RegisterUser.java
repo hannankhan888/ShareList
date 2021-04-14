@@ -93,7 +93,8 @@ public class RegisterUser extends AppCompatActivity {
         // connect to the firebase
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                User user = new User(userName, phoneNumber, email, password);
+                String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                User user = new User(userName, phoneNumber, email, password, userID);
                 // We will send everything in user to the firebase database
                 FirebaseDatabase.getInstance()
                         .getReference("User")

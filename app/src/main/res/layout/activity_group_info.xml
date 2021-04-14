@@ -4,52 +4,61 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TaskInfo">
+    android:padding="8dp">
 
     <TextView
-        android:id="@+id/taskInfoUserNumber"
+        android:id="@+id/groupInfoUserNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="The number of user"
+        android:paddingBottom="3dp"
+        android:text="@string/total_users"
+        android:textSize="17sp"
+        android:fontFamily="@font/roboto_condensed_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/taskUserCount"
+        android:id="@+id/groupUserCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskInfoUserNumber" />
+        android:textSize="17sp"
+        android:fontFamily="@font/roboto_condensed_light"
+        app:layout_constraintStart_toEndOf="@id/groupInfoUserNumber"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/taskInfoAdminNumber"
+        android:id="@+id/groupInfoAdminNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="The number of admin"
+        android:paddingBottom="3dp"
+        android:text="@string/total_group_admins"
+        android:textSize="17sp"
+        android:fontFamily="@font/roboto_condensed_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskUserCount" />
+        app:layout_constraintTop_toBottomOf="@+id/groupInfoUserNumber" />
 
     <TextView
-        android:id="@+id/taskAdminCount"
+        android:id="@+id/groupAdminCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskInfoAdminNumber" />
+        android:textSize="17sp"
+        android:fontFamily="@font/roboto_condensed_light"
+        app:layout_constraintTop_toBottomOf="@id/groupInfoUserNumber"
+        app:layout_constraintStart_toEndOf="@id/groupInfoAdminNumber"/>
 
     <Button
-        android:id="@+id/taskInfoOKButton"
+        android:id="@+id/groupInfoOKButton"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="OK"
+        android:text="@string/ok"
+        android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/taskAdminCount"
+        app:layout_constraintTop_toBottomOf="@+id/groupAdminCount"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

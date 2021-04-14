@@ -50,4 +50,7 @@
     <string name="add_admin">Add Admin</string>
     <string name="delete_group">Delete Group</string>
     <string name="remove_assigned_user">Remove Assigned User</string>
+    <string name="ok">OK</string>
+    <string name="total_group_admins">Total group admins:</string>
+    <string name="total_users">Total users:</string>
 </resources>

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,9 +25,12 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -52,10 +56,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CreateTaskAdmin extends AppCompatActivity {
     private static final String TAG = "CreateTask";
 
+    private static final int ASSIGN_USER_REQUEST_CODE = 0;
+    private static final int REMOVE_ASSIGNED_USER_REQUEST_CODE = 1;
+
     private RecyclerView recyclerViewTask;
     private FloatingActionButton addTaskButton;
 
     private DatabaseReference databaseReference;
+    private DatabaseReference databaseReferenceTask;
     private FirebaseAuth auth;
 
     private String prevTaskName;
@@ -95,7 +103,8 @@ public class CreateTaskAdmin extends AppCompatActivity {
         // -------task1
         // -------task2
         // -------task3
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Tasks");
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReferenceTask = FirebaseDatabase.getInstance().getReference().child("Tasks");
 
         // Rename app bar to GROUP_NAME - Tasks
         getSupportActionBar().setTitle(groupNameStr + " - Tasks");
@@ -138,7 +147,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         if (id == R.id.createTaskAdminCornerMenuGroupInfo) {
             // insert code to show group info Activity HERE.
             // TODO: add a group info activity.
-            TaskInfoActivity();
+            GroupInfoActivity();
             Log.d(TAG, "Group Info option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuAddUser){
             Log.d(TAG, "Add User option pressed.");
@@ -157,27 +166,27 @@ public class CreateTaskAdmin extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void TaskInfoActivity() {
+    private void GroupInfoActivity() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View view = layoutInflater.inflate(R.layout.activity_task_info, null);
+        View view = layoutInflater.inflate(R.layout.activity_group_info, null);
         alertDialog.setView(view);
 
         AlertDialog dialog = alertDialog.create();
 
-        Button taskInfoOKButton = view.findViewById(R.id.taskInfoOKButton);
+        Button taskInfoOKButton = view.findViewById(R.id.groupInfoOKButton);
 
         taskInfoOKButton.setOnClickListener((v) -> {
             dialog.dismiss();
         });
 
         // It will receive the number of user in the create group activity and show it in the task info view
-        TextView taskUserCount = view.findViewById(R.id.taskUserCount);
+        TextView taskUserCount = view.findViewById(R.id.groupUserCount);
         String countUser = getIntent().getStringExtra("EXTRA_MEMBER_COUNT");
         taskUserCount.setText(countUser);
 
         // It will receive the number of admin in the create group activity and show it in the task info view
-        TextView taskAdminCount = view.findViewById(R.id.taskAdminCount);
+        TextView taskAdminCount = view.findViewById(R.id.groupAdminCount);
         String countAdmin = getIntent().getStringExtra("EXTRA_ADMIN_COUNT");
         taskAdminCount.setText(countAdmin);
 
@@ -215,7 +224,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
             String taskNameStr = taskName.getText().toString().trim();
             String taskDescriptionStr = taskDescription.getText().toString().trim();
             // This ID is a new ID created for the task we are about to store in the database.
-            String id = databaseReference.push().getKey();
+            String id = databaseReferenceTask.push().getKey();
             String creationDate = DateFormat.getDateInstance().format(new Date());
             String dueDateStr = taskDueDate.getText().toString().trim();
             Map<String, String> taskAssignedUsers = new HashMap<>();
@@ -234,7 +243,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
             Task task = new Task(taskNameStr, taskDescriptionStr, id, creationDate, dueDateStr, groupIDStr, false, taskAssignedUsers);
             Log.d(TAG, "groupIDStr is " + groupIDStr);
-            databaseReference.child(id).setValue(task).addOnCompleteListener(task1 -> {
+            databaseReferenceTask.child(id).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
                     Toast.makeText(CreateTaskAdmin.this, "The task has been added. ", Toast.LENGTH_LONG).show();
                     dialog.dismiss();
@@ -264,7 +273,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         // and returns those only.
         FirebaseRecyclerOptions<Task> firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<Task>()
-                .setQuery(databaseReference.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr), Task.class)
+                .setQuery(databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr), Task.class)
                 .build();
 
         FirebaseRecyclerAdapter<Task, TaskDisplay> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Task, TaskDisplay>(firebaseRecyclerOptions) {
@@ -336,6 +345,28 @@ public class CreateTaskAdmin extends AppCompatActivity {
         // Attach the adapter
         recyclerViewTask.setAdapter(firebaseRecyclerAdapter);
         firebaseRecyclerAdapter.startListening();
+    }
+
+    @Override
+    protected void onActivityResult (int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // If the activity that finished is assignUser activity:
+        if (requestCode == ASSIGN_USER_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // TODO: we get the selected user and update the database here, also show toast message.
+                // we get the selectedUserID based on the selectedUserEmail
+                String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
+                String selectedUserID;
+                // we add to the prevTaskAssignedUsers map:
+//                prevTaskAssignedUsers.put();
+                // we go into the database for this particular task, and add a
+            }
+        } else if (requestCode == REMOVE_ASSIGNED_USER_REQUEST_CODE) {
+            if (resultCode == RESULT_OK){
+                // TODO: we get the selected user and update the database here, also show toast message.
+            }
+        }
     }
 
     /**
@@ -433,7 +464,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
             Task task = new Task(taskNameStr, taskDescriptionStr, prevTaskID, prevCreationDate, dueDateStr, groupIDStr, prevMark, prevTaskAssignedUsers);
 
-            databaseReference.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
+            databaseReferenceTask.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
                     Toast.makeText(CreateTaskAdmin.this, "The task has been updated.", Toast.LENGTH_LONG).show();
                 } else {
@@ -482,12 +513,19 @@ public class CreateTaskAdmin extends AppCompatActivity {
         // TODO: start an intent to do autoCompleteUserSearch. In that class it should handle the
         // TODO: assignment in the database, and take care of everything there (like check whether
         // TODO: the user is already assigned, or not part of group).
+        // Here we start an activity: autoCompleteUserSearch to GET ITS RESULT:
+
+        Intent intent = new Intent(this, AutoCompleteUserSearch.class);
+        startActivityForResult(intent, ASSIGN_USER_REQUEST_CODE);
     }
 
     private void removeAssignedUserActivity() {
         // TODO: start an intent to do autoCompleteUserSearch. In that class it should handle the
         // TODO: removal in the database, and take care of everything there (like check whether user
         // TODO: is not assigned at all).
+
+        Intent intent = new Intent(this, AutoCompleteUserSearch.class);
+        startActivityForResult(intent, REMOVE_ASSIGNED_USER_REQUEST_CODE);
     }
 
     /**
@@ -498,7 +536,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
      * A toast message is displayed on success.
      */
     private void UpdateTaskMarkActivity() {
-        Query q = databaseReference.child(prevTaskID);
+        Query q = databaseReferenceTask.child(prevTaskID);
         AtomicReference<Boolean> stat = new AtomicReference<>(true);
         Log.e("task_status", String.valueOf(stat.get()));
         q.get().addOnCompleteListener(task -> {
@@ -511,7 +549,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                     Log.e("task_statusb", String.valueOf(stat.get()));
                     Task t2 = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, groupIDStr, stat.get(), prevTaskAssignedUsers);
 
-                    databaseReference.child(prevTaskID).setValue(t2).addOnCompleteListener(task1 -> {
+                    databaseReferenceTask.child(prevTaskID).setValue(t2).addOnCompleteListener(task1 -> {
                         if (task1.isSuccessful()) {
                             Toast.makeText(CreateTaskAdmin.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
                         } else {

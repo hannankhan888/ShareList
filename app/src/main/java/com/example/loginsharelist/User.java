@@ -8,6 +8,15 @@ public class User {
     public String phoneNumber;
     public String emailAddress;
     public String password;
+    public String userID;
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
 
     public String getUserName() {
         return userName;
@@ -45,10 +54,11 @@ public class User {
 
     }
 
-    public User(String userName, String phoneNumber, String emailAddress, String password) {
+    public User(String userName, String phoneNumber, String emailAddress, String password, String userID) {
         this.userName = userName;
         this.phoneNumber = phoneNumber;
         this.emailAddress = emailAddress;
         this.password = password;
+        this.userID = userID;
     }
 }
