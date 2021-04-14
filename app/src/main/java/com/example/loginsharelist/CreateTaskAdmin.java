@@ -113,7 +113,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         getSupportActionBar().setTitle(groupNameStr + " - Tasks");
 
 
-        recyclerViewTask = (RecyclerView) findViewById(R.id.recyclerViewTask);
+        recyclerViewTask = findViewById(R.id.recyclerViewTask);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
@@ -153,12 +153,18 @@ public class CreateTaskAdmin extends AppCompatActivity {
             GroupInfoActivity();
             Log.d(TAG, "Group Info option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuAddUser){
+//            AddUserActivity();
             Log.d(TAG, "Add User option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuRemoveUser){
+//            RemoveUserActivity();
             Log.d(TAG, "Remove User option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuAddAdmin){
+//            AddAdminActivity();
+            // TODO: if user is not a member, then add as both member and a group admin.
             Log.d(TAG, "Add Admin option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuDeleteGroup){
+//            DeleteGroupActivity();
+            // TODO: delete all tasks associated with that group.
             Log.d(TAG, "Delete Group option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuLeaveGroup) {
             // We do the Leave Group stuff here.
@@ -179,9 +185,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
         Button taskInfoOKButton = view.findViewById(R.id.groupInfoOKButton);
 
-        taskInfoOKButton.setOnClickListener((v) -> {
-            dialog.dismiss();
-        });
+        taskInfoOKButton.setOnClickListener((v) -> dialog.dismiss());
 
         // It will receive the number of user in the create group activity and show it in the task info view
         TextView taskUserCount = view.findViewById(R.id.groupUserCount);
@@ -560,7 +564,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
     }
 
     private void assignUserActivity() {
-        // TODO: start an intent to do autoCompleteUserSearch.
         // Here we start an activity: autoCompleteUserSearch to GET ITS RESULT:
 
         Intent intent = new Intent(this, AutoCompleteUserSearch.class);
@@ -570,7 +573,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
     }
 
     private void removeAssignedUserActivity() {
-        // TODO: start an intent to do autoCompleteUserSearch.
 
         Intent intent = new Intent(this, AutoCompleteUserSearch.class);
         intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
@@ -630,6 +632,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
+
         areYouSureDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
