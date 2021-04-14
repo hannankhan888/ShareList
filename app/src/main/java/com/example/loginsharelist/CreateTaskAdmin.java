@@ -71,6 +71,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
     private String prevTaskID;
     private String prevCreationDate;
     private String prevDueDate;
+    private String prevBelongsToGroupID;
     private boolean prevMark;
     private Map<String, String> prevTaskAssignedUsers;
     private String groupNameStr;
@@ -335,6 +336,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                     prevTaskID = getRef(position).getKey();
                     prevCreationDate = model.getTaskCreationDate();
                     prevDueDate = model.getTaskDueDate();
+                    prevBelongsToGroupID = model.getTaskBelongsToGroupID();
                     prevMark = model.isMark();
                     prevTaskAssignedUsers = model.getTaskAssignedUsers();
                     TaskMenuActivity();
@@ -354,17 +356,41 @@ public class CreateTaskAdmin extends AppCompatActivity {
         // If the activity that finished is assignUser activity:
         if (requestCode == ASSIGN_USER_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // TODO: we get the selected user and update the database here, also show toast message.
+                // TODO: check if user is already assigned or if user is not part of group.
                 // we get the selectedUserID based on the selectedUserEmail
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
-                String selectedUserID;
+                String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
                 // we add to the prevTaskAssignedUsers map:
-//                prevTaskAssignedUsers.put();
-                // we go into the database for this particular task, and add a
+                prevTaskAssignedUsers.put(selectedUserID, selectedUserID);
+                // we update the task in the database:
+                Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate,
+                        prevDueDate, prevBelongsToGroupID, prevMark, prevTaskAssignedUsers);
+                databaseReferenceTask.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been assigned.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(CreateTaskAdmin.this, "User not assigned.", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         } else if (requestCode == REMOVE_ASSIGNED_USER_REQUEST_CODE) {
             if (resultCode == RESULT_OK){
-                // TODO: we get the selected user and update the database here, also show toast message.
+                // TODO: check if user is already not assigned or if user is not part of group.
+                // we get the selectedUserID based on the selectedUserEmail
+                String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
+                String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
+                // we add to the prevTaskAssignedUsers map:
+                prevTaskAssignedUsers.remove(selectedUserID);
+                // we update the task in the database:
+                Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate,
+                        prevDueDate, prevBelongsToGroupID, prevMark, prevTaskAssignedUsers);
+                databaseReferenceTask.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been removed.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(CreateTaskAdmin.this, "User not removed.", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         }
     }

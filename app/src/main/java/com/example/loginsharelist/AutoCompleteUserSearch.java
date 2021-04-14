@@ -103,8 +103,10 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                 // here we handle what happens when we click on a user to select them.
                 holder.view.setOnClickListener((v) -> {
                     String selectedUserEmail = model.getEmailAddress();
+                    String selectedUserID = model.getUserID();
                     Intent intent = new Intent();
                     intent.putExtra("EXTRA_SELECTED_USER_EMAIL", selectedUserEmail);
+                    intent.putExtra("EXTRA_SELECTED_USER_ID", selectedUserID);
                     // we set the result of the intent to be ok, and pass the intent data back to
                     // the previous activity.
                     setResult(RESULT_OK, intent);
