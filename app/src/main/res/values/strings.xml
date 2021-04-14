@@ -42,4 +42,12 @@
     <string name="update_task_contents">Update Task Contents</string>
     <string name="assign_user_to_task">Assign User To Task</string>
     <string name="remove_task">Remove Task</string>
+    <string name="view_assigned_users">View Assigned Users</string>
+    <string name="assign_user">Assign User</string>
+    <string name="un_assign_user">Unassign User</string>
+    <string name="add_user">Add User</string>
+    <string name="remove_user">Remove User</string>
+    <string name="add_admin">Add Admin</string>
+    <string name="delete_group">Delete Group</string>
+    <string name="remove_assigned_user">Remove Assigned User</string>
 </resources>

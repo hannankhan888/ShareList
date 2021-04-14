@@ -15,19 +15,19 @@
                 app:showAsAction="ifRoom"/>
             <item
                 android:id="@+id/createTaskAdminCornerMenuAddUser"
-                android:title="Add User"
+                android:title="@string/add_user"
                 app:showAsAction="ifRoom"/>
             <item
                 android:id="@+id/createTaskAdminCornerMenuRemoveUser"
-                android:title="Remove User"
+                android:title="@string/remove_user"
                 app:showAsAction="ifRoom"/>
             <item
                 android:id="@+id/createTaskAdminCornerMenuAddAdmin"
-                android:title="Add Admin"
+                android:title="@string/add_admin"
                 app:showAsAction="ifRoom"/>
             <item
                 android:id="@+id/createTaskAdminCornerMenuDeleteGroup"
-                android:title="Delete Group"
+                android:title="@string/delete_group"
                 app:showAsAction="ifRoom"/>
             <item
                 android:id="@+id/createTaskAdminCornerMenuLeaveGroup"

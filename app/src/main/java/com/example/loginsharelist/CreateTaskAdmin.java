@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -356,7 +355,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
         AlertDialog dialog = alertDialog.create();
 
         Button taskUpdateTaskContentsButton = view.findViewById(R.id.taskMenuUpdateTaskContentsButton);
-
         // We can use the statement lambda to make the code easier to understand
         taskUpdateTaskContentsButton.setOnClickListener((v) -> {
             UpdateTaskContentsActivity();
@@ -364,10 +362,11 @@ public class CreateTaskAdmin extends AppCompatActivity {
         });
 
         // taskMenuUpdateAssignedUsersButton goes here
-//        taskUpdateAssignedUsersButton.setOnClickListener((v) -> {
-//            UpdateTaskAssignedUsersActivity();
-//            dialog.dismiss();
-//        });
+        Button taskUpdateAssignedUsersButton = view.findViewById(R.id.taskMenuUpdateAssignedUsersButton);
+        taskUpdateAssignedUsersButton.setOnClickListener((v) -> {
+            UpdateTaskAssignedUsersActivity();
+            dialog.dismiss();
+        });
 
         Button taskMenuMarkButton = view.findViewById(R.id.taskMenuMarkButton);
         // We can use the statement lambda to make the code easier to understand
@@ -445,6 +444,50 @@ public class CreateTaskAdmin extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    private void UpdateTaskAssignedUsersActivity(){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.activity_update_assigned_users_menu, null);
+        alertDialog.setView(view);
+
+        AlertDialog dialog = alertDialog.create();
+
+        Button viewAssignedUsersButton = view.findViewById(R.id.assignedUsersMenuViewAssignedUsersButton);
+        Button assignUserButton = view.findViewById(R.id.assignedUsersMenuAssignUserButton);
+        Button removeAssignedUserButton = view.findViewById(R.id.assignedUsersMenuRemoveAssignedUserButton);
+
+        viewAssignedUsersButton.setOnClickListener((v) -> {
+            viewAssignedUsersActivity();
+            dialog.dismiss();
+        });
+        assignUserButton.setOnClickListener((v) -> {
+            assignUserActivity();
+            dialog.dismiss();
+        });
+        removeAssignedUserButton.setOnClickListener((v) -> {
+            removeAssignedUserActivity();
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
+    private void viewAssignedUsersActivity() {
+        // TODO: start an intent to show assigned users in separate activity.
+    }
+
+    private void assignUserActivity() {
+        // TODO: start an intent to do autoCompleteUserSearch. In that class it should handle the
+        // TODO: assignment in the database, and take care of everything there (like check whether
+        // TODO: the user is already assigned, or not part of group).
+    }
+
+    private void removeAssignedUserActivity() {
+        // TODO: start an intent to do autoCompleteUserSearch. In that class it should handle the
+        // TODO: removal in the database, and take care of everything there (like check whether user
+        // TODO: is not assigned at all).
     }
 
     /**
