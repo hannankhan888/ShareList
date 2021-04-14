@@ -7,8 +7,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -329,6 +331,28 @@ public class CreateTaskAdmin extends AppCompatActivity {
                     holder.setCrossTaskDueDate(model.getTaskDueDate());
                 }
 
+                Map<String, String> taskAssignedUsers = model.getTaskAssignedUsers();
+                if (taskAssignedUsers.size() >= 1){
+                    for (String userID : taskAssignedUsers.keySet()) {
+                        Query queryToGetUserName = databaseReference.child("User").child(userID).child("userName");
+                        queryToGetUserName.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String userName = snapshot.getValue(String.class);
+                                holder.addUserToAssignedUsersStr(userName);
+                                Log.d(TAG, "Assigned User Name: " + userName);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.d(TAG, "Unable to get Assigned User Name: " + error);
+                            }
+                        });
+                    }
+                } else {
+                    holder.setAssignedUsersStr("No one.");
+                }
+
                 // If you click the task, it will open the task menu
                 holder.view.setOnClickListener((view) -> {
                     prevTaskName = model.getTaskName();
@@ -432,11 +456,11 @@ public class CreateTaskAdmin extends AppCompatActivity {
             dialog.dismiss();
         });
 
-//        Button taskRemoveTaskButton = view.findViewById(R.id.taskRemoveTaskButton);
-//        taskRemoveTaskButton.setOnClickListener((v) -> {
-//            RemoveTaskActivity();
-//            dialog.dismiss();
-//        });
+        Button taskRemoveTaskButton = view.findViewById(R.id.taskRemoveTaskButton);
+        taskRemoveTaskButton.setOnClickListener((v) -> {
+            RemoveTaskActivity();
+            dialog.dismiss();
+        });
 
         dialog.show();
     }
@@ -536,21 +560,21 @@ public class CreateTaskAdmin extends AppCompatActivity {
     }
 
     private void assignUserActivity() {
-        // TODO: start an intent to do autoCompleteUserSearch. In that class it should handle the
-        // TODO: assignment in the database, and take care of everything there (like check whether
-        // TODO: the user is already assigned, or not part of group).
+        // TODO: start an intent to do autoCompleteUserSearch.
         // Here we start an activity: autoCompleteUserSearch to GET ITS RESULT:
 
         Intent intent = new Intent(this, AutoCompleteUserSearch.class);
+        intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+        intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
         startActivityForResult(intent, ASSIGN_USER_REQUEST_CODE);
     }
 
     private void removeAssignedUserActivity() {
-        // TODO: start an intent to do autoCompleteUserSearch. In that class it should handle the
-        // TODO: removal in the database, and take care of everything there (like check whether user
-        // TODO: is not assigned at all).
+        // TODO: start an intent to do autoCompleteUserSearch.
 
         Intent intent = new Intent(this, AutoCompleteUserSearch.class);
+        intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+        intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
         startActivityForResult(intent, REMOVE_ASSIGNED_USER_REQUEST_CODE);
     }
 
@@ -585,6 +609,36 @@ public class CreateTaskAdmin extends AppCompatActivity {
                     });
                 }
         });
+    }
+
+    private void RemoveTaskActivity(){
+        AlertDialog.Builder areYouSureDialog = new AlertDialog.Builder(this);
+        areYouSureDialog.setTitle("Confirm Delete");
+        areYouSureDialog.setMessage("This will permanently delete the task.\nAre you sure?");
+
+        areYouSureDialog.setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Here we remove the task from the database.
+                databaseReferenceTask.child(prevTaskID).removeValue().addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        Toast.makeText(CreateTaskAdmin.this, "The task has been deleted.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(CreateTaskAdmin.this, "The task has not been deleted.", Toast.LENGTH_LONG).show();
+                    }
+                });
+                dialog.dismiss();
+            }
+        });
+        areYouSureDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = areYouSureDialog.create();
+        dialog.show();
     }
 
     /**

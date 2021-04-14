@@ -172,8 +172,7 @@ public class CreateGroup extends AppCompatActivity {
      * Starts the group search activity.
      */
     private void groupSearchActivity() {
-        startActivity(new Intent(CreateGroup.this, AutoCompleteUserSearch.class));
-//        startActivity(new Intent(CreateGroup.this, AutoCompleteGroupSearch.class));
+        startActivity(new Intent(CreateGroup.this, AutoCompleteGroupSearch.class));
     }
 
 
@@ -207,7 +206,6 @@ public class CreateGroup extends AppCompatActivity {
 
             @Override
             protected void onBindViewHolder(@NonNull GroupDisplay holder, int position, @NonNull Group model) {
-                model.printGroupData();
                 // It is what is going to display on the group card view
                 holder.setGroupName(model.getGroupName());
                 Map<String, String> groupMembersMap = model.getGroupMembers();

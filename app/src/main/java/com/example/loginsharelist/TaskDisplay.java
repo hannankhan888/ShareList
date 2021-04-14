@@ -7,6 +7,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.w3c.dom.Text;
+
 /**
  * This class implements a TaskDisplay which the FirebaseRecyclerView will use to display the tasks
  * associated with a certain group. The methods in this class are used to update the RecyclerView.
@@ -54,5 +56,21 @@ public class TaskDisplay extends RecyclerView.ViewHolder {
         taskDueDateDisplay.setText(taskDueDate);
         // https://stackoverflow.com/questions/9786544/creating-a-strikethrough-text
         taskDueDateDisplay.setPaintFlags(taskDueDateDisplay.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+    }
+
+    public void setAssignedUsersStr(String assignedUsersStr){
+        TextView taskAssignedUsersDisplay = view.findViewById(R.id.taskAssignedUsersDisplay);
+        taskAssignedUsersDisplay.setText(assignedUsersStr);
+    }
+
+    public void addUserToAssignedUsersStr(String userName){
+        TextView taskAssignedUsersDisplay = view.findViewById(R.id.taskAssignedUsersDisplay);
+        String oldUsers = taskAssignedUsersDisplay.getText().toString();
+        if (oldUsers.length() == 0){
+            taskAssignedUsersDisplay.setText(userName);
+        } else {
+            String newMembers = oldUsers + ", " + userName;
+            taskAssignedUsersDisplay.setText(newMembers);
+        }
     }
 }

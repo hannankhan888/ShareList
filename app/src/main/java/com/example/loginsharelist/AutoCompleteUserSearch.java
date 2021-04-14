@@ -32,6 +32,9 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
     private RecyclerView autoUserSearchList;
     private EditText autoUserEmailInput;
 
+    private String groupID;
+    private String groupName;
+
     FirebaseRecyclerAdapter<User, UserDisplay> firebaseRecyclerAdapter;
 
     private FirebaseAuth auth;
@@ -46,6 +49,8 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
         currUserID = auth.getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReferenceUser = FirebaseDatabase.getInstance().getReference().child("User");
+        groupID = getIntent().getStringExtra("EXTRA_GROUP_ID");
+        groupName = getIntent().getStringExtra("EXTRA_GROUP_NAME");
 
         autoUserSearchList = (RecyclerView) findViewById(R.id.autoCompleteUserSearchList);
         autoUserSearchList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -68,7 +73,7 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                 if (s.toString() != null){
                     UserSearch(s.toString().trim());
                 } else {
-                    UserSearch("");
+                    UserSearch(null);
                 }
             }
         });
@@ -76,7 +81,8 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
 
     private void UserSearch(String userEmailStr){
         // TODO: if we search all email addresses, it becomes a security concern.
-//        Query query = databaseReferenceUser.orderByChild("/emailAddress").startAt(userEmailStr).endAt(userEmailStr + "\uf8ff");
+//        query = databaseReferenceUser.orderByChild("/emailAddress").startAt(userEmailStr).endAt(userEmailStr + "\uf8ff");
+        // here we get the email address search.
         Query query = databaseReferenceUser.orderByChild("/emailAddress").equalTo(userEmailStr);
 
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
