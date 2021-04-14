@@ -74,7 +74,8 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
     }
 
     private void UserSearch(String userEmailStr){
-        Query query = databaseReferenceUser.orderByChild("/emailAddress").equalTo(userEmailStr);
+        Query query = databaseReferenceUser.orderByChild("/emailAddress").startAt(userEmailStr).endAt(userEmailStr + "\uf8ff");
+//        Query query = databaseReferenceUser.orderByChild("/emailAddress").equalTo(userEmailStr);
 
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<User>()
