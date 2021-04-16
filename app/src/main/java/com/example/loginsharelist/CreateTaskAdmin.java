@@ -60,6 +60,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
     private static final int ASSIGN_USER_REQUEST_CODE = 0;
     private static final int REMOVE_ASSIGNED_USER_REQUEST_CODE = 1;
+    private static final int ADD_USER_REQUEST_CODE = 2;
 
     private RecyclerView recyclerViewTask;
     private FloatingActionButton addTaskButton;
@@ -153,7 +154,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
             GroupInfoActivity();
             Log.d(TAG, "Group Info option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuAddUser){
-//            AddUserActivity();
+            AddUserActivity();
             Log.d(TAG, "Add User option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuRemoveUser){
 //            RemoveUserActivity();
@@ -420,6 +421,21 @@ public class CreateTaskAdmin extends AppCompatActivity {
                     }
                 });
             }
+        } else if (requestCode == ADD_USER_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // TODO: check if user is already not assigned or if user is not part of group.
+                // we get the selectedUserID based on the selectedUserEmail
+                String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
+                String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
+
+                databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).setValue(selectedUserID).addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been added to group.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(CreateTaskAdmin.this, "User not added to group.", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
         }
     }
 
@@ -682,6 +698,15 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
         datePickerDialog.show();
+    }
+
+    private void AddUserActivity(){
+        // Here we start an activity: autoCompleteUserSearch to GET ITS RESULT:
+
+        Intent intent = new Intent(this, AutoCompleteUserSearch.class);
+        intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+        intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
+        startActivityForResult(intent, ADD_USER_REQUEST_CODE);
     }
 }
 
