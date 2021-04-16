@@ -9,6 +9,7 @@ import java.util.Map;
  * Implements a class Group for holding a single groups data.
  * Allows for getters/setters.
  */
+
 public class Group {
 
     private String groupName;
