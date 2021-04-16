@@ -243,7 +243,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
             } else if (taskDescriptionStr.isEmpty()) {
                 taskDescription.setError("Description should not be empty. ");
                 return;
-            } else if (dueDateStr.isEmpty()) {
+            } else if (dueDateStr.isEmpty() | dueDateStr.equals("Due Date")) {
                 taskDueDate.setError("Due date should not be empty. ");
                 return;
             }
