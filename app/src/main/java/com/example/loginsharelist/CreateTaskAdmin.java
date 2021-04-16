@@ -153,7 +153,11 @@ public class CreateTaskAdmin extends AppCompatActivity {
             // TODO: add a group info activity.
             GroupInfoActivity();
             Log.d(TAG, "Group Info option pressed.");
-        } else if (id == R.id.createTaskAdminCornerMenuAddUser){
+        } else if (id == R.id.createTaskAdminCornerMenuRenameGroup){
+            RenameGroupActivity();
+            Log.d(TAG, "Rename Group option pressed.");
+        }
+        else if (id == R.id.createTaskAdminCornerMenuAddUser){
             AddUserActivity();
             Log.d(TAG, "Add User option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuRemoveUser){
@@ -707,6 +711,14 @@ public class CreateTaskAdmin extends AppCompatActivity {
         intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
         intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
         startActivityForResult(intent, ADD_USER_REQUEST_CODE);
+    }
+
+    private void RenameGroupActivity() {
+        // create a layout activity_rename_group
+        // create an alert dialog
+        // set the alert dialogs layout to activity_rename_group
+        // add and onclick listener to the button
+        // update the database when the button is clicked.
     }
 }
 

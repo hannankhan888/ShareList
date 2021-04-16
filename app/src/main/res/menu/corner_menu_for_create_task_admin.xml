@@ -14,6 +14,10 @@
                 android:title="@string/group_info"
                 app:showAsAction="ifRoom"/>
             <item
+                android:id="@+id/createTaskAdminCornerMenuRenameGroup"
+                android:title="@string/rename_group"
+                app:showAsAction="ifRoom"/>
+            <item
                 android:id="@+id/createTaskAdminCornerMenuAddUser"
                 android:title="@string/add_user"
                 app:showAsAction="ifRoom"/>
