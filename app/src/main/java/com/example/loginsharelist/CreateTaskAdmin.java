@@ -456,15 +456,10 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 // src: https://stackoverflow.com/questions/66698325/how-to-wait-for-firebase-task-to-complete-to-get-result-as-an-await-function
 
                 // THIS SELECTED GROUP WILL HAVE ALL INFO OF YOUR GROUP.
-                Group selectedGroup = new Group();
                 databaseReference.child("Groups").child(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Group tempGroup = snapshot.getValue(Group.class);
-                        selectedGroup.setGroupId(tempGroup.getGroupId());
-                        selectedGroup.setGroupName(tempGroup.getGroupName());
-                        selectedGroup.setGroupAdmins(tempGroup.getGroupAdmins());
-                        selectedGroup.setGroupMembers(tempGroup.getGroupMembers());
+                        Group selectedGroup = snapshot.getValue(Group.class);
 
                         // PLEASE ADD YOUR LOGIC CODE HERE:
                         Map<String, String> selectedGroupMembers = selectedGroup.getGroupMembers();
@@ -477,9 +472,9 @@ public class CreateTaskAdmin extends AppCompatActivity {
                             // Here we add the user, that is currently a member, to the admins list, and notify the currUser.
                             databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).setValue(selectedUserID).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
-                                    Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been added to group as Admin.", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " is now a Group Admin.", Toast.LENGTH_LONG).show();
                                 } else {
-                                    Toast.makeText(CreateTaskAdmin.this, "User not added to group as Admin.", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(CreateTaskAdmin.this, "User not added as Group Admin.", Toast.LENGTH_LONG).show();
                                 }
                             });
                         } else if (!(selectedGroupMembers.containsKey(selectedUserID)) && !(selectedGroupAdmins.containsKey(selectedUserID))) {
