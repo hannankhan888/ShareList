@@ -53,10 +53,26 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
         groupID = getIntent().getStringExtra("EXTRA_GROUP_ID");
         groupName = getIntent().getStringExtra("EXTRA_GROUP_NAME");
         searchReason = getIntent().getStringExtra("EXTRA_SEARCH_REASON");
-        if (searchReason.equals("ADD_USER")) {
-            getSupportActionBar().setTitle("Add User To " + groupName);
-        }else if (searchReason.equals("ADD_ADMIN")) {
-            getSupportActionBar().setTitle("Add Admin To " + groupName);
+
+        switch (searchReason) {
+            case "ASSIGN_USER": {
+                String taskName = getIntent().getStringExtra("EXTRA_TASK_NAME");
+                getSupportActionBar().setTitle("Assign User To: " + taskName);
+                break;
+            }
+            case "REMOVE_ASSIGNED_USER": {
+                String taskName = getIntent().getStringExtra("EXTRA_TASK_NAME");
+                getSupportActionBar().setTitle("Remove Assigned User: " + taskName);
+                break;
+            }
+            case "ADD_USER":
+                getSupportActionBar().setTitle("Add User To " + groupName);
+                break;
+            case "ADD_ADMIN":
+                getSupportActionBar().setTitle("Add Admin To " + groupName);
+                break;
+            default:
+                getSupportActionBar().setTitle("ShareList - Search Users");
         }
 
         autoUserSearchList = (RecyclerView) findViewById(R.id.autoCompleteUserSearchList);

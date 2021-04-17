@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -33,6 +34,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -56,7 +59,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Any data that is created/updated is also reflected in the database.
  */
 public class CreateTaskAdmin extends AppCompatActivity {
-    private static final String TAG = "CreateTask";
+    private static final String TAG = "CreateTaskAdmin";
 
     private static final int ASSIGN_USER_REQUEST_CODE = 0;
     private static final int REMOVE_ASSIGNED_USER_REQUEST_CODE = 1;
@@ -449,24 +452,49 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
 
-                databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).setValue(selectedUserID).addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful()) {
-                        Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been added to group as Admin.", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(CreateTaskAdmin.this, "User not added to group as Admin.", Toast.LENGTH_LONG).show();
+                // THIS SELECTED GROUP WILL HAVE ALL INFO OF YOUR GROUP.
+                Group selectedGroup = new Group();
+                databaseReference.child("Groups").child(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Group tempGroup = snapshot.getValue(Group.class);
+                        selectedGroup.setGroupId(tempGroup.getGroupId());
+                        selectedGroup.setGroupName(tempGroup.getGroupName());
+                        selectedGroup.setGroupAdmins(tempGroup.getGroupAdmins());
+                        selectedGroup.setGroupMembers(tempGroup.getGroupMembers());
+
+                        // PLEASE ADD YOUR LOGIC CODE HERE:
+                        Map<String, String> selectedGroupMembers = selectedGroup.getGroupMembers();
+                        Map<String, String> selectedGroupAdmins = selectedGroup.getGroupAdmins();
+                        if (selectedGroupMembers.containsKey(selectedUserID) && selectedGroupAdmins.containsKey(selectedUserID)) {
+                            Log.d(TAG, "Selected user is both a member and admin for ADD_ADMIN");
+                            // TODO: Inform currUser that selected user is already an admin.
+                        } else if (selectedGroupMembers.containsKey(selectedUserID) && !(selectedGroupAdmins.containsKey(selectedUserID))) {
+                            Log.d(TAG, "Selected user is a member but not admin for ADD_ADMIN");
+                            // Here we add the user, that is currently a member, to the admins list, and notify the currUser.
+                            databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).setValue(selectedUserID).addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been added to group as Admin.", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(CreateTaskAdmin.this, "User not added to group as Admin.", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        } else if (!(selectedGroupMembers.containsKey(selectedUserID)) && !(selectedGroupAdmins.containsKey(selectedUserID))) {
+                            Log.d(TAG, "SelectedGroupMembers");
+                            for (String groupMember : selectedGroupMembers.keySet()) {
+                                Log.d(TAG, groupMember);
+                            }
+                            Log.d(TAG, "Selected user is neither a member nor admin for ADD_ADMIN");
+                            // TODO: Here we add the user to both the group members and the admins list, and notify the currUser that the selected
+                            // TODO: user has been added as both.
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d(TAG, "Selected Group " + groupIDStr + " Not retrieving data for ADD_ADMIN");
                     }
                 });
-
-//                Map groupMembers = (Map) databaseReference.child("Groups").child(groupIDStr).child("groupMembers");
-//                if ( !groupMembers.containsKey(selectedUserID)){
-//                    databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).setValue(selectedUserID).addOnCompleteListener(task1 -> {
-//                        if (task1.isSuccessful()) {
-//                            Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been added to group as User too.", Toast.LENGTH_LONG).show();
-//                        } else {
-//                            Toast.makeText(CreateTaskAdmin.this, "User not added to group as User too.", Toast.LENGTH_LONG).show();
-//                        }
-//                    });
-//                }
             }
         }
     }
@@ -617,6 +645,8 @@ public class CreateTaskAdmin extends AppCompatActivity {
         Intent intent = new Intent(this, AutoCompleteUserSearch.class);
         intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
         intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
+        intent.putExtra("EXTRA_SEARCH_REASON", "ASSIGN_USER");
+        intent.putExtra("EXTRA_TASK_NAME", prevTaskName);
         startActivityForResult(intent, ASSIGN_USER_REQUEST_CODE);
     }
 
@@ -625,6 +655,8 @@ public class CreateTaskAdmin extends AppCompatActivity {
         Intent intent = new Intent(this, AutoCompleteUserSearch.class);
         intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
         intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
+        intent.putExtra("EXTRA_SEARCH_REASON", "REMOVE_ASSIGNED_USER");
+        intent.putExtra("EXTRA_TASK_NAME", prevTaskName);
         startActivityForResult(intent, REMOVE_ASSIGNED_USER_REQUEST_CODE);
     }
 
@@ -786,7 +818,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
             databaseReference.child("Groups").child(groupIDStr).child("groupName").setValue(groupNameStr).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
                     Toast.makeText(CreateTaskAdmin.this, "The group name has been updated.", Toast.LENGTH_LONG).show();
-                    getSupportActionBar().setTitle(groupNameStr);
+                    getSupportActionBar().setTitle(groupNameStr + " - Tasks");
                 } else {
                     Toast.makeText(CreateTaskAdmin.this, "The group name has not been updated.", Toast.LENGTH_LONG).show();
                 }
