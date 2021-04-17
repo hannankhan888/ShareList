@@ -34,6 +34,7 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
 
     private String groupID;
     private String groupName;
+    private String searchReason;
 
     FirebaseRecyclerAdapter<User, UserDisplay> firebaseRecyclerAdapter;
 
@@ -51,6 +52,10 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
         databaseReferenceUser = FirebaseDatabase.getInstance().getReference().child("User");
         groupID = getIntent().getStringExtra("EXTRA_GROUP_ID");
         groupName = getIntent().getStringExtra("EXTRA_GROUP_NAME");
+        searchReason = getIntent().getStringExtra("EXTRA_SEARCH_REASON");
+        if (searchReason.equals("ADD_USER")) {
+            getSupportActionBar().setTitle("Add User To " + groupName);
+        }
 
         autoUserSearchList = (RecyclerView) findViewById(R.id.autoCompleteUserSearchList);
         autoUserSearchList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
