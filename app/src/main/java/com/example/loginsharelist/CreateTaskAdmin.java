@@ -61,6 +61,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
     private static final int ASSIGN_USER_REQUEST_CODE = 0;
     private static final int REMOVE_ASSIGNED_USER_REQUEST_CODE = 1;
     private static final int ADD_USER_REQUEST_CODE = 2;
+    private static final int ADD_ADMIN_REQUEST_CODE = 3;
 
     private RecyclerView recyclerViewTask;
     private FloatingActionButton addTaskButton;
@@ -165,7 +166,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
 //            RemoveUserActivity();
             Log.d(TAG, "Remove User option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuAddAdmin){
-//            AddAdminActivity();
+            AddAdminActivity();
             // TODO: if user is not a member, then add as both member and a group admin.
             Log.d(TAG, "Add Admin option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuDeleteGroup){
@@ -441,6 +442,32 @@ public class CreateTaskAdmin extends AppCompatActivity {
                     }
                 });
             }
+        } else if (requestCode == ADD_ADMIN_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // TODO: check if user is already not assigned or if user is not part of group.
+                // we get the selectedUserID based on the selectedUserEmail
+                String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
+                String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
+
+                databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).setValue(selectedUserID).addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been added to group as Admin.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(CreateTaskAdmin.this, "User not added to group as Admin.", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+//                Map groupMembers = (Map) databaseReference.child("Groups").child(groupIDStr).child("groupMembers");
+//                if ( !groupMembers.containsKey(selectedUserID)){
+//                    databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).setValue(selectedUserID).addOnCompleteListener(task1 -> {
+//                        if (task1.isSuccessful()) {
+//                            Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been added to group as User too.", Toast.LENGTH_LONG).show();
+//                        } else {
+//                            Toast.makeText(CreateTaskAdmin.this, "User not added to group as User too.", Toast.LENGTH_LONG).show();
+//                        }
+//                    });
+//                }
+            }
         }
     }
 
@@ -715,6 +742,16 @@ public class CreateTaskAdmin extends AppCompatActivity {
         startActivityForResult(intent, ADD_USER_REQUEST_CODE);
     }
 
+    private void AddAdminActivity(){
+        // Here we start an activity: autoCompleteUserSearch to GET ITS RESULT:
+        System.out.println("Inside the add admin activity");
+        Intent intent = new Intent(this, AutoCompleteUserSearch.class);
+        intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+        intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
+        intent.putExtra("EXTRA_SEARCH_REASON", "ADD_ADMIN");
+        startActivityForResult(intent, ADD_ADMIN_REQUEST_CODE);
+    }
+
     private void RenameGroupActivity() {
         // create a layout activity_rename_group
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
@@ -732,7 +769,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         Button saveButton = view.findViewById(R.id.groupUpdateButton);
 
         newGroupNameInput.setText(groupNameStr);
-        saveButton.setText(R.string.update);
+//        saveButton.setText(R.string.update);
 
         // add and onclick listener to the button
         // update the database when the button is clicked.

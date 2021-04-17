@@ -55,6 +55,8 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
         searchReason = getIntent().getStringExtra("EXTRA_SEARCH_REASON");
         if (searchReason.equals("ADD_USER")) {
             getSupportActionBar().setTitle("Add User To " + groupName);
+        }else if (searchReason.equals("ADD_ADMIN")) {
+            getSupportActionBar().setTitle("Add Admin To " + groupName);
         }
 
         autoUserSearchList = (RecyclerView) findViewById(R.id.autoCompleteUserSearchList);
