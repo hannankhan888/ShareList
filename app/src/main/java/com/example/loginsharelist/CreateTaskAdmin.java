@@ -452,6 +452,9 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
 
+                // `any code that needs the data from the database, needs to be inside your onSuccess method or be called from there.`
+                // src: https://stackoverflow.com/questions/66698325/how-to-wait-for-firebase-task-to-complete-to-get-result-as-an-await-function
+
                 // THIS SELECTED GROUP WILL HAVE ALL INFO OF YOUR GROUP.
                 Group selectedGroup = new Group();
                 databaseReference.child("Groups").child(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
