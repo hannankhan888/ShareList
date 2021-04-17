@@ -711,6 +711,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         Intent intent = new Intent(this, AutoCompleteUserSearch.class);
         intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
         intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
+        intent.putExtra("EXTRA_SEARCH_REASON", "ADD_USER");
         startActivityForResult(intent, ADD_USER_REQUEST_CODE);
     }
 
@@ -727,34 +728,36 @@ public class CreateTaskAdmin extends AppCompatActivity {
         // set the alert dialogs layout to activity_rename_group
 
         EditText newGroupNameInput = view.findViewById(R.id.groupUpdateNameInput);
+        newGroupNameInput.setText(groupNameStr);
         Button saveButton = view.findViewById(R.id.groupUpdateButton);
 
         newGroupNameInput.setText(groupNameStr);
         saveButton.setText(R.string.update);
 
         // add and onclick listener to the button
+        // update the database when the button is clicked.
         saveButton.setOnClickListener((v) -> {
             // Everything is converted to string
             groupNameStr = newGroupNameInput.getText().toString().trim();
 
             // Validate that everything is not empty
             if (groupNameStr.isEmpty()) {
-                newGroupNameInput.setError("Task name should not be empty. ");
+                newGroupNameInput.setError("Group name should not be empty. ");
                 return;
             }
 
-            databaseReference.child("Groups").child(groupIDStr).setValue(groupIDStr).addOnCompleteListener(task1 -> {
+            databaseReference.child("Groups").child(groupIDStr).child("groupName").setValue(groupNameStr).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
-                    Toast.makeText(CreateTaskAdmin.this, "The group has been updated.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateTaskAdmin.this, "The group name has been updated.", Toast.LENGTH_LONG).show();
+                    getSupportActionBar().setTitle(groupNameStr);
                 } else {
-                    Toast.makeText(CreateTaskAdmin.this, "The group has not been updated.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateTaskAdmin.this, "The group name has not been updated.", Toast.LENGTH_LONG).show();
                 }
                 dialog.dismiss();
             });
         });
-        dialog.show();
 
-        // update the database when the button is clicked.
+        dialog.show();
     }
 }
 
