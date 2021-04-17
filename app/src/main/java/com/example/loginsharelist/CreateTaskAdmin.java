@@ -739,7 +739,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
             // Validate that everything is not empty
             if (groupNameStr.isEmpty()) {
-                newGroupNameInput.setError("Task name should not be empty. ");
+                newGroupNameInput.setError("Group name should not be empty. ");
                 return;
             }
 
