@@ -147,6 +147,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+
         // its NOT RECOMMENDED to use switch statement according to gradle.
         if (id == R.id.createTaskAdminCornerMenuGroupInfo) {
             // insert code to show group info Activity HERE.
@@ -715,9 +716,44 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
     private void RenameGroupActivity() {
         // create a layout activity_rename_group
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.activity_update_group, null);
+        alertDialog.setView(view);
+
         // create an alert dialog
+        AlertDialog dialog = alertDialog.create();
+
         // set the alert dialogs layout to activity_rename_group
+
+        EditText newGroupNameInput = view.findViewById(R.id.groupUpdateNameInput);
+        Button saveButton = view.findViewById(R.id.groupUpdateButton);
+
+        newGroupNameInput.setText(groupNameStr);
+        saveButton.setText(R.string.update);
+
         // add and onclick listener to the button
+        saveButton.setOnClickListener((v) -> {
+            // Everything is converted to string
+            groupNameStr = newGroupNameInput.getText().toString().trim();
+
+            // Validate that everything is not empty
+            if (groupNameStr.isEmpty()) {
+                newGroupNameInput.setError("Task name should not be empty. ");
+                return;
+            }
+
+            databaseReference.child("Groups").child(groupIDStr).setValue(groupIDStr).addOnCompleteListener(task1 -> {
+                if (task1.isSuccessful()) {
+                    Toast.makeText(CreateTaskAdmin.this, "The group has been updated.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(CreateTaskAdmin.this, "The group has not been updated.", Toast.LENGTH_LONG).show();
+                }
+                dialog.dismiss();
+            });
+        });
+        dialog.show();
+
         // update the database when the button is clicked.
     }
 }
