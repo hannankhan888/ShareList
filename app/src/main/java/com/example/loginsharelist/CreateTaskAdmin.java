@@ -641,7 +641,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         Intent intent = new Intent(this, AutoCompleteUserSearch.class);
         intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
         intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
-        intent.putExtra("EXTRA_SEARCH_REASON", "ASSIGN_USER");
+        intent.putExtra("EXTRA_SEARCH_REASON", "ASSIGN_USER_TO_TASK");
         intent.putExtra("EXTRA_TASK_NAME", prevTaskName);
         startActivityForResult(intent, ASSIGN_USER_TO_TASK_REQUEST_CODE);
     }
