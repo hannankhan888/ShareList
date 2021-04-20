@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -44,6 +45,7 @@ public class CreateTaskUser extends AppCompatActivity {
     private RecyclerView recyclerViewTask;
 
     private DatabaseReference databaseReference;
+    private FloatingActionButton searchTaskButton;
     private FirebaseAuth auth;
 
     private String prevTaskName;
@@ -96,6 +98,9 @@ public class CreateTaskUser extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerViewTask.setHasFixedSize(true);
         recyclerViewTask.setLayoutManager(linearLayoutManager);
+
+        searchTaskButton = (FloatingActionButton) findViewById(R.id.createTaskUserSearchButton);
+        searchTaskButton.setOnClickListener((view) -> searchTaskActivity());
     }
 
     /**
@@ -294,6 +299,14 @@ public class CreateTaskUser extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void searchTaskActivity() {
+        Intent intent = new Intent(CreateTaskUser.this, AutoCompleteTaskSearch.class);
+        intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
+        intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+        intent.putExtra("EXTRA_CURR_USER_IS_ADMIN", false);
+        startActivity(intent);
     }
 }
 // Citation Source

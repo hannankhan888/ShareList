@@ -48,7 +48,6 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
     private FloatingActionButton autoCompleteCreateGroupButton;
 
     FirebaseRecyclerAdapter<Group, GroupDisplay> firebaseRecyclerAdapter;
-
     private FirebaseAuth auth;
     String currUserID;
 
@@ -98,7 +97,7 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
             // https://developer.android.com/reference/android/text/TextWatcher.html
             // https://stackoverflow.com/questions/26992407/ontextchanged-vs-aftertextchanged-in-android-live-examples-needed
             public void afterTextChanged(Editable s) {
-                GroupSearch(s.toString().trim());
+                GroupSearch(s.toString().toLowerCase().trim());
             }
         });
     }
@@ -170,7 +169,7 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
                     public Group parseSnapshot(@NonNull DataSnapshot snapshot) {
                         Group tempGroup = snapshot.getValue(Group.class);
                         // this way we can search all groups that match or contain the current string.
-                        if (tempGroup.getGroupName().toLowerCase().contains(groupNameStr.toLowerCase())){
+                        if (tempGroup.getGroupName().toLowerCase().contains(groupNameStr)){
                             return tempGroup;
                         } else {
                             return new Group();

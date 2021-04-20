@@ -9,4 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/createTaskUserSearchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="16dp"
+        app:tint="@color/white"
+        android:src="@drawable/ic_search_black_56dp"
+        app:fabCustomSize="50dp"
+        android:contentDescription="@string/search_tasks"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

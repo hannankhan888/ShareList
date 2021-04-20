@@ -64,6 +64,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
     private RecyclerView recyclerViewTask;
     private FloatingActionButton addTaskButton;
+    private FloatingActionButton searchTaskButton;
 
     private DatabaseReference databaseReference;
     private DatabaseReference databaseReferenceTask;
@@ -124,6 +125,9 @@ public class CreateTaskAdmin extends AppCompatActivity {
         addTaskButton = findViewById(R.id.addTaskButton);
         // We can use the statement lambda to make the code easier to understand
         addTaskButton.setOnClickListener((view) -> addTaskActivity());
+
+        searchTaskButton = (FloatingActionButton) findViewById(R.id.createTaskAdminSearchButton);
+        searchTaskButton.setOnClickListener((view) -> searchTaskActivity());
     }
 
     /**
@@ -305,24 +309,28 @@ public class CreateTaskAdmin extends AppCompatActivity {
             @NonNull
             @Override
             public TaskDisplay onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                if (viewType == 0) {
-                    // It is mark is false
-                    // Inflate the task card view
-                    View view = LayoutInflater
-                            .from(parent.getContext())
-                            .inflate(R.layout.activity_display_task_database, parent, false);
-                    return new TaskDisplay(view);
-                } else {
-                    // It is mark is true
-                    // Inflate the task card view
-                    // It is going to show you the same layout if you mark the task
-                    // If you are going to use the more beautiful layout you can put it here
-                    // Then you have to update the onBindViewHolder
-                    View view = LayoutInflater
-                            .from(parent.getContext())
-                            .inflate(R.layout.activity_display_task_database, parent, false);
-                    return new TaskDisplay(view);
-                }
+//                if (viewType == 0) {
+//                    // It is mark is false
+//                    // Inflate the task card view
+//                    View view = LayoutInflater
+//                            .from(parent.getContext())
+//                            .inflate(R.layout.activity_display_task_database, parent, false);
+//                    return new TaskDisplay(view);
+//                } else {
+//                    // It is mark is true
+//                    // Inflate the task card view
+//                    // It is going to show you the same layout if you mark the task
+//                    // If you are going to use the more beautiful layout you can put it here
+//                    // Then you have to update the onBindViewHolder
+//                    View view = LayoutInflater
+//                            .from(parent.getContext())
+//                            .inflate(R.layout.activity_display_task_database, parent, false);
+//                    return new TaskDisplay(view);
+//                }
+                View view = LayoutInflater
+                        .from(parent.getContext())
+                        .inflate(R.layout.activity_display_task_database, parent, false);
+                return new TaskDisplay(view);
             }
 
             @Override
@@ -799,7 +807,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
         Button saveButton = view.findViewById(R.id.groupUpdateButton);
 
         newGroupNameInput.setText(groupNameStr);
-//        saveButton.setText(R.string.update);
 
         // add and onclick listener to the button
         // update the database when the button is clicked.
@@ -825,6 +832,14 @@ public class CreateTaskAdmin extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    private void searchTaskActivity() {
+        Intent intent = new Intent(CreateTaskAdmin.this, AutoCompleteTaskSearch.class);
+        intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
+        intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+        intent.putExtra("EXTRA_CURR_USER_IS_ADMIN", true);
+        startActivity(intent);
     }
 }
 
