@@ -354,6 +354,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 String userName = snapshot.getValue(String.class);
                                 holder.addUserToAssignedUsersStr(userName);
+                                queryToGetUserName.removeEventListener(this);
                                 Log.d(TAG, "Assigned User Name: " + userName);
                             }
 
@@ -666,6 +667,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
      * A toast message is displayed on success.
      */
     private void UpdateTaskMarkActivity() {
+        // TODO: make it clear that clicking on mark as complete, on a marked task, will UNMARK it. (update button).
         Query q = databaseReferenceTask.child(prevTaskID);
         AtomicReference<Boolean> stat = new AtomicReference<>(true);
         Log.e("task_status", String.valueOf(stat.get()));

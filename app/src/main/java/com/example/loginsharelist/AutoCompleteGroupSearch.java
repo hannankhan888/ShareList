@@ -174,7 +174,8 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
                     @Override
                     public Group parseSnapshot(@NonNull DataSnapshot snapshot) {
                         Group tempGroup = snapshot.getValue(Group.class);
-                        if (tempGroup.getGroupName().equals(groupNameStr)){
+                        // this way we can search all groups that match or contain the current string.
+                        if (tempGroup.getGroupName().toLowerCase().contains(groupNameStr.toLowerCase())){
                             return tempGroup;
                         } else {
                             return new Group();
