@@ -146,10 +146,10 @@ public class CreateGroup extends AppCompatActivity {
                 Group group = new Group(groupNameStr, id, groupMembers, groupAdmins);
                 group.addGroupMember(currUserID);
                 group.addGroupAdmin(currUserID);
-//                src: https://stackoverflow.com/questions/39815117/add-an-item-to-a-list-in-firebase-database
-//                I have started re-iterating to myself: whenever you find yourself doing
-//                array.contains("xyz"), you should probably be using a set instead of an array.
-//                The above mapping with "key": true is an implementation of a set on Firebase.
+                // src: https://stackoverflow.com/questions/39815117/add-an-item-to-a-list-in-firebase-database
+                // I have started re-iterating to myself: whenever you find yourself doing
+                // array.contains("xyz"), you should probably be using a set instead of an array.
+                // The above mapping with "key": true is an implementation of a set on Firebase.
 
                 databaseReferenceGroup.child(id).setValue(group).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

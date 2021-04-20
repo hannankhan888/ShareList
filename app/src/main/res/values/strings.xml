@@ -54,4 +54,5 @@
     <string name="total_group_admins">Total group admins:</string>
     <string name="total_users">Total users:</string>
     <string name="rename_group">Rename Group</string>
+    <string name="enter_group_name">Enter Group Name</string>
 </resources>

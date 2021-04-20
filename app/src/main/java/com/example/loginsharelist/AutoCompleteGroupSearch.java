@@ -58,6 +58,8 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_complete_group_search);
 
+        getSupportActionBar().setTitle("Search Your Groups");
+
         auth = FirebaseAuth.getInstance();
         currUserID = auth.getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference();
@@ -70,9 +72,6 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
         autoCompleteCreateGroupButton = (FloatingActionButton) findViewById(R.id.autoCompleteCreateGroupButton);
         autoCompleteCreateGroupButton.setOnClickListener((view) -> addGroupActivity());
 
-
-//        GroupSearch("");
-
         autoGroupSearchInput = (EditText) findViewById(R.id.autoCompleteGroupNameSearchInput);
         // Citation Source
         // https://www.youtube.com/watch?v=b_tz8kbFUsU&ab_channel=TVACStudio
@@ -82,6 +81,7 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
         // Another video teach you how to search it manually
         // One video is outdated, so the syntax has changed
         // So you have to change several line of code to make it work
+        GroupSearch("");
         autoGroupSearchInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -98,11 +98,7 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
             // https://developer.android.com/reference/android/text/TextWatcher.html
             // https://stackoverflow.com/questions/26992407/ontextchanged-vs-aftertextchanged-in-android-live-examples-needed
             public void afterTextChanged(Editable s) {
-                if (s.toString() != null) {
-                    GroupSearch(s.toString().trim());
-                } else {
-                    GroupSearch("");
-                }
+                GroupSearch(s.toString().trim());
             }
         });
     }
@@ -162,7 +158,6 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
      * for the group selected.
      * */
     private void GroupSearch(String groupNameStr) {
-        ArrayList<Group> matchingGroups = new ArrayList<Group>();
 //        Query query = databaseReference.orderByChild("groupName").startAt(groupNameStr).endAt(groupNameStr + "\uf8ff");
         Query query = databaseReferenceGroup.orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
 

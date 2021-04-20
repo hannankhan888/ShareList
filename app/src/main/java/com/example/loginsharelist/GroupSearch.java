@@ -49,6 +49,7 @@ public class GroupSearch extends AppCompatActivity {
 
         groupNameSearchInput = (EditText) findViewById(R.id.groupNameSearchInput);
         groupNameSearchButton = (Button) findViewById(R.id.groupNameSearchButton);
+
         // Citation Source
         // https://www.youtube.com/watch?v=b_tz8kbFUsU&ab_channel=TVACStudio
         // https://www.youtube.com/watch?v=_nIoEAC3kLg&ab_channel=TechnicalSkillz

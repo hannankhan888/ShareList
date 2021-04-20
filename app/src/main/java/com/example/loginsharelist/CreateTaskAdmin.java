@@ -10,7 +10,6 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.renderscript.Sampler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,7 +24,6 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -34,8 +32,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -61,7 +57,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class CreateTaskAdmin extends AppCompatActivity {
     private static final String TAG = "CreateTaskAdmin";
 
-    private static final int ASSIGN_USER_REQUEST_CODE = 0;
+    private static final int ASSIGN_USER_TO_TASK_REQUEST_CODE = 0;
     private static final int REMOVE_ASSIGNED_USER_REQUEST_CODE = 1;
     private static final int ADD_USER_REQUEST_CODE = 2;
     private static final int ADD_ADMIN_REQUEST_CODE = 3;
@@ -394,7 +390,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         // If the activity that finished is assignUser activity:
-        if (requestCode == ASSIGN_USER_REQUEST_CODE) {
+        if (requestCode == ASSIGN_USER_TO_TASK_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // TODO: check if user is already assigned or if user is not part of group.
                 // we get the selectedUserID based on the selectedUserEmail
@@ -415,7 +411,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
             }
         } else if (requestCode == REMOVE_ASSIGNED_USER_REQUEST_CODE) {
             if (resultCode == RESULT_OK){
-                // TODO: check if user is already not assigned or if user is not part of group.
+                // TODO: check if user is already not assigned.
                 // we get the selectedUserID based on the selectedUserEmail
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
@@ -434,7 +430,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
             }
         } else if (requestCode == ADD_USER_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // TODO: check if user is already not assigned or if user is not part of group.
+                // TODO: check if user is already part of group.
                 // we get the selectedUserID based on the selectedUserEmail
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
@@ -449,7 +445,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
             }
         } else if (requestCode == ADD_ADMIN_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // TODO: check if user is already not assigned or if user is not part of group.
+                // TODO: bunch of todos below:
                 // we get the selectedUserID based on the selectedUserEmail
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
@@ -647,7 +643,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
         intent.putExtra("EXTRA_SEARCH_REASON", "ASSIGN_USER");
         intent.putExtra("EXTRA_TASK_NAME", prevTaskName);
-        startActivityForResult(intent, ASSIGN_USER_REQUEST_CODE);
+        startActivityForResult(intent, ASSIGN_USER_TO_TASK_REQUEST_CODE);
     }
 
     private void removeAssignedUserActivity() {
@@ -657,6 +653,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
         intent.putExtra("EXTRA_SEARCH_REASON", "REMOVE_ASSIGNED_USER");
         intent.putExtra("EXTRA_TASK_NAME", prevTaskName);
+        intent.putExtra("EXTRA_TASK_ID", prevTaskID);
         startActivityForResult(intent, REMOVE_ASSIGNED_USER_REQUEST_CODE);
     }
 

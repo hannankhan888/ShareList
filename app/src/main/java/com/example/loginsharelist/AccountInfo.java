@@ -6,22 +6,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
 public class AccountInfo extends AppCompatActivity {
 
-    private DatabaseReference databaseReference;
+    private DatabaseReference databaseReferenceUser;
     private FirebaseAuth auth;
-    String currUserID;
+    private String currUserID;
+    private User currUserObject;
 
     private EditText usernameText;
     private EditText emailText;
@@ -37,8 +39,8 @@ public class AccountInfo extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         currUserID = auth.getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("User");
-        Query query = databaseReference.child(currUserID);
+        databaseReferenceUser = FirebaseDatabase.getInstance().getReference().child("User");
+        Query query = databaseReferenceUser.child(currUserID);
 
         usernameText = findViewById(R.id.editTextTextPersonName);
         emailText = findViewById(R.id.editTextTextEmailAddress);
@@ -52,16 +54,42 @@ public class AccountInfo extends AppCompatActivity {
                 Log.e("firebase", "Error getting data", task.getException());
             }
             else {
-                User user = task.getResult().getValue(User.class);
-                usernameText.setText(user.userName);
-                emailText.setText(user.emailAddress);
-                phoneText.setText(user.phoneNumber);
-                Log.e("firebase_account_user",user.userName);
+                currUserObject = task.getResult().getValue(User.class);
+                usernameText.setText(currUserObject.userName);
+                emailText.setText(currUserObject.emailAddress);
+                phoneText.setText(currUserObject.phoneNumber);
+                Log.e("firebase_account_user", currUserObject.userName);
             }
         });
 
-        resetPassBt.setOnClickListener((view) -> startActivity(new Intent(this, ForgetPassword.class)));
+        resetPassBt.setOnClickListener(v -> {
+            startActivity(new Intent(this, ForgetPassword.class));
+            finish();
+        });
 
+        updateBt.setOnClickListener((view) -> UpdateAccountInfoActivity());
+    }
 
+    private void UpdateAccountInfoActivity() {
+        // create a new user object with updated values.
+        User updatedUser = new User();
+        updatedUser.setEmailAddress(emailText.getText().toString().trim());
+        updatedUser.setUserID(currUserID);
+        updatedUser.setPhoneNumber(phoneText.getText().toString().trim());
+        updatedUser.setUserName(usernameText.getText().toString().trim());
+        updatedUser.setPassword(currUserObject.getPassword());
+
+        if (updatedUser == currUserObject) {
+            Toast.makeText(this, "No Account Info Has Changed.", Toast.LENGTH_LONG).show();
+        } else {
+            databaseReferenceUser.child(currUserID).setValue(updatedUser).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(this, "Account Info Updated", Toast.LENGTH_LONG).show();
+                    finish();
+                } else {
+                    Toast.makeText(this, "ERROR UPDATING Account Info", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
     }
 }
