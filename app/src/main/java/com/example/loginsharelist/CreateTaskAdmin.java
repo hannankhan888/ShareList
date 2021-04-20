@@ -354,6 +354,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 String userName = snapshot.getValue(String.class);
                                 holder.addUserToAssignedUsersStr(userName);
+                                //TODO: here we have an example of a remove listener that is working.
                                 queryToGetUserName.removeEventListener(this);
                                 Log.d(TAG, "Assigned User Name: " + userName);
                             }
