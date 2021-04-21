@@ -498,27 +498,25 @@ public class CreateTaskAdmin extends AppCompatActivity {
                         // PLEASE ADD YOUR LOGIC CODE HERE:
                         Map<String, String> selectedGroupMembers = selectedGroup.getGroupMembers();
                         Map<String, String> selectedGroupAdmins = selectedGroup.getGroupAdmins();
-                        if (selectedGroupMembers.containsKey(selectedUserID) && selectedGroupAdmins.containsKey(selectedUserID)) {
-                            Log.d(TAG, "Selected user is both a member and admin for ADD_ADMIN");
-                            // TODO: Inform currUser that selected user is already an admin.
-                        } else if (selectedGroupMembers.containsKey(selectedUserID) && !(selectedGroupAdmins.containsKey(selectedUserID))) {
+
+                        // if user is already admin:
+                        if (selectedGroupAdmins.containsKey(selectedUserID)) {
+                            // if curr user is trying to add themselves as admin AGAIN:
+                            if (selectedUserID.equals(currUserID)) {
+                                Toast.makeText(CreateTaskAdmin.this, " You are already an admin of this group.", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(CreateTaskAdmin.this, selectedUserName + " is already an admin of this group.", Toast.LENGTH_LONG).show();
+                            }
+                        } else {
                             Log.d(TAG, "Selected user is a member but not admin for ADD_ADMIN");
                             // Here we add the user, that is currently a member, to the admins list, and notify the currUser.
                             databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).setValue(selectedUserID).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
-                                    Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " is now a Group Admin.", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(CreateTaskAdmin.this, selectedUserName + " is now a Group Admin.", Toast.LENGTH_LONG).show();
                                 } else {
                                     Toast.makeText(CreateTaskAdmin.this, "User not added as Group Admin.", Toast.LENGTH_LONG).show();
                                 }
                             });
-                        } else if (!(selectedGroupMembers.containsKey(selectedUserID)) && !(selectedGroupAdmins.containsKey(selectedUserID))) {
-                            Log.d(TAG, "SelectedGroupMembers");
-                            for (String groupMember : selectedGroupMembers.keySet()) {
-                                Log.d(TAG, groupMember);
-                            }
-                            Log.d(TAG, "Selected user is neither a member nor admin for ADD_ADMIN");
-                            // TODO: Here we add the user to both the group members and the admins list, and notify the currUser that the selected
-                            // TODO: user has been added as both.
                         }
                     }
 
@@ -539,7 +537,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 AlertDialog.Builder areYouSureDialog = new AlertDialog.Builder(this);
                 areYouSureDialog.setTitle("Confirm Removal");
                 if (selectedUserID.equals(currUserID)) {
-                    areYouSureDialog.setMessage("This will remove you as admin. You will still be a group member.\n\nAre you sure?");
+                    areYouSureDialog.setMessage("\nThis will remove you as admin. You will still be a group member.\n\nAre you sure?");
                     areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -559,7 +557,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                         }
                     });
                 } else {
-                    areYouSureDialog.setMessage("This will remove " + selectedUserName + " as admin.\n\nAre you sure?");
+                    areYouSureDialog.setMessage("\nThis will remove " + selectedUserName + " as admin.\n\nAre you sure?");
                     areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
