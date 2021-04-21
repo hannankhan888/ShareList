@@ -30,6 +30,10 @@
                 android:title="@string/add_admin"
                 app:showAsAction="ifRoom"/>
             <item
+                android:id="@+id/createTaskAdminCornerMenuRemoveAdmin"
+                android:title="@string/remove_admin"
+                app:showAsAction="ifRoom"/>
+            <item
                 android:id="@+id/createTaskAdminCornerMenuDeleteGroup"
                 android:title="@string/delete_group"
                 app:showAsAction="ifRoom"/>

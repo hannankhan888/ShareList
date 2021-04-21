@@ -56,4 +56,5 @@
     <string name="enter_group_name">Enter Group Name</string>
     <string name="search">Search</string>
     <string name="search_tasks">Search Tasks</string>
+    <string name="remove_admin">Remove Admin</string>
 </resources>

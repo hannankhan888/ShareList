@@ -137,6 +137,22 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                     }
                 });
                 break;
+            case "REMOVE_ADMIN":
+                getSupportActionBar().setTitle("Remove Admin From " + groupName);
+                autoUserEmailInput.setHint("Enter Username");
+                GroupAdminsSearch("");
+                autoUserEmailInput.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        GroupAdminsSearch(s.toString().trim());
+                    }
+                });
+                break;
             default:
                 getSupportActionBar().setTitle("ShareList - Search All Users");
         }
@@ -262,7 +278,6 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
     }
 
     private void AssignedUsersSearch(String userNameString) {
-        //        Query query = databaseReference.child("Groups").orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
         // This will only search the assigned users of a task.
         Query keyQuery = databaseReference.child("Tasks").child(taskID).child("taskAssignedUsers");
 
@@ -320,6 +335,80 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                         Intent intent = new Intent();
                         intent.putExtra("EXTRA_SELECTED_USER_EMAIL", selectedUserEmail);
                         intent.putExtra("EXTRA_SELECTED_USER_ID", selectedUserID);
+                        // we set the result of the intent to be ok, and pass the intent data back to
+                        // the previous activity.
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    });
+                }
+            }
+        };
+
+        // Attach the adapter
+        firebaseRecyclerAdapter.startListening();
+        autoUserSearchList.setAdapter(firebaseRecyclerAdapter);
+    }
+
+    private void GroupAdminsSearch(String userNameString) {
+        // This will only search the assigned users of a task.
+        Query keyQuery = databaseReference.child("Groups").child(groupID).child("groupAdmins");
+
+        // This way we get the groupAdmins of the currGroup (Map<String, String>) and then we use
+        // a keyQuery to parse through the keys of that Map (which are userIDs that are part of this
+        // group). The keyQuery will search through database reference (in our case the users reference),
+        // and return a User class (goes along with the reference). We can then parse the user class,
+        // to see if the username matches the search parameter.
+        FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
+                .Builder<User>()
+                .setIndexedQuery(keyQuery, databaseReferenceUser, new SnapshotParser<User>() {
+                    @NonNull
+                    @Override
+                    public User parseSnapshot(@NonNull DataSnapshot snapshot) {
+                        User tempUser = snapshot.getValue(User.class);
+                        // this way we can search all groups that match or contain the current string.
+                        if (tempUser.getUserName().toLowerCase().contains(userNameString.toLowerCase())){
+                            return tempUser;
+                        } else {
+                            return new User();
+                        }
+                    }
+                })
+                .build();
+
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<User, UserDisplay>(firebaseRecyclerOptions) {
+            @NonNull
+            @Override
+            public UserDisplay onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                // Inflate the user card view
+                View view = LayoutInflater
+                        .from(parent.getContext())
+                        .inflate(R.layout.activity_display_user_database, parent, false);
+                return new UserDisplay(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull UserDisplay holder, int position, @NonNull User model) {
+                // https://stackoverflow.com/questions/41223413/how-to-hide-an-item-from-recycler-view-on-a-particular-condition
+                if (model.getUserName() == null) {
+                    holder.itemView.setVisibility(View.GONE);
+                    holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
+
+                } else {
+                    holder.itemView.setVisibility(View.VISIBLE);
+                    holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                    holder.setUserName(model.getUserName());
+                    holder.setUserEmail(model.getEmailAddress());
+
+                    // here we handle what happens when we click on a user to select them.
+                    holder.view.setOnClickListener((v) -> {
+                        String selectedUserEmail = model.getEmailAddress();
+                        String selectedUserID = model.getUserID();
+                        String selectedUserName = model.getUserName();
+                        Intent intent = new Intent();
+                        intent.putExtra("EXTRA_SELECTED_USER_EMAIL", selectedUserEmail);
+                        intent.putExtra("EXTRA_SELECTED_USER_ID", selectedUserID);
+                        intent.putExtra("EXTRA_SELECTED_USER_NAME", selectedUserName);
                         // we set the result of the intent to be ok, and pass the intent data back to
                         // the previous activity.
                         setResult(RESULT_OK, intent);

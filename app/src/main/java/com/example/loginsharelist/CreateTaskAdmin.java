@@ -61,6 +61,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
     private static final int REMOVE_ASSIGNED_USER_REQUEST_CODE = 1;
     private static final int ADD_USER_REQUEST_CODE = 2;
     private static final int ADD_ADMIN_REQUEST_CODE = 3;
+    private static final int REMOVE_ADMIN_REQUEST_CODE = 4;
 
     private RecyclerView recyclerViewTask;
     private FloatingActionButton addTaskButton;
@@ -80,6 +81,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
     private Map<String, String> prevTaskAssignedUsers;
     private String groupNameStr;
     private String groupIDStr;
+    private String currUserID;
 
     public static boolean status = false;
 
@@ -94,6 +96,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         setContentView(R.layout.activity_create_task_admin);
 
         auth = FirebaseAuth.getInstance();
+        currUserID = auth.getUid();
         // How do I pass data between Activities in Android application
         // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
         // How to use putExtra() and getExtra() for string data
@@ -172,6 +175,8 @@ public class CreateTaskAdmin extends AppCompatActivity {
             AddAdminActivity();
             // TODO: if user is not a member, then add as both member and a group admin.
             Log.d(TAG, "Add Admin option pressed.");
+        } else if (id == R.id.createTaskAdminCornerMenuRemoveAdmin) {
+            RemoveAdminActivity();
         } else if (id == R.id.createTaskAdminCornerMenuDeleteGroup){
 //            DeleteGroupActivity();
             // TODO: delete all tasks associated with that group.
@@ -403,6 +408,8 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 // we get the selectedUserID based on the selectedUserEmail
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
+                String selectedUserName = data.getStringExtra("EXTRA_SELECTED_USER_NAME");
+
                 // we add to the prevTaskAssignedUsers map:
                 prevTaskAssignedUsers.put(selectedUserID, selectedUserID);
                 // we update the task in the database:
@@ -422,6 +429,8 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 // we get the selectedUserID based on the selectedUserEmail
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
+                String selectedUserName = data.getStringExtra("EXTRA_SELECTED_USER_NAME");
+
                 // we add to the prevTaskAssignedUsers map:
                 prevTaskAssignedUsers.remove(selectedUserID);
                 // we update the task in the database:
@@ -441,6 +450,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 // we get the selectedUserID based on the selectedUserEmail
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
+                String selectedUserName = data.getStringExtra("EXTRA_SELECTED_USER_NAME");
 
                 databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).setValue(selectedUserID).addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
@@ -456,6 +466,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 // we get the selectedUserID based on the selectedUserEmail
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
+                String selectedUserName = data.getStringExtra("EXTRA_SELECTED_USER_NAME");
 
                 // `any code that needs the data from the database, needs to be inside your onSuccess method or be called from there.`
                 // src: https://stackoverflow.com/questions/66698325/how-to-wait-for-firebase-task-to-complete-to-get-result-as-an-await-function
@@ -498,6 +509,64 @@ public class CreateTaskAdmin extends AppCompatActivity {
                         Log.d(TAG, "Selected Group " + groupIDStr + " Not retrieving data for ADD_ADMIN");
                     }
                 });
+            }
+        } else if (requestCode == REMOVE_ADMIN_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // here we create a confirmation dialogue. And remove the admin.
+                String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
+                String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
+                String selectedUserName = data.getStringExtra("EXTRA_SELECTED_USER_NAME");
+
+                // now we do confirmation dialogue:
+                AlertDialog.Builder areYouSureDialog = new AlertDialog.Builder(this);
+                areYouSureDialog.setTitle("Confirm Removal");
+                if (selectedUserID.equals(currUserID)) {
+                    areYouSureDialog.setMessage("This will remove you as admin. You will still be a group member.\n\nAre you sure?");
+                    areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Here we remove the task from the database.
+                            databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    Toast.makeText(CreateTaskAdmin.this,  selectedUserName + " has been removed as admin.", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            dialog.dismiss();
+                            // here we finish the activity so that the curr user can load into the
+                            // createTaskUser activity. instead of it occurring later when activity
+                            // finishes by user.
+                            finish();
+                        }
+                    });
+                } else {
+                    areYouSureDialog.setMessage("This will remove " + selectedUserName + " as admin.\n\nAre you sure?");
+                    areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Here we remove the task from the database.
+                            databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    Toast.makeText(CreateTaskAdmin.this,  selectedUserName + " has been removed as admin.", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            dialog.dismiss();
+                        }
+                    });
+                }
+
+                areYouSureDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog dialog = areYouSureDialog.create();
+                dialog.show();
             }
         }
     }
@@ -787,6 +856,15 @@ public class CreateTaskAdmin extends AppCompatActivity {
         intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
         intent.putExtra("EXTRA_SEARCH_REASON", "ADD_ADMIN");
         startActivityForResult(intent, ADD_ADMIN_REQUEST_CODE);
+    }
+
+    private void RemoveAdminActivity() {
+        // Here we start an activity: autoCompleteUserSearch to GET ITS RESULT:
+        Intent intent = new Intent(this, AutoCompleteUserSearch.class);
+        intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+        intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
+        intent.putExtra("EXTRA_SEARCH_REASON", "REMOVE_ADMIN");
+        startActivityForResult(intent, REMOVE_ADMIN_REQUEST_CODE);
     }
 
     private void RenameGroupActivity() {
