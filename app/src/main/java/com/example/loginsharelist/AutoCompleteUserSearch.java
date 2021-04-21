@@ -189,9 +189,11 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                 holder.view.setOnClickListener((v) -> {
                     String selectedUserEmail = model.getEmailAddress();
                     String selectedUserID = model.getUserID();
+                    String selectedUserName = model.getUserName();
                     Intent intent = new Intent();
                     intent.putExtra("EXTRA_SELECTED_USER_EMAIL", selectedUserEmail);
                     intent.putExtra("EXTRA_SELECTED_USER_ID", selectedUserID);
+                    intent.putExtra("EXTRA_SELECTED_USER_NAME", selectedUserName);
                     // we set the result of the intent to be ok, and pass the intent data back to
                     // the previous activity.
                     setResult(RESULT_OK, intent);
@@ -260,9 +262,11 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                     holder.view.setOnClickListener((v) -> {
                         String selectedUserEmail = model.getEmailAddress();
                         String selectedUserID = model.getUserID();
+                        String selectedUserName = model.getUserName();
                         Intent intent = new Intent();
                         intent.putExtra("EXTRA_SELECTED_USER_EMAIL", selectedUserEmail);
                         intent.putExtra("EXTRA_SELECTED_USER_ID", selectedUserID);
+                        intent.putExtra("EXTRA_SELECTED_USER_NAME", selectedUserName);
                         // we set the result of the intent to be ok, and pass the intent data back to
                         // the previous activity.
                         setResult(RESULT_OK, intent);
@@ -332,9 +336,11 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                     holder.view.setOnClickListener((v) -> {
                         String selectedUserEmail = model.getEmailAddress();
                         String selectedUserID = model.getUserID();
+                        String selectedUserName = model.getUserName();
                         Intent intent = new Intent();
                         intent.putExtra("EXTRA_SELECTED_USER_EMAIL", selectedUserEmail);
                         intent.putExtra("EXTRA_SELECTED_USER_ID", selectedUserID);
+                        intent.putExtra("EXTRA_SELECTED_USER_NAME", selectedUserName);
                         // we set the result of the intent to be ok, and pass the intent data back to
                         // the previous activity.
                         setResult(RESULT_OK, intent);

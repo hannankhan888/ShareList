@@ -452,11 +452,29 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
                 String selectedUserName = data.getStringExtra("EXTRA_SELECTED_USER_NAME");
 
-                databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).setValue(selectedUserID).addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful()) {
-                        Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been added to group.", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(CreateTaskAdmin.this, "User not added to group.", Toast.LENGTH_LONG).show();
+                databaseReference.child("Groups").child(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Group selectedGroup = snapshot.getValue(Group.class);
+
+                        // PLEASE ADD YOUR LOGIC CODE HERE:
+                        Map<String, String> selectedGroupMembers = selectedGroup.getGroupMembers();
+                        if (selectedGroupMembers.containsKey(selectedUserID)) {
+                            Toast.makeText(CreateTaskAdmin.this, selectedUserName + " is already part of " + groupNameStr + ".", Toast.LENGTH_LONG).show();
+                        } else {
+                            databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).setValue(selectedUserID).addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been added to group.", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(CreateTaskAdmin.this, "Failed to add user to group.", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d(TAG, "Selected Group " + groupIDStr + " Not retrieving data for ADD_USER");
                     }
                 });
             }
