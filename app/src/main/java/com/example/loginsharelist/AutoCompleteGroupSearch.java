@@ -130,17 +130,13 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
                 return;
             } else {
                 Group group = new Group(groupNameStr, id, groupMembers, groupAdmins);
-                databaseReferenceGroup.child(databaseReferenceGroup.push().getKey()).setValue(group).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(AutoCompleteGroupSearch.this, "The group has been added. ", Toast.LENGTH_LONG).show();
-                            dialog.dismiss();
-                        } else {
-                            Toast.makeText(AutoCompleteGroupSearch.this, "The group has not been added. ", Toast.LENGTH_LONG).show();
-                            dialog.dismiss();
-                        }
+                databaseReferenceGroup.child(databaseReferenceGroup.push().getKey()).setValue(group).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(AutoCompleteGroupSearch.this, "The group has been added. ", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(AutoCompleteGroupSearch.this, "The group has not been added. ", Toast.LENGTH_LONG).show();
                     }
+                    dialog.dismiss();
                 });
             }
         });

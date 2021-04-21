@@ -218,8 +218,6 @@ public class AutoCompleteTaskSearch extends AppCompatActivity {
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     String userName = snapshot.getValue(String.class);
                                     holder.addUserToAssignedUsersStr(userName);
-                                    //TODO: here we have an example of a remove listener that is working.
-                                    queryToGetUserName.removeEventListener(this);
                                     Log.d(TAG, "Assigned User Name: " + userName);
                                 }
 
@@ -478,27 +476,19 @@ public class AutoCompleteTaskSearch extends AppCompatActivity {
         areYouSureDialog.setTitle("Confirm Delete");
         areYouSureDialog.setMessage("This will permanently delete the task.\nAre you sure?");
 
-        areYouSureDialog.setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Here we remove the task from the database.
-                databaseReferenceTask.child(prevTaskID).removeValue().addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful()) {
-                        Toast.makeText(AutoCompleteTaskSearch.this, "The task has been deleted.", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(AutoCompleteTaskSearch.this, "The task has not been deleted.", Toast.LENGTH_LONG).show();
-                    }
-                });
-                dialog.dismiss();
-            }
+        areYouSureDialog.setPositiveButton("DELETE", (dialog, which) -> {
+            // Here we remove the task from the database.
+            databaseReferenceTask.child(prevTaskID).removeValue().addOnCompleteListener(task1 -> {
+                if (task1.isSuccessful()) {
+                    Toast.makeText(AutoCompleteTaskSearch.this, "The task has been deleted.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(AutoCompleteTaskSearch.this, "The task has not been deleted.", Toast.LENGTH_LONG).show();
+                }
+            });
+            dialog.dismiss();
         });
 
-        areYouSureDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        areYouSureDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = areYouSureDialog.create();
         dialog.show();
