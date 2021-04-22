@@ -82,11 +82,8 @@ public class CreateTaskAdmin extends AppCompatActivity {
     private String groupNameStr;
     private String groupIDStr;
     private String currUserID;
-
-    public static boolean status = false;
-
-    private int numofTasks =0;
-    private int completedtasks = 0;
+    private int numOfTasks = 0;
+    private int completedTasks = 0;
 
 
     /**
@@ -161,7 +158,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
         // its NOT RECOMMENDED to use switch statement according to gradle.
         if (id == R.id.createTaskAdminCornerMenuGroupInfo) {
             // insert code to show group info Activity HERE.
-            // TODO: add a group info activity.
             GroupInfoActivity();
             Log.d(TAG, "Group Info option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuRenameGroup) {
@@ -179,13 +175,13 @@ public class CreateTaskAdmin extends AppCompatActivity {
         } else if (id == R.id.createTaskAdminCornerMenuRemoveAdmin) {
             RemoveAdminActivity();
         } else if (id == R.id.createTaskAdminCornerMenuDeleteGroup) {
+            // deletes all tasks associated with that group, and the group itself.
             DeleteGroupActivity();
-            // TODO: delete all tasks associated with that group.
             Log.d(TAG, "Delete Group option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuLeaveGroup) {
             // We do the Leave Group stuff here.
             // TODO: add the Leave the Group stuff.
-            // TODO: this does NOT mean pressing the back button.
+            // this does NOT mean pressing the back button.
             Log.d(TAG, "Leave Group option pressed.");
         }
         return super.onOptionsItemSelected(item);
@@ -212,30 +208,31 @@ public class CreateTaskAdmin extends AppCompatActivity {
         TextView taskAdminCount = view.findViewById(R.id.groupAdminCount);
         String countAdmin = getIntent().getStringExtra("EXTRA_ADMIN_COUNT");
         taskAdminCount.setText(countAdmin);
-        numofTasks = 0;
-        completedtasks = 0;
+        numOfTasks = 0;
+        completedTasks = 0;
         Query tasksquery = databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr);
         tasksquery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot task : snapshot.getChildren()) {
                     Task tempTask = task.getValue(Task.class);
-                    numofTasks+=1;
-                    if(tempTask.isMark()){
-                        completedtasks+=1;
+                    numOfTasks += 1;
+                    if (tempTask.isMark()) {
+                        completedTasks += 1;
                     }
                     Log.d("Firebase_groupinfo", String.valueOf(tempTask.getTaskId()));
                 }
-                Log.e("firebase_groupinfo", String.valueOf(numofTasks));
-                Log.e("firebase_groupcompl", String.valueOf(completedtasks));
+                Log.e("firebase_groupinfo", String.valueOf(numOfTasks));
+                Log.e("firebase_groupcompl", String.valueOf(completedTasks));
                 TextView totaltasks = view.findViewById(R.id.groupTasks);
                 TextView completed = view.findViewById(R.id.completedTasks);
                 TextView remaintasks = view.findViewById(R.id.remainTasks);
-                totaltasks.setText(String.valueOf(numofTasks));
-                completed.setText(String.valueOf(completedtasks));
-                remaintasks.setText(String.valueOf(numofTasks-completedtasks));
+                totaltasks.setText(String.valueOf(numOfTasks));
+                completed.setText(String.valueOf(completedTasks));
+                remaintasks.setText(String.valueOf(numOfTasks - completedTasks));
                 dialog.show();
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.d("Firebase_groupinfo", "FireGrouperror");
@@ -588,7 +585,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
             }
         } else if (requestCode == ADD_ADMIN_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // TODO: bunch of todos below:
                 // we get the selectedUserID based on the selectedUserEmail
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
@@ -644,53 +640,83 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 // now we do confirmation dialogue:
                 AlertDialog.Builder areYouSureDialog = new AlertDialog.Builder(this);
                 areYouSureDialog.setTitle("Confirm Removal");
-                if (selectedUserID.equals(currUserID)) {
-                    areYouSureDialog.setMessage("\nThis will remove you as admin. You will still be a group member.\n\nAre you sure?");
-                    areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Here we remove the task from the database.
-                            databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
-                                if (task1.isSuccessful()) {
-                                    Toast.makeText(CreateTaskAdmin.this, selectedUserName + " has been removed as admin.", Toast.LENGTH_LONG).show();
-                                } else {
-                                    Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                            dialog.dismiss();
-                            // here we finish the activity so that the curr user can load into the
-                            // createTaskUser activity. instead of it occurring later when activity
-                            // finishes by user.
-                            finish();
-                        }
-                    });
-                } else {
-                    areYouSureDialog.setMessage("\nThis will remove " + selectedUserName + " as admin.\n\nAre you sure?");
-                    areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Here we remove the task from the database.
-                            databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
-                                if (task1.isSuccessful()) {
-                                    Toast.makeText(CreateTaskAdmin.this, selectedUserName + " has been removed as admin.", Toast.LENGTH_LONG).show();
-                                } else {
-                                    Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                            dialog.dismiss();
-                        }
-                    });
-                }
 
-                areYouSureDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                databaseReference.child("Groups").child(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Group tempGroup = snapshot.getValue(Group.class);
+
+                        if (selectedUserID.equals(currUserID)) {
+                            // if the currUser decides to remove themselves as admin:
+                            if ((tempGroup.getGroupAdmins().size() == 1) && (tempGroup.getGroupMembers().size() > 1)) {
+                                Toast.makeText(CreateTaskAdmin.this, "Please make sure to make someone else admin before leaving.", Toast.LENGTH_LONG).show();
+                            } else if ((tempGroup.getGroupAdmins().size() == 1) && (tempGroup.getGroupMembers().size() == 1)) {
+                                // if the user is alone in the group:
+                                Toast.makeText(CreateTaskAdmin.this, "Please delete the group if you want to leave.", Toast.LENGTH_LONG).show();
+                            } else if ((tempGroup.getGroupAdmins().size() > 1) && (tempGroup.getGroupMembers().size() > 1)) {
+                                // there are more than 1 admins, in a group with more than 1 members.
+                                areYouSureDialog.setMessage("\nThis will remove YOU as admin.\n\nAre you sure?");
+                                areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // Here we remove the task from the database.
+                                        databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
+                                            if (task1.isSuccessful()) {
+                                                Toast.makeText(CreateTaskAdmin.this, "You have been removed as admin.", Toast.LENGTH_LONG).show();
+                                            } else {
+                                                Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                                        dialog.dismiss();
+                                        //finish the activity cause currUser is no longer admin.
+                                        finish();
+                                    }
+                                });
+                                areYouSureDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+
+                                AlertDialog dialog = areYouSureDialog.create();
+                                dialog.show();
+
+                            }
+                        } else {
+                            // if the curr user wants to remove someone else as admin.
+                            areYouSureDialog.setMessage("\nThis will remove " + selectedUserName + " as admin.\n\nAre you sure?");
+                            areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Here we remove the task from the database.
+                                    databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            Toast.makeText(CreateTaskAdmin.this, selectedUserName + " has been removed as admin.", Toast.LENGTH_LONG).show();
+                                        } else {
+                                            Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                    dialog.dismiss();
+                                }
+                            });
+                            areYouSureDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            AlertDialog dialog = areYouSureDialog.create();
+                            dialog.show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d(TAG, "Error getting group data for REMOVE_ADMIN.");
                     }
                 });
-
-                AlertDialog dialog = areYouSureDialog.create();
-                dialog.show();
             }
         }
     }
@@ -778,13 +804,13 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
             // Validate that everything is not empty
             if (taskNameStr.isEmpty()) {
-                newTaskNameInput.setError("Task name should not be empty. ");
+                newTaskNameInput.setError("Task name should not be empty.");
                 return;
             } else if (taskDescriptionStr.isEmpty()) {
-                newTaskDescriptionInput.setError("Description should not be empty. ");
+                newTaskDescriptionInput.setError("Description should not be empty.");
                 return;
             } else if (dueDateStr.isEmpty()) {
-                newTaskDueDateButtonInput.setError("Due date should not be empty. ");
+                newTaskDueDateButtonInput.setError("Due date should not be empty.");
                 return;
             }
 
@@ -833,6 +859,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
     private void viewAssignedUsersActivity() {
         // TODO: start an intent to show assigned users in separate activity.
+
     }
 
     private void assignUserActivity() {
