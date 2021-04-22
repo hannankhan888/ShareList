@@ -214,7 +214,8 @@ public class CreateTaskAdmin extends AppCompatActivity {
         TextView taskAdminCount = view.findViewById(R.id.groupAdminCount);
         String countAdmin = getIntent().getStringExtra("EXTRA_ADMIN_COUNT");
         taskAdminCount.setText(countAdmin);
-
+        numofTasks = 0;
+        completedtasks = 0;
         Query tasksquery = databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr);
         tasksquery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
