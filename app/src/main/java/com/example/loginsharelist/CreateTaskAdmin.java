@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -165,8 +166,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         } else if (id == R.id.createTaskAdminCornerMenuRenameGroup){
             RenameGroupActivity();
             Log.d(TAG, "Rename Group option pressed.");
-        }
-        else if (id == R.id.createTaskAdminCornerMenuAddUser){
+        } else if (id == R.id.createTaskAdminCornerMenuAddUser){
             AddUserActivity();
             Log.d(TAG, "Add User option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuRemoveUser){
@@ -174,12 +174,11 @@ public class CreateTaskAdmin extends AppCompatActivity {
             Log.d(TAG, "Remove User option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuAddAdmin){
             AddAdminActivity();
-            // TODO: if user is not a member, then add as both member and a group admin.
             Log.d(TAG, "Add Admin option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuRemoveAdmin) {
             RemoveAdminActivity();
         } else if (id == R.id.createTaskAdminCornerMenuDeleteGroup){
-//            DeleteGroupActivity();
+            DeleteGroupActivity();
             // TODO: delete all tasks associated with that group.
             Log.d(TAG, "Delete Group option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuLeaveGroup) {
@@ -970,6 +969,58 @@ public class CreateTaskAdmin extends AppCompatActivity {
         intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
         intent.putExtra("EXTRA_SEARCH_REASON", "REMOVE_ADMIN");
         startActivityForResult(intent, REMOVE_ADMIN_REQUEST_CODE);
+    }
+
+    private void DeleteGroupActivity() {
+        // we will ask confirmation. Then delete each task in the group, and finally the group itself.
+        AlertDialog.Builder areYouSureDialog = new AlertDialog.Builder(this);
+        areYouSureDialog.setTitle("Confirm Deletion");
+        areYouSureDialog.setMessage("\nTHIS WILL PERMANENTLY DELETE THIS GROUP AND ALL TASKS ASSOCIATED WITH THIS GROUP.\n\nAre you sure?");
+        areYouSureDialog.setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // first we get and delete all tasks:
+                databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        // we iterate through each task here:
+                        for (DataSnapshot task : snapshot.getChildren()) {
+                            Task tempTask = task.getValue(Task.class);
+                            databaseReferenceTask.child(tempTask.getTaskId()).removeValue().addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    Log.d(TAG, tempTask.getTaskId() + " task deleted.");
+                                } else {
+                                    Log.d(TAG, "Error deleting task: " + tempTask.getTaskId());
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d(TAG, "Error calling by child in DeleteGroupActivity.");
+                    }
+                });
+
+                // next we delete the group itself:
+                databaseReference.child("Groups").child(groupIDStr).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Deleted group successfully.");
+                            finish();
+                        } else {
+                            Log.d(TAG, "Error deleting group: " + groupIDStr);
+                        }
+                    }
+                });
+            }
+        });
+
+        areYouSureDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = areYouSureDialog.create();
+        dialog.show();
     }
 
     private void RenameGroupActivity() {
