@@ -120,6 +120,21 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                     }
                 });
                 break;
+            case "REMOVE_USER":
+                getSupportActionBar().setTitle("Remove User From " + groupName);
+                GroupMembersSearch("");
+                autoUserEmailInput.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        GroupMembersSearch(s.toString().trim());
+                    }
+                });
+                break;
             case "ADD_ADMIN":
                 // only searches the current group members.
                 getSupportActionBar().setTitle("Add Admin To " + groupName);

@@ -60,8 +60,9 @@ public class CreateTaskAdmin extends AppCompatActivity {
     private static final int ASSIGN_USER_TO_TASK_REQUEST_CODE = 0;
     private static final int REMOVE_ASSIGNED_USER_REQUEST_CODE = 1;
     private static final int ADD_USER_REQUEST_CODE = 2;
-    private static final int ADD_ADMIN_REQUEST_CODE = 3;
-    private static final int REMOVE_ADMIN_REQUEST_CODE = 4;
+    private static final int REMOVE_USER_REQUEST_CODE = 3;
+    private static final int ADD_ADMIN_REQUEST_CODE = 4;
+    private static final int REMOVE_ADMIN_REQUEST_CODE = 5;
 
     private RecyclerView recyclerViewTask;
     private FloatingActionButton addTaskButton;
@@ -169,7 +170,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
             AddUserActivity();
             Log.d(TAG, "Add User option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuRemoveUser){
-//            RemoveUserActivity();
+            RemoveUserActivity();
             Log.d(TAG, "Remove User option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuAddAdmin){
             AddAdminActivity();
@@ -478,6 +479,86 @@ public class CreateTaskAdmin extends AppCompatActivity {
                     }
                 });
             }
+        } else if (requestCode == REMOVE_USER_REQUEST_CODE) {
+          if (resultCode == RESULT_OK) {
+              // check here if the selected group member to be removed is an admin or not. If
+              // so, confirm that the selected user will be removed as BOTH AN ADMIN AND A MEMBER.
+              String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
+              String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
+              String selectedUserName = data.getStringExtra("EXTRA_SELECTED_USER_NAME");
+              AlertDialog.Builder areYouSureDialog = new AlertDialog.Builder(this);
+              areYouSureDialog.setTitle("Confirm Removal");
+
+              databaseReference.child("Groups").child(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                  @Override
+                  public void onDataChange(@NonNull DataSnapshot snapshot) {
+                      Group selectedGroup = snapshot.getValue(Group.class);
+
+                      // LOGIC CODE HERE:
+                      Map<String, String> selectedGroupMembers = selectedGroup.getGroupMembers();
+                      Map<String, String> selectedGroupAdmins = selectedGroup.getGroupAdmins();
+                      // if user is both an admin and a member:
+                      if (selectedGroupMembers.containsKey(selectedUserID) && selectedGroupAdmins.containsKey(selectedUserID)) {
+                          // confirm dialog will mention that user is both an admin and a member.
+                          // make sure to differentiate between a curr user removing themselves (tell
+                          // them to use `Leave Group`), and a curr user removing someone else.
+                          if (selectedUserID.equals(currUserID)) {
+                              Toast.makeText(CreateTaskAdmin.this,  "Please use the Leave Group button instead.", Toast.LENGTH_LONG).show();
+                              return;
+                          } else {
+                              areYouSureDialog.setMessage("\nTHIS WILL REMOVE " + selectedUserName + " AS BOTH ADMIN AND MEMBER.\n\nAre you sure?");
+                              areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
+                                  @Override
+                                  public void onClick(DialogInterface dialog, int which) {
+                                      // Here we remove the ADMIN from the database.
+                                      databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
+                                          if (task1.isSuccessful()) {
+                                              // Here we remove the MEMBER from the database.
+                                              databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).removeValue().addOnCompleteListener(task -> {
+                                                  if (task.isSuccessful()) {
+                                                      Toast.makeText(CreateTaskAdmin.this,  selectedUserName + " has been removed as both admin and member.", Toast.LENGTH_SHORT).show();
+                                                  } else {
+                                                      Toast.makeText(CreateTaskAdmin.this,  " Failed to removed member.", Toast.LENGTH_LONG).show();
+                                                  }
+                                              });
+                                          } else {
+                                              Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
+                                          }
+                                      });
+                                      dialog.dismiss();
+                                  }
+                              });
+                          }
+                      } else if (selectedGroupMembers.containsKey(selectedUserID) && !(selectedGroupAdmins.containsKey(selectedUserID))) {
+                          // here we remove the user as usual. make sure the curr user cannot remove themselves.
+                          areYouSureDialog.setMessage("\nTHIS WILL REMOVE " + selectedUserName + " FROM THE GROUP.\n\nAre you sure?");
+                          areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
+                              @Override
+                              public void onClick(DialogInterface dialog, int which) {
+                                  databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).removeValue().addOnCompleteListener(task -> {
+                                      if (task.isSuccessful()) {
+                                          Toast.makeText(CreateTaskAdmin.this,  selectedUserName + " has been removed.", Toast.LENGTH_SHORT).show();
+                                      } else {
+                                          Toast.makeText(CreateTaskAdmin.this,  "Failed to remove member.", Toast.LENGTH_SHORT).show();
+                                      }
+                                  });
+                              }
+                          });
+                      }
+
+                      areYouSureDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+
+                      AlertDialog dialog = areYouSureDialog.create();
+                      dialog.show();
+
+                  }
+
+                  @Override
+                  public void onCancelled(@NonNull DatabaseError error) {
+                      Log.d(TAG, "Selected Group " + groupIDStr + " Not retrieving data for REMOVE_USER");
+                  }
+              });
+          }
         } else if (requestCode == ADD_ADMIN_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 // TODO: bunch of todos below:
@@ -862,6 +943,14 @@ public class CreateTaskAdmin extends AppCompatActivity {
         intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
         intent.putExtra("EXTRA_SEARCH_REASON", "ADD_USER");
         startActivityForResult(intent, ADD_USER_REQUEST_CODE);
+    }
+
+    private void RemoveUserActivity() {
+        Intent intent = new Intent(this, AutoCompleteUserSearch.class);
+        intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+        intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
+        intent.putExtra("EXTRA_SEARCH_REASON", "REMOVE_USER");
+        startActivityForResult(intent, REMOVE_USER_REQUEST_CODE);
     }
 
     private void AddAdminActivity(){
