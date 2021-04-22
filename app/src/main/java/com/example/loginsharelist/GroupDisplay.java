@@ -1,5 +1,8 @@
 package com.example.loginsharelist;
 
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -26,6 +29,23 @@ public class GroupDisplay extends RecyclerView.ViewHolder {
     public void setGroupName(String groupName) {
         TextView groupNameDisplay = view.findViewById(R.id.groupNameDisplay);
         groupNameDisplay.setText(groupName);
+    }
+
+    public void setGroupSearchName (String groupName, String searchStr) {
+        int start = groupName.toLowerCase().indexOf(searchStr.toLowerCase());
+
+        if (start != -1) {
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+
+            SpannableString str1 = new SpannableString(groupName);
+            str1.setSpan(new ForegroundColorSpan(0xFF03DAC5), start, start+searchStr.length(), 0);
+            builder.append(str1);
+
+            TextView groupNameDisplay = view.findViewById(R.id.groupNameDisplay);
+            groupNameDisplay.setText(builder, TextView.BufferType.SPANNABLE);
+        } else {
+            setGroupName(groupName);
+        }
     }
 
     public void setGroupMembersStr(String groupMembersStr){

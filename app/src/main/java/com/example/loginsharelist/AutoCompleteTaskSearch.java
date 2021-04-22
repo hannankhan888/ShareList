@@ -162,24 +162,6 @@ public class AutoCompleteTaskSearch extends AppCompatActivity {
             @Override
             public TaskDisplay onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                 // Inflate the task card view
-//                if (viewType == 0) {
-//                    // It is mark is false
-//                    // Inflate the task card view
-//                    View view = LayoutInflater
-//                            .from(parent.getContext())
-//                            .inflate(R.layout.activity_display_task_database, parent, false);
-//                    return new TaskDisplay(view);
-//                } else {
-//                    // It is mark is true
-//                    // Inflate the task card view
-//                    // It is going to show you the same layout if you mark the task
-//                    // If you are going to use the more beautiful layout you can put it here
-//                    // Then you have to update the onBindViewHolder
-//                    View view = LayoutInflater
-//                            .from(parent.getContext())
-//                            .inflate(R.layout.activity_display_task_database, parent, false);
-//                    return new TaskDisplay(view);
-//                }
                 View view = LayoutInflater
                         .from(parent.getContext())
                         .inflate(R.layout.activity_display_task_database, parent, false);
@@ -198,8 +180,8 @@ public class AutoCompleteTaskSearch extends AppCompatActivity {
                     if (holder.getItemViewType() == 0) {
                         // It is mark is false
                         // It is what is going to display on the task card view
-                        holder.setTaskName(model.getTaskName());
-                        holder.setTaskDescription(model.getTaskDescription());
+                        holder.setTaskSearchName(model.getTaskName(), taskNameStr);
+                        holder.setTaskSearchDescription(model.getTaskDescription(), taskNameStr);
                         holder.setTaskDueDate(model.getTaskDueDate());
                     } else if (holder.getItemViewType() == 1) {
                         // It is mark is true
@@ -230,7 +212,6 @@ public class AutoCompleteTaskSearch extends AppCompatActivity {
                     } else {
                         holder.setAssignedUsersStr("No one.");
                     }
-
 
                     // Check if current user is an ADMIN. Launch the respective activity.
                     holder.view.setOnClickListener((view) -> {

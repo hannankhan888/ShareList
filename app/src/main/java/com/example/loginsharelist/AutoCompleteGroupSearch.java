@@ -195,7 +195,7 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
                     holder.itemView.setVisibility(View.VISIBLE);
                     holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-                    holder.setGroupName(model.getGroupName());
+                    holder.setGroupSearchName(model.getGroupName(), groupNameStr);
                     Map<String, String> groupMembersMap = model.getGroupMembers();
                     if (groupMembersMap.size() > 1){
                         for (String userID : groupMembersMap.keySet()){

@@ -1,6 +1,12 @@
 package com.example.loginsharelist;
 
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -26,9 +32,49 @@ public class TaskDisplay extends RecyclerView.ViewHolder {
         taskNameDisplay.setText(taskName);
     }
 
+    public void setTaskSearchName(String taskName, String searchStr) {
+        int start = taskName.toLowerCase().indexOf(searchStr.toLowerCase());
+
+        if (start != -1) {
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+
+            SpannableString str1 = new SpannableString(taskName);
+            Log.d("Task Display", "taskName is: " + taskName);
+            Log.d("Task Display", "searchStr is: " + searchStr);
+            Log.d("Task Display", "int start is: " + start);
+            str1.setSpan(new ForegroundColorSpan(0xFF03DAC5), start, start+searchStr.length(), 0);
+            builder.append(str1);
+
+            TextView taskNameDisplay = view.findViewById(R.id.taskNameDisplay);
+            taskNameDisplay.setText(builder, TextView.BufferType.SPANNABLE);
+        } else {
+            setTaskName(taskName);
+        }
+    }
+
     public void setTaskDescription(String description) {
         TextView taskDescriptionDisplay = view.findViewById(R.id.taskDescriptionDisplay);
         taskDescriptionDisplay.setText(description);
+    }
+
+    public void setTaskSearchDescription(String description, String searchStr) {
+        int start = description.toLowerCase().indexOf(searchStr.toLowerCase());
+
+        if (start != -1) {
+            SpannableStringBuilder builder = new SpannableStringBuilder();
+
+            SpannableString str1 = new SpannableString(description);
+            Log.d("Task Display", "description is: " + description);
+            Log.d("Task Display", "searchStr is: " + searchStr);
+            Log.d("Task Display", "int start is: " + start);
+            str1.setSpan(new ForegroundColorSpan(0xFF03DAC5), start, start+searchStr.length(), 0);
+            builder.append(str1);
+
+            TextView taskDescriptionDisplay = view.findViewById(R.id.taskDescriptionDisplay);
+            taskDescriptionDisplay.setText(builder, TextView.BufferType.SPANNABLE);
+        } else {
+            setTaskDescription(description);
+        }
     }
 
     public void setTaskDueDate(String taskDueDate) {
