@@ -87,6 +87,9 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
     public static boolean status = false;
 
+    private int numofTasks =0;
+    private int completedtasks = 0;
+
 
     /**
      * This method sets all necessary vars for this activity. It also sets the app bar title to
@@ -212,7 +215,35 @@ public class CreateTaskAdmin extends AppCompatActivity {
         String countAdmin = getIntent().getStringExtra("EXTRA_ADMIN_COUNT");
         taskAdminCount.setText(countAdmin);
 
-        dialog.show();
+        Query tasksquery = databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr);
+        tasksquery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot task : snapshot.getChildren()) {
+                    Task tempTask = task.getValue(Task.class);
+                    numofTasks+=1;
+                    if(tempTask.isMark()){
+                        completedtasks+=1;
+                    }
+                    Log.d("Firebase_groupinfo", String.valueOf(tempTask.getTaskId()));
+                }
+                Log.e("firebase_groupinfo", String.valueOf(numofTasks));
+                Log.e("firebase_groupcompl", String.valueOf(completedtasks));
+                TextView totaltasks = view.findViewById(R.id.groupTasks);
+                TextView completed = view.findViewById(R.id.completedTasks);
+                TextView remaintasks = view.findViewById(R.id.remainTasks);
+                totaltasks.setText(String.valueOf(numofTasks));
+                completed.setText(String.valueOf(completedtasks));
+                remaintasks.setText(String.valueOf(numofTasks-completedtasks));
+                dialog.show();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("Firebase_groupinfo", "FireGrouperror");
+            }
+        });
+
+
     }
 
     /**

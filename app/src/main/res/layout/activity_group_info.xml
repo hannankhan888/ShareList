@@ -40,6 +40,44 @@
         app:layout_constraintTop_toBottomOf="@+id/groupInfoUserNumber" />
 
     <TextView
+        android:id="@+id/groupInfoTotalTaks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_condensed_light"
+        android:paddingBottom="3dp"
+        android:text="@string/total_tasks"
+        android:textSize="17sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/groupInfoAdminNumber" />
+
+    <TextView
+        android:id="@+id/groupInfoComplTasks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_condensed_light"
+        android:paddingBottom="3dp"
+        android:text="@string/completed_tasks"
+        android:textSize="17sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/groupInfoTotalTaks" />
+
+    <TextView
+        android:id="@+id/groupInfoRemainTasks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_condensed_light"
+        android:paddingBottom="3dp"
+        android:text="@string/remaining_tasks"
+        android:textSize="17sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/groupInfoComplTasks" />
+
+    <TextView
         android:id="@+id/groupAdminCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,15 +86,43 @@
         app:layout_constraintTop_toBottomOf="@id/groupInfoUserNumber"
         app:layout_constraintStart_toEndOf="@id/groupInfoAdminNumber"/>
 
+    <TextView
+        android:id="@+id/groupTasks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_condensed_light"
+        android:textSize="17sp"
+        app:layout_constraintStart_toEndOf="@id/groupInfoTotalTaks"
+        app:layout_constraintTop_toBottomOf="@id/groupInfoAdminNumber" />
+
+    <TextView
+        android:id="@+id/completedTasks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_condensed_light"
+        android:textSize="17sp"
+        app:layout_constraintStart_toEndOf="@id/groupInfoComplTasks"
+        app:layout_constraintTop_toBottomOf="@id/groupInfoTotalTaks" />
+
+    <TextView
+        android:id="@+id/remainTasks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_condensed_light"
+        android:textSize="17sp"
+        app:layout_constraintStart_toEndOf="@id/groupInfoRemainTasks"
+        app:layout_constraintTop_toBottomOf="@id/groupInfoComplTasks" />
+
     <Button
         android:id="@+id/groupInfoOKButton"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="96dp"
         android:text="@string/ok"
         android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.517"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/groupAdminCount"
         tools:ignore="MissingConstraints" />
