@@ -407,22 +407,38 @@ public class CreateTaskAdmin extends AppCompatActivity {
         // If the activity that finished is assignUser activity:
         if (requestCode == ASSIGN_USER_TO_TASK_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // TODO: check if user is already assigned or if user is not part of group.
                 // we get the selectedUserID based on the selectedUserEmail
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
                 String selectedUserName = data.getStringExtra("EXTRA_SELECTED_USER_NAME");
 
-                // we add to the prevTaskAssignedUsers map:
-                prevTaskAssignedUsers.put(selectedUserID, selectedUserID);
-                // we update the task in the database:
-                Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate,
-                        prevDueDate, prevBelongsToGroupID, prevMark, prevTaskAssignedUsers);
-                databaseReferenceTask.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful()) {
-                        Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been assigned.", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(CreateTaskAdmin.this, "User not assigned.", Toast.LENGTH_LONG).show();
+                databaseReferenceTask.child(prevTaskID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Task tempTask = snapshot.getValue(Task.class);
+                        // we check if the selectedUser is already assigned to the task:
+                        if (tempTask.getTaskAssignedUsers().containsKey(selectedUserID)) {
+                            Toast.makeText(CreateTaskAdmin.this, selectedUserName + " is already assigned to this task.", Toast.LENGTH_LONG).show();
+                        } else {
+                            // if the user is not already assigned:
+                            // we add to the prevTaskAssignedUsers map:
+                            prevTaskAssignedUsers.put(selectedUserID, selectedUserID);
+                            // we update the task in the database:
+                            Task task = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate,
+                                    prevDueDate, prevBelongsToGroupID, prevMark, prevTaskAssignedUsers);
+                            databaseReferenceTask.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been assigned.", Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(CreateTaskAdmin.this, "Error assigning user.", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d(TAG, "Error retrieving task data in ONACTIVITYRESULT ASSIGN USER TO TASK.");
                     }
                 });
             }
@@ -1065,8 +1081,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
     }
 
     private void LeaveGroupActivity() {
-        // TODO: remove user from all assigned tasks first.
-
         // first we make confirmation dialogue object:
         AlertDialog.Builder areYouSureDialog = new AlertDialog.Builder(this);
         areYouSureDialog.setTitle("Confirm Leave");
@@ -1098,8 +1112,35 @@ public class CreateTaskAdmin extends AppCompatActivity {
                                             @Override
                                             public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
                                                 if (task.isSuccessful()) {
-                                                    // finish activity
-                                                    finish();
+                                                    // now we loop through all tasks that belong to the group ID.
+                                                    // If the user is assigned to any, the currUser will be removed (unassigned).
+                                                    databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                            // Here we iterate through all tasks that belong to the group.
+                                                            for (DataSnapshot ds : snapshot.getChildren()){
+                                                                Task tempTask = ds.getValue(Task.class);
+                                                                if (tempTask.getTaskAssignedUsers().containsKey(currUserID)) {
+                                                                    tempTask.getTaskAssignedUsers().remove(currUserID);
+                                                                    // now we update the database to match the removal.
+                                                                    databaseReferenceTask.child(tempTask.getTaskId()).setValue(tempTask).addOnCompleteListener(task1 -> {
+                                                                        if (task1.isSuccessful()) {
+                                                                            Log.d(TAG, "Curr user removed from assignment to task: " + tempTask.getTaskId());
+                                                                        } else {
+                                                                            Log.d(TAG, "Error removing currUser from assignment to task: " + tempTask.getTaskId());
+                                                                        }
+                                                                    });
+                                                                }
+                                                            }
+                                                            // After the iteration is done, we can exit the activity.
+                                                            Toast.makeText(CreateTaskAdmin.this, "You have left the group.", Toast.LENGTH_LONG).show();
+                                                            finish();
+                                                        }
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError error) {
+                                                            Log.d(TAG, "Error getting tasks from group in LeaveGroupActivity.");
+                                                        }
+                                                    });
                                                 } else {
                                                     Log.d(TAG, "Error removing user from groupMembers in LeaveGroupActivity.");
                                                 }

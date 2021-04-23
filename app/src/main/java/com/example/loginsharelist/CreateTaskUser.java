@@ -162,8 +162,37 @@ public class CreateTaskUser extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(CreateTaskUser.this, "You have left the group.", Toast.LENGTH_LONG).show();
-                            finish();
+                            // here we iterate through all tasks of the group
+                            // if the currUser is assigned to any task, it will remove (un-assign the user).
+                            databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    for (DataSnapshot ds : snapshot.getChildren()) {
+                                        Task tempTask = ds.getValue(Task.class);
+                                        if (tempTask.getTaskAssignedUsers().containsKey(currUserID)) {
+                                            // here we update the database to un-assign the currUser.
+                                            tempTask.getTaskAssignedUsers().remove(currUserID);
+                                            databaseReferenceTask.child(tempTask.getTaskId()).setValue(tempTask).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        Log.d(TAG, "Curr user removed from assignment to task: " + tempTask.getTaskId());
+                                                    } else {
+                                                        Log.d(TAG, "Error removing currUser from assignment to task: " + tempTask.getTaskId());
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                    // here we notify the user they have left the group.
+                                    Toast.makeText(CreateTaskUser.this, "You have left the group.", Toast.LENGTH_LONG).show();
+                                    finish();
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.d(TAG, "Error retrieving tasks data in LEAVE GROUP.");
+                                }
+                            });
                         } else {
                             Toast.makeText(CreateTaskUser.this, "Error leaving the group.", Toast.LENGTH_LONG).show();
                         }
@@ -172,12 +201,7 @@ public class CreateTaskUser extends AppCompatActivity {
             }
         });
 
-        areYouSureDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        areYouSureDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = areYouSureDialog.create();
         dialog.show();
@@ -249,6 +273,27 @@ public class CreateTaskUser extends AppCompatActivity {
                     holder.setCrossTaskName(model.getTaskName());
                     holder.setCrossTaskDescription(model.getTaskDescription());
                     holder.setCrossTaskDueDate(model.getTaskDueDate());
+                }
+
+                Map<String, String> taskAssignedUsers = model.getTaskAssignedUsers();
+                if (taskAssignedUsers.size() >= 1) {
+                    for (String userID : taskAssignedUsers.keySet()) {
+                        Query queryToGetUserName = databaseReference.child("User").child(userID).child("userName");
+                        queryToGetUserName.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String userName = snapshot.getValue(String.class);
+                                holder.addUserToAssignedUsersStr(userName);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.d(TAG, "Unable to get Assigned User Name: " + error);
+                            }
+                        });
+                    }
+                } else {
+                    holder.setAssignedUsersStr("No one.");
                 }
 
                 // If you click the task, it will open the task menu
