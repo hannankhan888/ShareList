@@ -180,52 +180,13 @@ public class CreateTaskAdmin extends AppCompatActivity {
             Log.d(TAG, "Delete Group option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuLeaveGroup) {
             // We do the Leave Group stuff here.
-
-            Log.d(TAG, "Leave Group option pressed.");
-            leaveGroupDialog();
-
-            // TODO: add the Leave the Group stuff.
             // this does NOT mean pressing the back button.
+            Log.d(TAG, "Leave Group option pressed.");
+            LeaveGroupActivity();
         }
         return super.onOptionsItemSelected(item);
     }
 
-
-    private void leaveGroupDialog() {
-        Log.d(TAG, "Inside Leave alert.");
-
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View view = layoutInflater.inflate(R.layout.dialog_leave_group, null);
-        alertDialog.setView(view);
-
-        AlertDialog dialog = alertDialog.create();
-
-        Button leaveGroupOkButton = view.findViewById(R.id.leaveGroupOKButton);
-        Button leaveGroupCancelButton = view.findViewById(R.id.leaveGroupCancelButton);
-        TextView groupName = view.findViewById(R.id.groupName);
-        groupName.setText(groupNameStr);
-        leaveGroupCancelButton.setOnClickListener((v) -> dialog.dismiss());
-        leaveGroupOkButton.setOnClickListener(view1 -> {
-//            new Group().removeGroupMember(auth.getUid());
-
-//            databaseReferenceGroup.child(id).setValue(group).addOnCompleteListener(task -> {
-//                if (task.isSuccessful()) {
-//                    Toast.makeText(CreateGroup.this, "The group has been added. ", Toast.LENGTH_LONG).show();
-//                } else {
-//                    Toast.makeText(CreateGroup.this, "The group has not been added. ", Toast.LENGTH_LONG).show();
-//                }
-//                dialog.dismiss();
-//            });
-            Toast.makeText(this, auth.getUid() + " left Group " + groupNameStr, Toast.LENGTH_SHORT).show();
-            Log.d(TAG, auth.getUid() + " left Group " + groupNameStr);
-            dialog.dismiss();
-            startActivity(new Intent(this, CreateGroup.class));
-            finish();
-        });
-
-        dialog.show();
-    }
 
 
     private void GroupInfoActivity() {
@@ -512,7 +473,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
             }
         } else if (requestCode == ADD_USER_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // TODO: check if user is already part of group.
+                // Also checks if user is already part of group.
                 // we get the selectedUserID based on the selectedUserEmail
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
@@ -530,7 +491,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                         } else {
                             databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).setValue(selectedUserID).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
-                                    Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been added to group.", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(CreateTaskAdmin.this, selectedUserName + " has been added to group.", Toast.LENGTH_LONG).show();
                                 } else {
                                     Toast.makeText(CreateTaskAdmin.this, "Failed to add user to group.", Toast.LENGTH_LONG).show();
                                 }
@@ -700,7 +661,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                                 areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        // Here we remove the task from the database.
+                                        // Here we remove the user admin status from the database.
                                         databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
                                             if (task1.isSuccessful()) {
                                                 Toast.makeText(CreateTaskAdmin.this, "You have been removed as admin.", Toast.LENGTH_LONG).show();
@@ -1117,6 +1078,68 @@ public class CreateTaskAdmin extends AppCompatActivity {
         AlertDialog dialog = areYouSureDialog.create();
         dialog.show();
     }
+
+    private void LeaveGroupActivity() {
+        // first we make confirmation dialogue object:
+        AlertDialog.Builder areYouSureDialog = new AlertDialog.Builder(this);
+        areYouSureDialog.setTitle("Confirm Leave");
+
+        // second we check how many group members there are:
+        databaseReference.child("Groups").child(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Group tempGroup = snapshot.getValue(Group.class);
+
+                if ((tempGroup.getGroupAdmins().size() == 1) && (tempGroup.getGroupMembers().size() > 1)) {
+                    // if currUser is the only groupAdmin for this group, and the group has many members.
+                    Toast.makeText(CreateTaskAdmin.this, "Please make sure to make someone else admin before leaving.", Toast.LENGTH_LONG).show();
+                } else if ((tempGroup.getGroupAdmins().size() == 1) && (tempGroup.getGroupMembers().size() == 1)) {
+                    // if currUser is the only member and admin of this group (aka private group).
+                    Toast.makeText(CreateTaskAdmin.this, "Please delete the group if you want to leave.", Toast.LENGTH_LONG).show();
+                } else if ((tempGroup.getGroupAdmins().size() > 1) && (tempGroup.getGroupMembers().size() > 1)) {
+                    // if there are multiple admins in a group of many members.
+                    areYouSureDialog.setMessage("\nThis will remove YOU from the group.\n\nAre you sure?");
+                    areYouSureDialog.setPositiveButton("LEAVE", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // here we remove the admin from the database.
+                            databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(currUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(currUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    // finish activity
+                                                    finish();
+                                                } else {
+                                                    Log.d(TAG, "Error removing user from groupMembers in LeaveGroupActivity.");
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        Log.d(TAG, "Error removing admin from group in LeaveGroupActivity.");
+                                    }
+                                }
+                            });
+                            dialog.dismiss();
+                        }
+                    });
+
+                    areYouSureDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+                    AlertDialog dialog = areYouSureDialog.create();
+                    dialog.show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d(TAG, "Error retrieving group data for LeaveGroupActivity.");
+            }
+        });
+    }
+
 
     private void RenameGroupActivity() {
         // create a layout activity_rename_group

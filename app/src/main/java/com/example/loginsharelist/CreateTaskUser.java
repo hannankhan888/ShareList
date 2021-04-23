@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,14 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -50,6 +48,7 @@ public class CreateTaskUser extends AppCompatActivity {
     private RecyclerView recyclerViewTask;
 
     private DatabaseReference databaseReference;
+    private DatabaseReference databaseReferenceTask;
     private FloatingActionButton searchTaskButton;
     private FirebaseAuth auth;
 
@@ -64,6 +63,7 @@ public class CreateTaskUser extends AppCompatActivity {
 
     private String groupNameStr;
     private String groupIDStr;
+    private String currUserID;
 
     public static boolean status = false;
 
@@ -78,6 +78,7 @@ public class CreateTaskUser extends AppCompatActivity {
         setContentView(R.layout.activity_create_task_user);
 
         auth = FirebaseAuth.getInstance();
+        currUserID = auth.getUid();
         // How do I pass data between Activities in Android application
         // https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
         // How to use putExtra() and getExtra() for string data
@@ -92,7 +93,8 @@ public class CreateTaskUser extends AppCompatActivity {
         // -------task1
         // -------task2
         // -------task3
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Tasks");
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        databaseReferenceTask = FirebaseDatabase.getInstance().getReference().child("Tasks");
 
         // Rename app bar to GROUP_NAME - Tasks
         getSupportActionBar().setTitle(groupNameStr + " - Tasks");
@@ -136,53 +138,44 @@ public class CreateTaskUser extends AppCompatActivity {
             Log.d(TAG, "Group Info option pressed.");
         } else if (id == R.id.createTaskCornerMenuLeaveGroupItem) {
             // We do the Leave Group stuff here.
-            // TODO: add the Leave Group stuff.
-
             Log.d(TAG, "Leave Group option pressed.");
-            leaveGroupDialog();
-//            item.setOnMenuItemClickListener((v) -> {
-//
-//                startActivity(new Intent(CreateTaskUser.this, CreateGroup.class));
-//                finish();
-//                return true;
-//            });
+            LeaveGroupActivity();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void leaveGroupDialog() {
-        Log.d(TAG, "Inside Leave alert.");
-        Log.d(TAG, auth.getUid() + " left Group: "+ groupNameStr);
+    private void LeaveGroupActivity() {
+        // first we make confirmation dialogue object:
+        AlertDialog.Builder areYouSureDialog = new AlertDialog.Builder(this);
+        areYouSureDialog.setTitle("Confirm Leave");
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View view = layoutInflater.inflate(R.layout.dialog_leave_group, null);
-        alertDialog.setView(view);
-
-        AlertDialog dialog = alertDialog.create();
-
-        Button leaveGroupOkButton = view.findViewById(R.id.leaveGroupOKButton);
-        Button leaveGroupCancelButton = view.findViewById(R.id.leaveGroupCancelButton);
-        TextView groupName = view.findViewById(R.id.groupName);
-        groupName.setText(groupNameStr);
-        leaveGroupCancelButton.setOnClickListener((v) -> dialog.dismiss());
-        leaveGroupOkButton.setOnClickListener(view1 -> {
-
-//            databaseReferenceGroup.child(id).setValue(group).addOnCompleteListener(task -> {
-//                if (task.isSuccessful()) {
-//                    Toast.makeText(CreateGroup.this, "The group has been added. ", Toast.LENGTH_LONG).show();
-//                } else {
-//                    Toast.makeText(CreateGroup.this, "The group has not been added. ", Toast.LENGTH_LONG).show();
-//                }
-//                dialog.dismiss();
-//            });
-
-            Log.d(TAG, auth.getUid() + " left Group " + groupNameStr);
-            dialog.dismiss();
-            startActivity(new Intent(this, CreateGroup.class));
-            finish();
+        areYouSureDialog.setMessage("This will remove YOU from the group.\n\nAre you sure?");
+        // since the currUser is a groupMember only, and NOT an admin, we can just remove them from group.
+        areYouSureDialog.setPositiveButton("LEAVE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(currUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(CreateTaskUser.this, "You have left the group.", Toast.LENGTH_LONG).show();
+                            finish();
+                        } else {
+                            Toast.makeText(CreateTaskUser.this, "Error leaving the group.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+            }
         });
 
+        areYouSureDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = areYouSureDialog.create();
         dialog.show();
     }
 
@@ -199,7 +192,7 @@ public class CreateTaskUser extends AppCompatActivity {
         // and returns those only.
         FirebaseRecyclerOptions<Task> firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<Task>()
-                .setQuery(databaseReference.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr), Task.class)
+                .setQuery(databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr), Task.class)
                 .build();
 
         FirebaseRecyclerAdapter<Task, TaskDisplay> firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Task, TaskDisplay>(firebaseRecyclerOptions) {
@@ -321,7 +314,7 @@ public class CreateTaskUser extends AppCompatActivity {
      * A toast message is displayed on success.
      */
     private void UpdateTaskMarkActivity() {
-        Query q = databaseReference.child(prevTaskID);
+        Query q = databaseReferenceTask.child(prevTaskID);
         AtomicReference<Boolean> stat = new AtomicReference<>(true);
         Log.e("task_statusa", String.valueOf(stat.get()));
         q.get().addOnCompleteListener(task -> {
@@ -333,7 +326,7 @@ public class CreateTaskUser extends AppCompatActivity {
                 Log.e("task_statusb", String.valueOf(stat.get()));
                 Task t2 = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, groupIDStr, stat.get(), prevTaskAssignedUsers);
 
-                databaseReference.child(prevTaskID).setValue(t2).addOnCompleteListener(task1 -> {
+                databaseReferenceTask.child(prevTaskID).setValue(t2).addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
                         Toast.makeText(CreateTaskUser.this, "The task has been updated. ", Toast.LENGTH_LONG).show();
                     } else {
