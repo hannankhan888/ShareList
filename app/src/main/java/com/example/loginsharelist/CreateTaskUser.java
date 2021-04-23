@@ -1,11 +1,6 @@
 package com.example.loginsharelist;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,15 +10,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -132,14 +137,53 @@ public class CreateTaskUser extends AppCompatActivity {
         } else if (id == R.id.createTaskCornerMenuLeaveGroupItem) {
             // We do the Leave Group stuff here.
             // TODO: add the Leave Group stuff.
-            item.setOnMenuItemClickListener((v) -> {
-                startActivity(new Intent(CreateTaskUser.this, CreateGroup.class));
-                finish();
-                return true;
-            });
+
             Log.d(TAG, "Leave Group option pressed.");
+            leaveGroupDialog();
+//            item.setOnMenuItemClickListener((v) -> {
+//
+//                startActivity(new Intent(CreateTaskUser.this, CreateGroup.class));
+//                finish();
+//                return true;
+//            });
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void leaveGroupDialog() {
+        Log.d(TAG, "Inside Leave alert.");
+        Log.d(TAG, auth.getUid() + " left Group: "+ groupNameStr);
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.dialog_leave_group, null);
+        alertDialog.setView(view);
+
+        AlertDialog dialog = alertDialog.create();
+
+        Button leaveGroupOkButton = view.findViewById(R.id.leaveGroupOKButton);
+        Button leaveGroupCancelButton = view.findViewById(R.id.leaveGroupCancelButton);
+        TextView groupName = view.findViewById(R.id.groupName);
+        groupName.setText(groupNameStr);
+        leaveGroupCancelButton.setOnClickListener((v) -> dialog.dismiss());
+        leaveGroupOkButton.setOnClickListener(view1 -> {
+
+//            databaseReferenceGroup.child(id).setValue(group).addOnCompleteListener(task -> {
+//                if (task.isSuccessful()) {
+//                    Toast.makeText(CreateGroup.this, "The group has been added. ", Toast.LENGTH_LONG).show();
+//                } else {
+//                    Toast.makeText(CreateGroup.this, "The group has not been added. ", Toast.LENGTH_LONG).show();
+//                }
+//                dialog.dismiss();
+//            });
+
+            Log.d(TAG, auth.getUid() + " left Group " + groupNameStr);
+            dialog.dismiss();
+            startActivity(new Intent(this, CreateGroup.class));
+            finish();
+        });
+
+        dialog.show();
     }
 
     /**

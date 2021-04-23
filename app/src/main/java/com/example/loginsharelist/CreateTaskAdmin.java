@@ -180,12 +180,53 @@ public class CreateTaskAdmin extends AppCompatActivity {
             Log.d(TAG, "Delete Group option pressed.");
         } else if (id == R.id.createTaskAdminCornerMenuLeaveGroup) {
             // We do the Leave Group stuff here.
+
+            Log.d(TAG, "Leave Group option pressed.");
+            leaveGroupDialog();
+
             // TODO: add the Leave the Group stuff.
             // this does NOT mean pressing the back button.
-            Log.d(TAG, "Leave Group option pressed.");
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    private void leaveGroupDialog() {
+        Log.d(TAG, "Inside Leave alert.");
+
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.dialog_leave_group, null);
+        alertDialog.setView(view);
+
+        AlertDialog dialog = alertDialog.create();
+
+        Button leaveGroupOkButton = view.findViewById(R.id.leaveGroupOKButton);
+        Button leaveGroupCancelButton = view.findViewById(R.id.leaveGroupCancelButton);
+        TextView groupName = view.findViewById(R.id.groupName);
+        groupName.setText(groupNameStr);
+        leaveGroupCancelButton.setOnClickListener((v) -> dialog.dismiss());
+        leaveGroupOkButton.setOnClickListener(view1 -> {
+//            new Group().removeGroupMember(auth.getUid());
+
+//            databaseReferenceGroup.child(id).setValue(group).addOnCompleteListener(task -> {
+//                if (task.isSuccessful()) {
+//                    Toast.makeText(CreateGroup.this, "The group has been added. ", Toast.LENGTH_LONG).show();
+//                } else {
+//                    Toast.makeText(CreateGroup.this, "The group has not been added. ", Toast.LENGTH_LONG).show();
+//                }
+//                dialog.dismiss();
+//            });
+            Toast.makeText(this, auth.getUid() + " left Group " + groupNameStr, Toast.LENGTH_SHORT).show();
+            Log.d(TAG, auth.getUid() + " left Group " + groupNameStr);
+            dialog.dismiss();
+            startActivity(new Intent(this, CreateGroup.class));
+            finish();
+        });
+
+        dialog.show();
+    }
+
 
     private void GroupInfoActivity() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);

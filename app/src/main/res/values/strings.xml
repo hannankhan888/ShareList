@@ -60,4 +60,7 @@
     <string name="search">Search</string>
     <string name="search_tasks">Search Tasks</string>
     <string name="remove_admin">Remove Admin</string>
+    <string name="are_you_sure_you_want_to_exit">Are you sure you want to exit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
