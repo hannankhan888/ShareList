@@ -11,6 +11,7 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -66,6 +67,16 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
 
 
         switch (searchReason) {
+            case "VIEW_ASSIGNED_USERS": {
+                // only searches the current assigned users.
+                taskID = getIntent().getStringExtra("EXTRA_TASK_ID");
+                taskName = getIntent().getStringExtra("EXTRA_TASK_NAME");
+                getSupportActionBar().setTitle("Users Assigned To - " + taskName);
+                autoUserEmailInput.setVisibility(View.GONE);
+                autoUserEmailInput.setLayoutParams(new ConstraintLayout.LayoutParams(0,0));
+                AssignedUsersSearch("");
+                break;
+            }
             case "ASSIGN_USER_TO_TASK": {
                 // only searches the current group members.
                 taskName = getIntent().getStringExtra("EXTRA_TASK_NAME");
@@ -86,7 +97,6 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                 break;
             }
             case "REMOVE_ASSIGNED_USER": {
-                // TODO: only search the current assigned users.
                 // only searches the current assigned users.
                 taskID = getIntent().getStringExtra("EXTRA_TASK_ID");
                 taskName = getIntent().getStringExtra("EXTRA_TASK_NAME");
@@ -223,7 +233,6 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
     }
 
     private void GroupMembersSearch(String userNameString) {
-//        Query query = databaseReference.child("Groups").orderByChild("/groupMembers/" + currUserID).equalTo(currUserID);
         Query keyQuery = databaseReference.child("Groups").child(groupID).child("groupMembers");
 
         // This way we get the groupMembers of the currGroup (Map<String, String>) and then we use

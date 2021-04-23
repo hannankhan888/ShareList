@@ -840,7 +840,13 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
     private void viewAssignedUsersActivity() {
         // TODO: start an intent to show assigned users in separate activity.
-
+        Intent intent = new Intent(CreateTaskAdmin.this, AutoCompleteUserSearch.class);
+        intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
+        intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
+        intent.putExtra("EXTRA_SEARCH_REASON", "VIEW_ASSIGNED_USERS");
+        intent.putExtra("EXTRA_TASK_NAME", prevTaskName);
+        intent.putExtra("EXTRA_TASK_ID", prevTaskID);
+        startActivity(intent);
     }
 
     private void assignUserActivity() {
@@ -873,7 +879,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
      * A toast message is displayed on success.
      */
     private void UpdateTaskMarkActivity() {
-        // TODO: make it clear that clicking on mark as complete, on a marked task, will UNMARK it. (update button).
+        // we make it clear that clicking on mark as complete, on a marked task, will UNMARK it. (update button).
         Query q = databaseReferenceTask.child(prevTaskID);
         AtomicReference<Boolean> stat = new AtomicReference<>(true);
         Log.e("task_status", String.valueOf(stat.get()));
