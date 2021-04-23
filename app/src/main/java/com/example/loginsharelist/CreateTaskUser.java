@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,9 +25,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -136,6 +139,7 @@ public class CreateTaskUser extends AppCompatActivity {
             // insert code to show group info Activity HERE.
             // TODO: add a group info activity.
             Log.d(TAG, "Group Info option pressed.");
+            GroupInfoActivity();
         } else if (id == R.id.createTaskCornerMenuLeaveGroupItem) {
             // We do the Leave Group stuff here.
             Log.d(TAG, "Leave Group option pressed.");
@@ -247,19 +251,6 @@ public class CreateTaskUser extends AppCompatActivity {
                     holder.setCrossTaskDueDate(model.getTaskDueDate());
                 }
 
-
-//                if (status) {
-//                    // It is what is going to display on the task card view
-//                    holder.setCrossTaskName(model.getTaskName());
-//                    holder.setCrossTaskDescription(model.getTaskDescription());
-//                    holder.setCrossTaskDueDate(model.getTaskDueDate());
-//                } else {
-//                    // It is what is going to display on the task card view
-//                    holder.setTaskName(model.getTaskName());
-//                    holder.setTaskDescription(model.getTaskDescription());
-//                    holder.setTaskDueDate(model.getTaskDueDate());
-//                }
-
                 // If you click the task, it will open the task menu
                 holder.view.setOnClickListener((view) -> {
                     prevTaskName = model.getTaskName();
@@ -297,6 +288,9 @@ public class CreateTaskUser extends AppCompatActivity {
         AlertDialog dialog = alertDialog.create();
 
         Button taskMenuUserMarkButton = view.findViewById(R.id.taskMenuUserMarkButton);
+        if (prevMark) {
+            taskMenuUserMarkButton.setText(R.string.unmark);
+        }
         // We can use the statement lambda to make the code easier to understand
         taskMenuUserMarkButton.setOnClickListener((v) -> {
             UpdateTaskMarkActivity();
@@ -344,6 +338,59 @@ public class CreateTaskUser extends AppCompatActivity {
         intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
         intent.putExtra("EXTRA_CURR_USER_IS_ADMIN", false);
         startActivity(intent);
+    }
+
+    private void GroupInfoActivity() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View view = layoutInflater.inflate(R.layout.activity_group_info, null);
+        alertDialog.setView(view);
+
+        AlertDialog dialog = alertDialog.create();
+
+        Button taskInfoOKButton = view.findViewById(R.id.groupInfoOKButton);
+        taskInfoOKButton.setOnClickListener((v) -> dialog.dismiss());
+
+        // It will receive the number of user in the create group activity and show it in the task info view
+        TextView taskUserCount = view.findViewById(R.id.groupUserCount);
+        String countUser = getIntent().getStringExtra("EXTRA_MEMBER_COUNT");
+        taskUserCount.setText(countUser);
+
+        // It will receive the number of admin in the create group activity and show it in the task info view
+        TextView taskAdminCount = view.findViewById(R.id.groupAdminCount);
+        String countAdmin = getIntent().getStringExtra("EXTRA_ADMIN_COUNT");
+        taskAdminCount.setText(countAdmin);
+        Query tasksQuery = databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr);
+        tasksQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int numOfTasks = 0;
+                int numCompletedTasks = 0;
+
+                for (DataSnapshot task : snapshot.getChildren()) {
+                    Task tempTask = task.getValue(Task.class);
+                    numOfTasks += 1;
+                    if (tempTask.isMark()) {
+                        numCompletedTasks += 1;
+                    }
+                    Log.d("Firebase_groupinfo", String.valueOf(tempTask.getTaskId()));
+                }
+                Log.e("firebase_groupinfo", String.valueOf(numOfTasks));
+                Log.e("firebase_groupcompl", String.valueOf(numCompletedTasks));
+                TextView totalTasks = view.findViewById(R.id.groupTasks);
+                TextView completedTasks = view.findViewById(R.id.completedTasks);
+                TextView remainingTasks = view.findViewById(R.id.remainTasks);
+                totalTasks.setText(String.valueOf(numOfTasks));
+                completedTasks.setText(String.valueOf(numCompletedTasks));
+                remainingTasks.setText(String.valueOf(numOfTasks - numCompletedTasks));
+                dialog.show();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("Firebase_groupinfo", "FireGrouperror");
+            }
+        });
     }
 }
 // Citation Source

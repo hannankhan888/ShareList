@@ -82,8 +82,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
     private String groupNameStr;
     private String groupIDStr;
     private String currUserID;
-    private int numOfTasks = 0;
-    private int completedTasks = 0;
 
 
     /**
@@ -187,8 +185,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-
     private void GroupInfoActivity() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
@@ -198,7 +194,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
         AlertDialog dialog = alertDialog.create();
 
         Button taskInfoOKButton = view.findViewById(R.id.groupInfoOKButton);
-
         taskInfoOKButton.setOnClickListener((v) -> dialog.dismiss());
 
         // It will receive the number of user in the create group activity and show it in the task info view
@@ -210,28 +205,29 @@ public class CreateTaskAdmin extends AppCompatActivity {
         TextView taskAdminCount = view.findViewById(R.id.groupAdminCount);
         String countAdmin = getIntent().getStringExtra("EXTRA_ADMIN_COUNT");
         taskAdminCount.setText(countAdmin);
-        numOfTasks = 0;
-        completedTasks = 0;
-        Query tasksquery = databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr);
-        tasksquery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query tasksQuery = databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr);
+        tasksQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int numOfTasks = 0;
+                int numCompletedTasks = 0;
+
                 for (DataSnapshot task : snapshot.getChildren()) {
                     Task tempTask = task.getValue(Task.class);
                     numOfTasks += 1;
                     if (tempTask.isMark()) {
-                        completedTasks += 1;
+                        numCompletedTasks += 1;
                     }
                     Log.d("Firebase_groupinfo", String.valueOf(tempTask.getTaskId()));
                 }
                 Log.e("firebase_groupinfo", String.valueOf(numOfTasks));
-                Log.e("firebase_groupcompl", String.valueOf(completedTasks));
-                TextView totaltasks = view.findViewById(R.id.groupTasks);
-                TextView completed = view.findViewById(R.id.completedTasks);
-                TextView remaintasks = view.findViewById(R.id.remainTasks);
-                totaltasks.setText(String.valueOf(numOfTasks));
-                completed.setText(String.valueOf(completedTasks));
-                remaintasks.setText(String.valueOf(numOfTasks - completedTasks));
+                Log.e("firebase_groupcompl", String.valueOf(numCompletedTasks));
+                TextView totalTasks = view.findViewById(R.id.groupTasks);
+                TextView completedTasks = view.findViewById(R.id.completedTasks);
+                TextView remainingTasks = view.findViewById(R.id.remainTasks);
+                totalTasks.setText(String.valueOf(numOfTasks));
+                completedTasks.setText(String.valueOf(numCompletedTasks));
+                remainingTasks.setText(String.valueOf(numOfTasks - numCompletedTasks));
                 dialog.show();
             }
 
@@ -240,8 +236,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 Log.d("Firebase_groupinfo", "FireGrouperror");
             }
         });
-
-
     }
 
     /**
@@ -343,24 +337,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
             @NonNull
             @Override
             public TaskDisplay onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//                if (viewType == 0) {
-//                    // It is mark is false
-//                    // Inflate the task card view
-//                    View view = LayoutInflater
-//                            .from(parent.getContext())
-//                            .inflate(R.layout.activity_display_task_database, parent, false);
-//                    return new TaskDisplay(view);
-//                } else {
-//                    // It is mark is true
-//                    // Inflate the task card view
-//                    // It is going to show you the same layout if you mark the task
-//                    // If you are going to use the more beautiful layout you can put it here
-//                    // Then you have to update the onBindViewHolder
-//                    View view = LayoutInflater
-//                            .from(parent.getContext())
-//                            .inflate(R.layout.activity_display_task_database, parent, false);
-//                    return new TaskDisplay(view);
-//                }
                 View view = LayoutInflater
                         .from(parent.getContext())
                         .inflate(R.layout.activity_display_task_database, parent, false);
@@ -754,6 +730,9 @@ public class CreateTaskAdmin extends AppCompatActivity {
         });
 
         Button taskMenuMarkButton = view.findViewById(R.id.taskMenuMarkButton);
+        if (prevMark) {
+            taskMenuMarkButton.setText(R.string.unmark);
+        }
         // We can use the statement lambda to make the code easier to understand
         taskMenuMarkButton.setOnClickListener((v) -> {
             UpdateTaskMarkActivity();
@@ -1139,7 +1118,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
             }
         });
     }
-
 
     private void RenameGroupActivity() {
         // create a layout activity_rename_group
