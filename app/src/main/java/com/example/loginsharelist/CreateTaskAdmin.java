@@ -1059,6 +1059,8 @@ public class CreateTaskAdmin extends AppCompatActivity {
     }
 
     private void LeaveGroupActivity() {
+        // TODO: remove user from all assigned tasks first.
+
         // first we make confirmation dialogue object:
         AlertDialog.Builder areYouSureDialog = new AlertDialog.Builder(this);
         areYouSureDialog.setTitle("Confirm Leave");

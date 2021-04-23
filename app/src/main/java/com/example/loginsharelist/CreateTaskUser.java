@@ -136,8 +136,7 @@ public class CreateTaskUser extends AppCompatActivity {
 
         // its not recommended to use switch statement according to gradle.
         if (id == R.id.createTaskCornerMenuGroupInfoItem) {
-            // insert code to show group info Activity HERE.
-            // TODO: add a group info activity.
+            // code to show group info Activity HERE.
             Log.d(TAG, "Group Info option pressed.");
             GroupInfoActivity();
         } else if (id == R.id.createTaskCornerMenuLeaveGroupItem) {
@@ -149,6 +148,7 @@ public class CreateTaskUser extends AppCompatActivity {
     }
 
     private void LeaveGroupActivity() {
+        // TODO: remove user from all assigned tasks first.
         // first we make confirmation dialogue object:
         AlertDialog.Builder areYouSureDialog = new AlertDialog.Builder(this);
         areYouSureDialog.setTitle("Confirm Leave");
