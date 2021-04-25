@@ -198,42 +198,52 @@ public class CreateTaskAdmin extends AppCompatActivity {
 
         // It will receive the number of user in the create group activity and show it in the task info view
         TextView taskUserCount = view.findViewById(R.id.groupUserCount);
-        String countUser = getIntent().getStringExtra("EXTRA_MEMBER_COUNT");
-        taskUserCount.setText(countUser);
 
         // It will receive the number of admin in the create group activity and show it in the task info view
         TextView taskAdminCount = view.findViewById(R.id.groupAdminCount);
-        String countAdmin = getIntent().getStringExtra("EXTRA_ADMIN_COUNT");
-        taskAdminCount.setText(countAdmin);
-        Query tasksQuery = databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr);
-        tasksQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+
+        databaseReference.child("Groups").child(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int numOfTasks = 0;
-                int numCompletedTasks = 0;
+                Group tempGroup = snapshot.getValue(Group.class);
+                taskUserCount.setText(String.valueOf(tempGroup.getGroupMembers().size()));
+                taskAdminCount.setText(String.valueOf(tempGroup.getGroupAdmins().size()));
 
-                for (DataSnapshot task : snapshot.getChildren()) {
-                    Task tempTask = task.getValue(Task.class);
-                    numOfTasks += 1;
-                    if (tempTask.isMark()) {
-                        numCompletedTasks += 1;
+                databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        int numOfTasks = 0;
+                        int numCompletedTasks = 0;
+
+                        for (DataSnapshot task : snapshot.getChildren()) {
+                            Task tempTask = task.getValue(Task.class);
+                            numOfTasks += 1;
+                            if (tempTask.isMark()) {
+                                numCompletedTasks += 1;
+                            }
+                            Log.d("Firebase_groupinfo", String.valueOf(tempTask.getTaskId()));
+                        }
+                        Log.e("firebase_groupinfo", String.valueOf(numOfTasks));
+                        Log.e("firebase_groupcompl", String.valueOf(numCompletedTasks));
+                        TextView totalTasks = view.findViewById(R.id.groupTasks);
+                        TextView completedTasks = view.findViewById(R.id.completedTasks);
+                        TextView remainingTasks = view.findViewById(R.id.remainTasks);
+                        totalTasks.setText(String.valueOf(numOfTasks));
+                        completedTasks.setText(String.valueOf(numCompletedTasks));
+                        remainingTasks.setText(String.valueOf(numOfTasks - numCompletedTasks));
+                        dialog.show();
                     }
-                    Log.d("Firebase_groupinfo", String.valueOf(tempTask.getTaskId()));
-                }
-                Log.e("firebase_groupinfo", String.valueOf(numOfTasks));
-                Log.e("firebase_groupcompl", String.valueOf(numCompletedTasks));
-                TextView totalTasks = view.findViewById(R.id.groupTasks);
-                TextView completedTasks = view.findViewById(R.id.completedTasks);
-                TextView remainingTasks = view.findViewById(R.id.remainTasks);
-                totalTasks.setText(String.valueOf(numOfTasks));
-                completedTasks.setText(String.valueOf(numCompletedTasks));
-                remainingTasks.setText(String.valueOf(numOfTasks - numCompletedTasks));
-                dialog.show();
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.d("Firebase_groupinfo", "FireGrouperror");
+                    }
+                });
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.d("Firebase_groupinfo", "FireGrouperror");
+                Log.d(TAG, "Error getting group data in GROUP INFO ACTIVITY.");
             }
         });
     }
