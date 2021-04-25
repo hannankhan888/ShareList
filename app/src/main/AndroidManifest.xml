@@ -15,7 +15,6 @@
         <activity android:name=".ForgetPassword" />
         <activity android:name=".CreateTaskAdmin" />
         <activity android:name=".RegisterUser" />
-        <activity android:name=".GroupSearch" />
         <activity android:name=".AutoCompleteGroupSearch" />
         <activity android:name=".AutoCompleteUserSearch" />
         <activity android:name=".CreateGroup" />
