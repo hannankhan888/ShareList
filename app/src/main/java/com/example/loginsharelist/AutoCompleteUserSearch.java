@@ -24,8 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.Objects;
 
 public class AutoCompleteUserSearch extends AppCompatActivity {
     public static final String TAG = "AutoCompleteUserSearch";
@@ -59,11 +58,11 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
         groupName = getIntent().getStringExtra("EXTRA_GROUP_NAME");
         searchReason = getIntent().getStringExtra("EXTRA_SEARCH_REASON");
 
-        autoUserSearchList = (RecyclerView) findViewById(R.id.autoCompleteUserSearchList);
+        autoUserSearchList = findViewById(R.id.autoCompleteUserSearchList);
         autoUserSearchList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         autoUserSearchList.setHasFixedSize(true);
 
-        autoUserEmailInput = (EditText) findViewById(R.id.autoCompleteUserEmailInput);
+        autoUserEmailInput = findViewById(R.id.autoCompleteUserEmailInput);
 
 
         switch (searchReason) {
@@ -71,7 +70,7 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                 // only searches the current assigned users.
                 taskID = getIntent().getStringExtra("EXTRA_TASK_ID");
                 taskName = getIntent().getStringExtra("EXTRA_TASK_NAME");
-                getSupportActionBar().setTitle("Users Assigned To - " + taskName);
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Users Assigned To - " + taskName);
                 autoUserEmailInput.setVisibility(View.GONE);
                 autoUserEmailInput.setLayoutParams(new ConstraintLayout.LayoutParams(0,0));
                 AssignedUsersSearch("");
@@ -80,7 +79,7 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
             case "ASSIGN_USER_TO_TASK": {
                 // only searches the current group members.
                 taskName = getIntent().getStringExtra("EXTRA_TASK_NAME");
-                getSupportActionBar().setTitle("Assign User To: " + taskName);
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Assign User To: " + taskName);
                 autoUserEmailInput.setHint("Enter Username");
                 GroupMembersSearch("");
                 autoUserEmailInput.addTextChangedListener(new TextWatcher() {
@@ -100,7 +99,7 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                 // only searches the current assigned users.
                 taskID = getIntent().getStringExtra("EXTRA_TASK_ID");
                 taskName = getIntent().getStringExtra("EXTRA_TASK_NAME");
-                getSupportActionBar().setTitle("Remove Assigned User: " + taskName);
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Remove Assigned User: " + taskName);
                 autoUserEmailInput.setHint("Enter Username");
                 AssignedUsersSearch("");
                 autoUserEmailInput.addTextChangedListener(new TextWatcher() {
@@ -117,7 +116,7 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                 break;
             }
             case "ADD_USER":
-                getSupportActionBar().setTitle("Add User To " + groupName);
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Add User To " + groupName);
                 autoUserEmailInput.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -131,7 +130,7 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                 });
                 break;
             case "REMOVE_USER":
-                getSupportActionBar().setTitle("Remove User From " + groupName);
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Remove User From " + groupName);
                 GroupMembersSearch("");
                 autoUserEmailInput.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -147,7 +146,7 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                 break;
             case "ADD_ADMIN":
                 // only searches the current group members.
-                getSupportActionBar().setTitle("Add Admin To " + groupName);
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Add Admin To " + groupName);
                 autoUserEmailInput.setHint("Enter Username");
                 GroupMembersSearch("");
                 autoUserEmailInput.addTextChangedListener(new TextWatcher() {
@@ -163,7 +162,7 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                 });
                 break;
             case "REMOVE_ADMIN":
-                getSupportActionBar().setTitle("Remove Admin From " + groupName);
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Remove Admin From " + groupName);
                 autoUserEmailInput.setHint("Enter Username");
                 GroupAdminsSearch("");
                 autoUserEmailInput.addTextChangedListener(new TextWatcher() {
@@ -179,7 +178,7 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
                 });
                 break;
             default:
-                getSupportActionBar().setTitle("ShareList - Search All Users");
+                Objects.requireNonNull(getSupportActionBar()).setTitle("ShareList - Search All Users");
         }
     }
 
@@ -242,17 +241,13 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
         // to see if the username matches the search parameter.
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<User>()
-                .setIndexedQuery(keyQuery, databaseReferenceUser, new SnapshotParser<User>() {
-                    @NonNull
-                    @Override
-                    public User parseSnapshot(@NonNull DataSnapshot snapshot) {
-                        User tempUser = snapshot.getValue(User.class);
-                        // this way we can search all groups that match or contain the current string.
-                        if (tempUser.getUserName().toLowerCase().contains(userNameString.toLowerCase())){
-                            return tempUser;
-                        } else {
-                            return new User();
-                        }
+                .setIndexedQuery(keyQuery, databaseReferenceUser, snapshot -> {
+                    User tempUser = snapshot.getValue(User.class);
+                    // this way we can search all groups that match or contain the current string.
+                    if (tempUser.getUserName().toLowerCase().contains(userNameString.toLowerCase())){
+                        return tempUser;
+                    } else {
+                        return new User();
                     }
                 })
                 .build();
@@ -316,17 +311,13 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
         // to see if the username matches the search parameter.
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<User>()
-                .setIndexedQuery(keyQuery, databaseReferenceUser, new SnapshotParser<User>() {
-                    @NonNull
-                    @Override
-                    public User parseSnapshot(@NonNull DataSnapshot snapshot) {
-                        User tempUser = snapshot.getValue(User.class);
-                        // this way we can search all groups that match or contain the current string.
-                        if (tempUser.getUserName().toLowerCase().contains(userNameString.toLowerCase())){
-                            return tempUser;
-                        } else {
-                            return new User();
-                        }
+                .setIndexedQuery(keyQuery, databaseReferenceUser, snapshot -> {
+                    User tempUser = snapshot.getValue(User.class);
+                    // this way we can search all groups that match or contain the current string.
+                    if (tempUser.getUserName().toLowerCase().contains(userNameString.toLowerCase())){
+                        return tempUser;
+                    } else {
+                        return new User();
                     }
                 })
                 .build();
@@ -390,17 +381,13 @@ public class AutoCompleteUserSearch extends AppCompatActivity {
         // to see if the username matches the search parameter.
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<User>()
-                .setIndexedQuery(keyQuery, databaseReferenceUser, new SnapshotParser<User>() {
-                    @NonNull
-                    @Override
-                    public User parseSnapshot(@NonNull DataSnapshot snapshot) {
-                        User tempUser = snapshot.getValue(User.class);
-                        // this way we can search all groups that match or contain the current string.
-                        if (tempUser.getUserName().toLowerCase().contains(userNameString.toLowerCase())){
-                            return tempUser;
-                        } else {
-                            return new User();
-                        }
+                .setIndexedQuery(keyQuery, databaseReferenceUser, snapshot -> {
+                    User tempUser = snapshot.getValue(User.class);
+                    // this way we can search all groups that match or contain the current string.
+                    if (tempUser.getUserName().toLowerCase().contains(userNameString.toLowerCase())){
+                        return tempUser;
+                    } else {
+                        return new User();
                     }
                 })
                 .build();

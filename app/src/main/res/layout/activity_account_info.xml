@@ -48,13 +48,13 @@
         android:layout_marginTop="15dp"
         android:layout_marginEnd="15dp"
         android:layout_marginRight="15dp"
+        android:hint="@string/email_address"
         android:autoLink="email"
         android:clickable="false"
         android:cursorVisible="false"
-        android:editable="false"
         android:ems="10"
         android:enabled="false"
-        android:inputType="textEmailAddress"
+        android:inputType="none"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName"
@@ -70,6 +70,7 @@
         android:layout_marginEnd="15dp"
         android:layout_marginRight="15dp"
         android:ems="10"
+        android:hint="@string/Phone_number"
         android:inputType="phone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView3"
@@ -87,10 +88,12 @@
         android:layout_marginRight="15dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name"
+        android:hint="@string/name"
+        android:text="@string/name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:autofillHints="" />
 
     <Button
         android:id="@+id/resetpassbutton"

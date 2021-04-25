@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -113,7 +114,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         databaseReferenceTask = FirebaseDatabase.getInstance().getReference().child("Tasks");
 
         // Rename app bar to GROUP_NAME - Tasks
-        getSupportActionBar().setTitle(groupNameStr + " - Tasks");
+        Objects.requireNonNull(getSupportActionBar()).setTitle(groupNameStr + " - Tasks");
 
 
         recyclerViewTask = findViewById(R.id.recyclerViewTask);
@@ -127,7 +128,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
         // We can use the statement lambda to make the code easier to understand
         addTaskButton.setOnClickListener((view) -> addTaskActivity());
 
-        searchTaskButton = (FloatingActionButton) findViewById(R.id.createTaskAdminSearchButton);
+        searchTaskButton = findViewById(R.id.createTaskAdminSearchButton);
         searchTaskButton.setOnClickListener((view) -> searchTaskActivity());
     }
 
@@ -438,7 +439,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                                     prevDueDate, prevBelongsToGroupID, prevMark, prevTaskAssignedUsers);
                             databaseReferenceTask.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
-                                    Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been assigned.", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(CreateTaskAdmin.this, selectedUserName + " has been assigned.", Toast.LENGTH_LONG).show();
                                 } else {
                                     Toast.makeText(CreateTaskAdmin.this, "Error assigning user.", Toast.LENGTH_LONG).show();
                                 }
@@ -454,7 +455,6 @@ public class CreateTaskAdmin extends AppCompatActivity {
             }
         } else if (requestCode == REMOVE_ASSIGNED_USER_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                // TODO: check if user is already not assigned.
                 // we get the selectedUserID based on the selectedUserEmail
                 String selectedUserEmail = data.getStringExtra("EXTRA_SELECTED_USER_EMAIL");
                 String selectedUserID = data.getStringExtra("EXTRA_SELECTED_USER_ID");
@@ -467,7 +467,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                         prevDueDate, prevBelongsToGroupID, prevMark, prevTaskAssignedUsers);
                 databaseReferenceTask.child(prevTaskID).setValue(task).addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
-                        Toast.makeText(CreateTaskAdmin.this, selectedUserEmail + " has been removed.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(CreateTaskAdmin.this, selectedUserName + " has been removed.", Toast.LENGTH_LONG).show();
                     } else {
                         Toast.makeText(CreateTaskAdmin.this, "User not removed.", Toast.LENGTH_LONG).show();
                     }
@@ -535,43 +535,35 @@ public class CreateTaskAdmin extends AppCompatActivity {
                                 return;
                             } else {
                                 areYouSureDialog.setMessage("\nTHIS WILL REMOVE " + selectedUserName + " AS BOTH ADMIN AND MEMBER.\n\nAre you sure?");
-                                areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // Here we remove the ADMIN from the database.
-                                        databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
-                                            if (task1.isSuccessful()) {
-                                                // Here we remove the MEMBER from the database.
-                                                databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).removeValue().addOnCompleteListener(task -> {
-                                                    if (task.isSuccessful()) {
-                                                        Toast.makeText(CreateTaskAdmin.this, selectedUserName + " has been removed as both admin and member.", Toast.LENGTH_SHORT).show();
-                                                    } else {
-                                                        Toast.makeText(CreateTaskAdmin.this, " Failed to removed member.", Toast.LENGTH_LONG).show();
-                                                    }
-                                                });
-                                            } else {
-                                                Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
-                                            }
-                                        });
-                                        dialog.dismiss();
-                                    }
+                                areYouSureDialog.setPositiveButton("REMOVE", (dialog, which) -> {
+                                    // Here we remove the ADMIN from the database.
+                                    databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            // Here we remove the MEMBER from the database.
+                                            databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).removeValue().addOnCompleteListener(task -> {
+                                                if (task.isSuccessful()) {
+                                                    Toast.makeText(CreateTaskAdmin.this, selectedUserName + " has been removed as both admin and member.", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    Toast.makeText(CreateTaskAdmin.this, " Failed to removed member.", Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                        } else {
+                                            Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                    dialog.dismiss();
                                 });
                             }
                         } else if (selectedGroupMembers.containsKey(selectedUserID) && !(selectedGroupAdmins.containsKey(selectedUserID))) {
                             // here we remove the user as usual. make sure the curr user cannot remove themselves.
                             areYouSureDialog.setMessage("\nTHIS WILL REMOVE " + selectedUserName + " FROM THE GROUP.\n\nAre you sure?");
-                            areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).removeValue().addOnCompleteListener(task -> {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(CreateTaskAdmin.this, selectedUserName + " has been removed.", Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(CreateTaskAdmin.this, "Failed to remove member.", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
+                            areYouSureDialog.setPositiveButton("REMOVE", (dialog, which) -> databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(selectedUserID).removeValue().addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(CreateTaskAdmin.this, selectedUserName + " has been removed.", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(CreateTaskAdmin.this, "Failed to remove member.", Toast.LENGTH_SHORT).show();
                                 }
-                            });
+                            }));
                         }
 
                         areYouSureDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
@@ -660,28 +652,20 @@ public class CreateTaskAdmin extends AppCompatActivity {
                             } else if ((tempGroup.getGroupAdmins().size() > 1) && (tempGroup.getGroupMembers().size() > 1)) {
                                 // there are more than 1 admins, in a group with more than 1 members.
                                 areYouSureDialog.setMessage("\nThis will remove YOU as admin.\n\nAre you sure?");
-                                areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // Here we remove the user admin status from the database.
-                                        databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
-                                            if (task1.isSuccessful()) {
-                                                Toast.makeText(CreateTaskAdmin.this, "You have been removed as admin.", Toast.LENGTH_LONG).show();
-                                            } else {
-                                                Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
-                                            }
-                                        });
-                                        dialog.dismiss();
-                                        //finish the activity cause currUser is no longer admin.
-                                        finish();
-                                    }
+                                areYouSureDialog.setPositiveButton("REMOVE", (dialog, which) -> {
+                                    // Here we remove the user admin status from the database.
+                                    databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            Toast.makeText(CreateTaskAdmin.this, "You have been removed as admin.", Toast.LENGTH_LONG).show();
+                                        } else {
+                                            Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                    dialog.dismiss();
+                                    //finish the activity cause currUser is no longer admin.
+                                    finish();
                                 });
-                                areYouSureDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
+                                areYouSureDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
                                 AlertDialog dialog = areYouSureDialog.create();
                                 dialog.show();
@@ -690,26 +674,18 @@ public class CreateTaskAdmin extends AppCompatActivity {
                         } else {
                             // if the curr user wants to remove someone else as admin.
                             areYouSureDialog.setMessage("\nThis will remove " + selectedUserName + " as admin.\n\nAre you sure?");
-                            areYouSureDialog.setPositiveButton("REMOVE", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    // Here we remove the task from the database.
-                                    databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
-                                        if (task1.isSuccessful()) {
-                                            Toast.makeText(CreateTaskAdmin.this, selectedUserName + " has been removed as admin.", Toast.LENGTH_LONG).show();
-                                        } else {
-                                            Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                                    dialog.dismiss();
-                                }
+                            areYouSureDialog.setPositiveButton("REMOVE", (dialog, which) -> {
+                                // Here we remove the task from the database.
+                                databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(selectedUserID).removeValue().addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        Toast.makeText(CreateTaskAdmin.this, selectedUserName + " has been removed as admin.", Toast.LENGTH_LONG).show();
+                                    } else {
+                                        Toast.makeText(CreateTaskAdmin.this, "Failed to remove admin.", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                                dialog.dismiss();
                             });
-                            areYouSureDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
+                            areYouSureDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
                             AlertDialog dialog = areYouSureDialog.create();
                             dialog.show();
@@ -865,7 +841,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
     }
 
     private void viewAssignedUsersActivity() {
-        // TODO: start an intent to show assigned users in separate activity.
+        // start an intent to show assigned users in separate activity.
         Intent intent = new Intent(CreateTaskAdmin.this, AutoCompleteUserSearch.class);
         intent.putExtra("EXTRA_GROUP_NAME", groupNameStr);
         intent.putExtra("EXTRA_GROUP_ID", groupIDStr);
@@ -913,7 +889,8 @@ public class CreateTaskAdmin extends AppCompatActivity {
             if (!task.isSuccessful()) {
                 Log.e("CreateTasK_updateMark", "Error getting data", task.getException());
             } else {
-                Task t = task.getResult().getValue(Task.class);
+                Task t = Objects.requireNonNull(task.getResult()).getValue(Task.class);
+                assert t != null;
                 stat.set(!(t.isMark()));
                 Log.e("task_statusb", String.valueOf(stat.get()));
                 Task t2 = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, groupIDStr, stat.get(), prevTaskAssignedUsers);
@@ -935,27 +912,19 @@ public class CreateTaskAdmin extends AppCompatActivity {
         areYouSureDialog.setTitle("Confirm Delete");
         areYouSureDialog.setMessage("This will permanently delete the task.\nAre you sure?");
 
-        areYouSureDialog.setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Here we remove the task from the database.
-                databaseReferenceTask.child(prevTaskID).removeValue().addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful()) {
-                        Toast.makeText(CreateTaskAdmin.this, "The task has been deleted.", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(CreateTaskAdmin.this, "The task has not been deleted.", Toast.LENGTH_LONG).show();
-                    }
-                });
-                dialog.dismiss();
-            }
+        areYouSureDialog.setPositiveButton("DELETE", (dialog, which) -> {
+            // Here we remove the task from the database.
+            databaseReferenceTask.child(prevTaskID).removeValue().addOnCompleteListener(task1 -> {
+                if (task1.isSuccessful()) {
+                    Toast.makeText(CreateTaskAdmin.this, "The task has been deleted.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(CreateTaskAdmin.this, "The task has not been deleted.", Toast.LENGTH_LONG).show();
+                }
+            });
+            dialog.dismiss();
         });
 
-        areYouSureDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        areYouSureDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         AlertDialog dialog = areYouSureDialog.create();
         dialog.show();
@@ -977,6 +946,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 // We parse the date from the selected task.
                 Date date = new SimpleDateFormat("MM/dd/yyyy", Locale.US).parse(prevDueDate);
                 // We set the calendar to match the prevDueDate.
+                assert date != null;
                 calendar.setTime(date);
             } catch (ParseException e) {
                 Log.d(TAG, "Date was not able to be parsed: " + prevDueDate);
@@ -986,13 +956,10 @@ public class CreateTaskAdmin extends AppCompatActivity {
         // I didn't replace the OnDateSetListener with a lambda because lambda is too confusing.
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        String correct_month = String.valueOf(month + 1);
-                        String date = correct_month + "/" + dayOfMonth + "/" + year;
-                        taskDueDate.setText(date);
-                    }
+                (view, year, month, dayOfMonth) -> {
+                    String correct_month = String.valueOf(month + 1);
+                    String date = correct_month + "/" + dayOfMonth + "/" + year;
+                    taskDueDate.setText(date);
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
@@ -1043,45 +1010,42 @@ public class CreateTaskAdmin extends AppCompatActivity {
         AlertDialog.Builder areYouSureDialog = new AlertDialog.Builder(this);
         areYouSureDialog.setTitle("Confirm Deletion");
         areYouSureDialog.setMessage("\nTHIS WILL PERMANENTLY DELETE THIS GROUP AND ALL TASKS ASSOCIATED WITH THIS GROUP.\n\nAre you sure?");
-        areYouSureDialog.setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // first we get and delete all tasks:
-                databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        // we iterate through each task here:
-                        for (DataSnapshot task : snapshot.getChildren()) {
-                            Task tempTask = task.getValue(Task.class);
-                            databaseReferenceTask.child(tempTask.getTaskId()).removeValue().addOnCompleteListener(task1 -> {
-                                if (task1.isSuccessful()) {
-                                    Log.d(TAG, tempTask.getTaskId() + " task deleted.");
-                                } else {
-                                    Log.d(TAG, "Error deleting task: " + tempTask.getTaskId());
-                                }
-                            });
-                        }
+        areYouSureDialog.setPositiveButton("DELETE", (dialog, which) -> {
+            // first we get and delete all tasks:
+            databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    // we iterate through each task here:
+                    for (DataSnapshot task : snapshot.getChildren()) {
+                        Task tempTask = task.getValue(Task.class);
+                        databaseReferenceTask.child(tempTask.getTaskId()).removeValue().addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                Log.d(TAG, tempTask.getTaskId() + " task deleted.");
+                            } else {
+                                Log.d(TAG, "Error deleting task: " + tempTask.getTaskId());
+                            }
+                        });
                     }
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.d(TAG, "Error calling by child in DeleteGroupActivity.");
-                    }
-                });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.d(TAG, "Error calling by child in DeleteGroupActivity.");
+                }
+            });
 
-                // next we delete the group itself:
-                databaseReference.child("Groups").child(groupIDStr).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "Deleted group successfully.");
-                            finish();
-                        } else {
-                            Log.d(TAG, "Error deleting group: " + groupIDStr);
-                        }
+            // next we delete the group itself:
+            databaseReference.child("Groups").child(groupIDStr).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "Deleted group successfully.");
+                        finish();
+                    } else {
+                        Log.d(TAG, "Error deleting group: " + groupIDStr);
                     }
-                });
-            }
+                }
+            });
         });
 
         areYouSureDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
@@ -1110,59 +1074,56 @@ public class CreateTaskAdmin extends AppCompatActivity {
                 } else if ((tempGroup.getGroupAdmins().size() > 1) && (tempGroup.getGroupMembers().size() > 1)) {
                     // if there are multiple admins in a group of many members.
                     areYouSureDialog.setMessage("\nThis will remove YOU from the group.\n\nAre you sure?");
-                    areYouSureDialog.setPositiveButton("LEAVE", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // here we remove the admin from the database.
-                            databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(currUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(currUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    // now we loop through all tasks that belong to the group ID.
-                                                    // If the user is assigned to any, the currUser will be removed (unassigned).
-                                                    databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                            // Here we iterate through all tasks that belong to the group.
-                                                            for (DataSnapshot ds : snapshot.getChildren()){
-                                                                Task tempTask = ds.getValue(Task.class);
-                                                                if (tempTask.getTaskAssignedUsers().containsKey(currUserID)) {
-                                                                    tempTask.getTaskAssignedUsers().remove(currUserID);
-                                                                    // now we update the database to match the removal.
-                                                                    databaseReferenceTask.child(tempTask.getTaskId()).setValue(tempTask).addOnCompleteListener(task1 -> {
-                                                                        if (task1.isSuccessful()) {
-                                                                            Log.d(TAG, "Curr user removed from assignment to task: " + tempTask.getTaskId());
-                                                                        } else {
-                                                                            Log.d(TAG, "Error removing currUser from assignment to task: " + tempTask.getTaskId());
-                                                                        }
-                                                                    });
-                                                                }
+                    areYouSureDialog.setPositiveButton("LEAVE", (dialog, which) -> {
+                        // here we remove the admin from the database.
+                        databaseReference.child("Groups").child(groupIDStr).child("groupAdmins").child(currUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(currUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                // now we loop through all tasks that belong to the group ID.
+                                                // If the user is assigned to any, the currUser will be removed (unassigned).
+                                                databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                                                        // Here we iterate through all tasks that belong to the group.
+                                                        for (DataSnapshot ds : snapshot1.getChildren()){
+                                                            Task tempTask = ds.getValue(Task.class);
+                                                            if (tempTask.getTaskAssignedUsers().containsKey(currUserID)) {
+                                                                tempTask.getTaskAssignedUsers().remove(currUserID);
+                                                                // now we update the database to match the removal.
+                                                                databaseReferenceTask.child(tempTask.getTaskId()).setValue(tempTask).addOnCompleteListener(task1 -> {
+                                                                    if (task1.isSuccessful()) {
+                                                                        Log.d(TAG, "Curr user removed from assignment to task: " + tempTask.getTaskId());
+                                                                    } else {
+                                                                        Log.d(TAG, "Error removing currUser from assignment to task: " + tempTask.getTaskId());
+                                                                    }
+                                                                });
                                                             }
-                                                            // After the iteration is done, we can exit the activity.
-                                                            Toast.makeText(CreateTaskAdmin.this, "You have left the group.", Toast.LENGTH_LONG).show();
-                                                            finish();
                                                         }
-                                                        @Override
-                                                        public void onCancelled(@NonNull DatabaseError error) {
-                                                            Log.d(TAG, "Error getting tasks from group in LeaveGroupActivity.");
-                                                        }
-                                                    });
-                                                } else {
-                                                    Log.d(TAG, "Error removing user from groupMembers in LeaveGroupActivity.");
-                                                }
+                                                        // After the iteration is done, we can exit the activity.
+                                                        Toast.makeText(CreateTaskAdmin.this, "You have left the group.", Toast.LENGTH_LONG).show();
+                                                        finish();
+                                                    }
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError error) {
+                                                        Log.d(TAG, "Error getting tasks from group in LeaveGroupActivity.");
+                                                    }
+                                                });
+                                            } else {
+                                                Log.d(TAG, "Error removing user from groupMembers in LeaveGroupActivity.");
                                             }
-                                        });
-                                    } else {
-                                        Log.d(TAG, "Error removing admin from group in LeaveGroupActivity.");
-                                    }
+                                        }
+                                    });
+                                } else {
+                                    Log.d(TAG, "Error removing admin from group in LeaveGroupActivity.");
                                 }
-                            });
-                            dialog.dismiss();
-                        }
+                            }
+                        });
+                        dialog.dismiss();
                     });
 
                     areYouSureDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
@@ -1211,7 +1172,7 @@ public class CreateTaskAdmin extends AppCompatActivity {
             databaseReference.child("Groups").child(groupIDStr).child("groupName").setValue(groupNameStr).addOnCompleteListener(task1 -> {
                 if (task1.isSuccessful()) {
                     Toast.makeText(CreateTaskAdmin.this, "The group name has been updated.", Toast.LENGTH_LONG).show();
-                    getSupportActionBar().setTitle(groupNameStr + " - Tasks");
+                    Objects.requireNonNull(getSupportActionBar()).setTitle(groupNameStr + " - Tasks");
                 } else {
                     Toast.makeText(CreateTaskAdmin.this, "The group name has not been updated.", Toast.LENGTH_LONG).show();
                 }

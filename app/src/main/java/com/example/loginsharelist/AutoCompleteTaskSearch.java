@@ -1,13 +1,6 @@
 package com.example.loginsharelist;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,9 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -38,6 +36,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -84,16 +83,16 @@ public class AutoCompleteTaskSearch extends AppCompatActivity {
         databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReferenceTask = FirebaseDatabase.getInstance().getReference().child("Tasks");
 
-        autoTaskSearchList = (RecyclerView) findViewById(R.id.autoCompleteTaskSearchList);
+        autoTaskSearchList = findViewById(R.id.autoCompleteTaskSearchList);
         autoTaskSearchList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         autoTaskSearchList.setHasFixedSize(true);
 
         currGroupID = getIntent().getStringExtra("EXTRA_GROUP_ID");
         currGroupName = getIntent().getStringExtra("EXTRA_GROUP_NAME");
         currUserIsAdmin = getIntent().getBooleanExtra("EXTRA_CURR_USER_IS_ADMIN", false);
-        getSupportActionBar().setTitle(currGroupName + " - Search Tasks");
+        Objects.requireNonNull(getSupportActionBar()).setTitle(currGroupName + " - Search Tasks");
 
-        autoTaskSearchInput = (EditText) findViewById(R.id.autoCompleteTaskSearchInput);
+        autoTaskSearchInput = findViewById(R.id.autoCompleteTaskSearchInput);
         // Citation Source
         // https://www.youtube.com/watch?v=b_tz8kbFUsU&ab_channel=TVACStudio
         // https://www.youtube.com/watch?v=_nIoEAC3kLg&ab_channel=TechnicalSkillz
@@ -131,16 +130,12 @@ public class AutoCompleteTaskSearch extends AppCompatActivity {
         //https://stackoverflow.com/questions/52041870/does-using-snapshotparser-while-querying-firestore-an-expensive-operation
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<Task>()
-                .setQuery(query, new SnapshotParser<Task>() {
-                    @NonNull
-                    @Override
-                    public Task parseSnapshot(@NonNull DataSnapshot snapshot) {
-                        Task tempTask = snapshot.getValue(Task.class);
-                        if (tempTask.getTaskName().toLowerCase().contains(taskNameStr) | tempTask.getTaskDescription().toLowerCase().contains(taskNameStr)) {
-                            return tempTask;
-                        } else {
-                            return new Task();
-                        }
+                .setQuery(query, snapshot -> {
+                    Task tempTask = snapshot.getValue(Task.class);
+                    if (tempTask.getTaskName().toLowerCase().contains(taskNameStr) | tempTask.getTaskDescription().toLowerCase().contains(taskNameStr)) {
+                        return tempTask;
+                    } else {
+                        return new Task();
                     }
                 })
                 .build();
@@ -247,6 +242,9 @@ public class AutoCompleteTaskSearch extends AppCompatActivity {
         AlertDialog dialog = alertDialog.create();
 
         Button taskMenuUserMarkButton = view.findViewById(R.id.taskMenuUserMarkButton);
+        if (prevMark) {
+            taskMenuUserMarkButton.setText(R.string.unmark);
+        }
         // We can use the statement lambda to make the code easier to understand
         taskMenuUserMarkButton.setOnClickListener((v) -> {
             UpdateTaskMarkActivity();
@@ -393,7 +391,14 @@ public class AutoCompleteTaskSearch extends AppCompatActivity {
     }
 
     private void viewAssignedUsersActivity() {
-        // TODO: start an intent to show assigned users in separate activity.
+        // start an intent to show assigned users in separate activity.
+        Intent intent = new Intent(AutoCompleteTaskSearch.this, AutoCompleteUserSearch.class);
+        intent.putExtra("EXTRA_GROUP_NAME", currGroupName);
+        intent.putExtra("EXTRA_GROUP_ID", currGroupID);
+        intent.putExtra("EXTRA_SEARCH_REASON", "VIEW_ASSIGNED_USERS");
+        intent.putExtra("EXTRA_TASK_NAME", prevTaskName);
+        intent.putExtra("EXTRA_TASK_ID", prevTaskID);
+        startActivity(intent);
     }
 
     private void assignUserActivity() {
@@ -435,7 +440,8 @@ public class AutoCompleteTaskSearch extends AppCompatActivity {
                 Log.e("CreateTasK_updateMark", "Error getting data", task.getException());
             }
             else {
-                Task t = task.getResult().getValue(Task.class);
+                Task t = Objects.requireNonNull(task.getResult()).getValue(Task.class);
+                assert t != null;
                 stat.set(!(t.isMark()));
                 Log.e("task_statusb", String.valueOf(stat.get()));
                 Task t2 = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, currGroupID, stat.get(), prevTaskAssignedUsers);
@@ -491,6 +497,7 @@ public class AutoCompleteTaskSearch extends AppCompatActivity {
                 // We parse the date from the selected task.
                 Date date = new SimpleDateFormat("MM/dd/yyyy", Locale.US).parse(prevDueDate);
                 // We set the calendar to match the prevDueDate.
+                assert date != null;
                 calendar.setTime(date);
             } catch (ParseException e) {
                 Log.d(TAG, "Date was not able to be parsed: " + prevDueDate);
@@ -500,13 +507,10 @@ public class AutoCompleteTaskSearch extends AppCompatActivity {
         // I didn't replace the OnDateSetListener with a lambda because lambda is too confusing.
         DatePickerDialog datePickerDialog = new DatePickerDialog(
                 this,
-                new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        String correct_month = String.valueOf(month + 1);
-                        String date = correct_month + "/" + dayOfMonth + "/" + year;
-                        taskDueDate.setText(date);
-                    }
+                (view, year, month, dayOfMonth) -> {
+                    String correct_month = String.valueOf(month + 1);
+                    String date = correct_month + "/" + dayOfMonth + "/" + year;
+                    taskDueDate.setText(date);
                 },
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),

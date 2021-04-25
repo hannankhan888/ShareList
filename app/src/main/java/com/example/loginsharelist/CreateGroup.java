@@ -29,9 +29,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This class implements the CreateGroup activity. This activity is available to ALL USERS, and is
@@ -55,24 +55,24 @@ public class CreateGroup extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_group);
-        getSupportActionBar().setTitle("Your Groups");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Your Groups");
 
         auth = FirebaseAuth.getInstance();
         currUserID = auth.getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReferenceGroup = FirebaseDatabase.getInstance().getReference().child("Groups");
 
-        recyclerViewGroup = (RecyclerView) findViewById(R.id.recyclerViewGroup);
+        recyclerViewGroup = findViewById(R.id.recyclerViewGroup);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
         recyclerViewGroup.setHasFixedSize(true);
         recyclerViewGroup.setLayoutManager(linearLayoutManager);
 
-        addGroupButton = (FloatingActionButton) findViewById(R.id.addGroupButton);
+        addGroupButton = findViewById(R.id.addGroupButton);
         addGroupButton.setOnClickListener((view) -> addGroupActivity());
 
-        groupSearchButton = (FloatingActionButton) findViewById(R.id.groupSearchButton);
+        groupSearchButton = findViewById(R.id.groupSearchButton);
         groupSearchButton.setOnClickListener((view) -> groupSearchActivity());
     }
 
@@ -141,7 +141,6 @@ public class CreateGroup extends AppCompatActivity {
             // Validate everything is not empty
             if (groupNameStr.isEmpty()) {
                 groupName.setError("Group name cannot be empty. ");
-                return;
             } else {
                 Group group = new Group(groupNameStr, id, groupMembers, groupAdmins);
                 group.addGroupMember(currUserID);

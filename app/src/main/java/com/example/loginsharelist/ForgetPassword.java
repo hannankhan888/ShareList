@@ -29,11 +29,11 @@ public class ForgetPassword extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        resetEmail = (EditText) findViewById(R.id.resetEmail);
+        resetEmail = findViewById(R.id.resetEmail);
 
         // If the user click the reset password button,
         // it will reset the password
-        resetPasswordButton = (Button) findViewById(R.id.resetPasswordButton);
+        resetPasswordButton = findViewById(R.id.resetPasswordButton);
         // We can use the statement lambda to make the code easier to understand
         resetPasswordButton.setOnClickListener((view) -> resetPasswordActivity());
     }
@@ -48,14 +48,11 @@ public class ForgetPassword extends AppCompatActivity {
             return;
         }
 
-        auth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    Toast.makeText(ForgetPassword.this, "Check your email to reset the password. ", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(ForgetPassword.this, "The email is wrong. ", Toast.LENGTH_LONG).show();
-                }
+        auth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(ForgetPassword.this, "Check your email to reset the password. ", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(ForgetPassword.this, "The email is wrong. ", Toast.LENGTH_LONG).show();
             }
         });
     }

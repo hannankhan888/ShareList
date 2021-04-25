@@ -1,18 +1,21 @@
 package com.example.loginsharelist;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
+import android.util.Log;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.Objects;
 
 public class SplashActivity extends AppCompatActivity {
+    private static final String TAG = "SplashActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-        getSupportActionBar().hide();
+        Objects.requireNonNull(getSupportActionBar()).hide();
         Thread background = new Thread() {
             public void run() {
                 try {
@@ -26,6 +29,7 @@ public class SplashActivity extends AppCompatActivity {
                     //Remove activity
                     finish();
                 } catch (Exception e) {
+                    Log.d(TAG, e.getMessage());
                 }
             }
         };

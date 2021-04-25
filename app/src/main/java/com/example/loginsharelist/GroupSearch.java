@@ -43,12 +43,12 @@ public class GroupSearch extends AppCompatActivity {
 
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Groups");
 
-        recyclerView = (RecyclerView) findViewById(R.id.autoCompletegroupSearchList);
+        recyclerView = findViewById(R.id.autoCompletegroupSearchList);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        groupNameSearchInput = (EditText) findViewById(R.id.groupNameSearchInput);
-        groupNameSearchButton = (Button) findViewById(R.id.groupNameSearchButton);
+        groupNameSearchInput = findViewById(R.id.groupNameSearchInput);
+        groupNameSearchButton = findViewById(R.id.groupNameSearchButton);
 
         // Citation Source
         // https://www.youtube.com/watch?v=b_tz8kbFUsU&ab_channel=TVACStudio

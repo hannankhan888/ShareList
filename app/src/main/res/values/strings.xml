@@ -16,21 +16,16 @@
     <string name="add_group">Add Group</string>
     <string name="update">Update</string>
     <string name="update_group_name">Update Group Name</string>
-    <string name="update_description">Update Description</string>
-    <string name="update_due_date">Update Due Date</string>
     <string name="update_assigned_users">Update Assigned Users</string>
     <string name="search_groups">Search Groups</string>
     <string name="add_task">Add Task</string>
-    <string name="group_search">Group Search</string>
     <string name="group_name">Group Name</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="task_name">Task Name</string>
     <string name="task_description">Task Description</string>
     <string name="due_date">Due Date</string>
-    <string name="name">Name</string>
     <string name="mark_as_completed">Mark as Completed</string>
-    <string name="description">Description</string>
     <string name="create_group_corner_menu">createGroupCornerMenu</string>
     <string name="account">Account</string>
     <string name="group_info">Group Info</string>
@@ -39,11 +34,9 @@
     <string name="assigned_to">Assigned to:</string>
     <string name="enter_user_email">Enter User Email</string>
     <string name="update_task_contents">Update Task Contents</string>
-    <string name="assign_user_to_task">Assign User To Task</string>
     <string name="remove_task">Remove Task</string>
     <string name="view_assigned_users">View Assigned Users</string>
     <string name="assign_user">Assign User</string>
-    <string name="un_assign_user">Unassign User</string>
     <string name="add_user">Add User</string>
     <string name="remove_user">Remove User</string>
     <string name="add_admin">Add Admin</string>
@@ -60,8 +53,7 @@
     <string name="search">Search</string>
     <string name="search_tasks">Search Tasks</string>
     <string name="remove_admin">Remove Admin</string>
-    <string name="are_you_sure_you_want_to_exit">Are you sure you want to exit?</string>
-    <string name="yes">Yes</string>
-    <string name="no">No</string>
     <string name="unmark">Unmark</string>
+    <string name="icon">Icon</string>
+    <string name="name">Name</string>
 </resources>

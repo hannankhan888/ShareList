@@ -17,6 +17,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
+
 /**
  * This class implements the MainActivity, which for our app ShareList is just the login page.
  */
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().hide();
+        Objects.requireNonNull(getSupportActionBar()).hide();
 
         auth = FirebaseAuth.getInstance();
 
@@ -100,17 +102,14 @@ public class MainActivity extends AppCompatActivity {
 
         // connect to the firebase
         // The user will use their email and password to login
-        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                // If the user login, the user will go to the create group activity
-                if (task.isSuccessful()) {
-                    // Clears the password for if you logout.
-                    loginPassword.setText("");
-                    startActivity(new Intent(MainActivity.this, CreateGroup.class));
-                } else {
-                    Toast.makeText(MainActivity.this, "Incorrect Email or Password!", Toast.LENGTH_LONG).show();
-                }
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            // If the user login, the user will go to the create group activity
+            if (task.isSuccessful()) {
+                // Clears the password for if you logout.
+                loginPassword.setText("");
+                startActivity(new Intent(MainActivity.this, CreateGroup.class));
+            } else {
+                Toast.makeText(MainActivity.this, "Incorrect Email or Password!", Toast.LENGTH_LONG).show();
             }
         });
     }

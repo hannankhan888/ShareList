@@ -32,6 +32,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -68,8 +69,6 @@ public class CreateTaskUser extends AppCompatActivity {
     private String groupIDStr;
     private String currUserID;
 
-    public static boolean status = false;
-
 
     /**
      * This method sets all necessary vars for this activity. It also sets the app bar title to
@@ -100,16 +99,16 @@ public class CreateTaskUser extends AppCompatActivity {
         databaseReferenceTask = FirebaseDatabase.getInstance().getReference().child("Tasks");
 
         // Rename app bar to GROUP_NAME - Tasks
-        getSupportActionBar().setTitle(groupNameStr + " - Tasks");
+        Objects.requireNonNull(getSupportActionBar()).setTitle(groupNameStr + " - Tasks");
 
-        recyclerViewTask = (RecyclerView) findViewById(R.id.recyclerViewTask);
+        recyclerViewTask = findViewById(R.id.recyclerViewTask);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
         recyclerViewTask.setHasFixedSize(true);
         recyclerViewTask.setLayoutManager(linearLayoutManager);
 
-        searchTaskButton = (FloatingActionButton) findViewById(R.id.createTaskUserSearchButton);
+        searchTaskButton = findViewById(R.id.createTaskUserSearchButton);
         searchTaskButton.setOnClickListener((view) -> searchTaskActivity());
     }
 
@@ -155,51 +154,46 @@ public class CreateTaskUser extends AppCompatActivity {
 
         areYouSureDialog.setMessage("This will remove YOU from the group.\n\nAre you sure?");
         // since the currUser is a groupMember only, and NOT an admin, we can just remove them from group.
-        areYouSureDialog.setPositiveButton("LEAVE", new DialogInterface.OnClickListener() {
+        areYouSureDialog.setPositiveButton("LEAVE", (dialog, which) -> databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(currUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                databaseReference.child("Groups").child(groupIDStr).child("groupMembers").child(currUserID).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            // here we iterate through all tasks of the group
-                            // if the currUser is assigned to any task, it will remove (un-assign the user).
-                            databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    for (DataSnapshot ds : snapshot.getChildren()) {
-                                        Task tempTask = ds.getValue(Task.class);
-                                        if (tempTask.getTaskAssignedUsers().containsKey(currUserID)) {
-                                            // here we update the database to un-assign the currUser.
-                                            tempTask.getTaskAssignedUsers().remove(currUserID);
-                                            databaseReferenceTask.child(tempTask.getTaskId()).setValue(tempTask).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                                                    if (task.isSuccessful()) {
-                                                        Log.d(TAG, "Curr user removed from assignment to task: " + tempTask.getTaskId());
-                                                    } else {
-                                                        Log.d(TAG, "Error removing currUser from assignment to task: " + tempTask.getTaskId());
-                                                    }
-                                                }
-                                            });
+            public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                if (task.isSuccessful()) {
+                    // here we iterate through all tasks of the group
+                    // if the currUser is assigned to any task, it will remove (un-assign the user).
+                    databaseReferenceTask.orderByChild("/taskBelongsToGroupID").equalTo(groupIDStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot ds : snapshot.getChildren()) {
+                                Task tempTask = ds.getValue(Task.class);
+                                if (tempTask.getTaskAssignedUsers().containsKey(currUserID)) {
+                                    // here we update the database to un-assign the currUser.
+                                    tempTask.getTaskAssignedUsers().remove(currUserID);
+                                    databaseReferenceTask.child(tempTask.getTaskId()).setValue(tempTask).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "Curr user removed from assignment to task: " + tempTask.getTaskId());
+                                            } else {
+                                                Log.d(TAG, "Error removing currUser from assignment to task: " + tempTask.getTaskId());
+                                            }
                                         }
-                                    }
-                                    // here we notify the user they have left the group.
-                                    Toast.makeText(CreateTaskUser.this, "You have left the group.", Toast.LENGTH_LONG).show();
-                                    finish();
+                                    });
                                 }
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    Log.d(TAG, "Error retrieving tasks data in LEAVE GROUP.");
-                                }
-                            });
-                        } else {
-                            Toast.makeText(CreateTaskUser.this, "Error leaving the group.", Toast.LENGTH_LONG).show();
+                            }
+                            // here we notify the user they have left the group.
+                            Toast.makeText(CreateTaskUser.this, "You have left the group.", Toast.LENGTH_LONG).show();
+                            finish();
                         }
-                    }
-                });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.d(TAG, "Error retrieving tasks data in LEAVE GROUP.");
+                        }
+                    });
+                } else {
+                    Toast.makeText(CreateTaskUser.this, "Error leaving the group.", Toast.LENGTH_LONG).show();
+                }
             }
-        });
+        }));
 
         areYouSureDialog.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
@@ -360,7 +354,8 @@ public class CreateTaskUser extends AppCompatActivity {
             if (!task.isSuccessful()) {
                 Log.e("CreateTasK_updateMark", "Error getting data", task.getException());
             } else {
-                Task t = task.getResult().getValue(Task.class);
+                Task t = Objects.requireNonNull(task.getResult()).getValue(Task.class);
+                assert t != null;
                 stat.set(!(t.isMark()));
                 Log.e("task_statusb", String.valueOf(stat.get()));
                 Task t2 = new Task(prevTaskName, prevTaskDescription, prevTaskID, prevCreationDate, prevDueDate, groupIDStr, stat.get(), prevTaskAssignedUsers);
@@ -415,6 +410,7 @@ public class CreateTaskUser extends AppCompatActivity {
                 for (DataSnapshot task : snapshot.getChildren()) {
                     Task tempTask = task.getValue(Task.class);
                     numOfTasks += 1;
+                    assert tempTask != null;
                     if (tempTask.isMark()) {
                         numCompletedTasks += 1;
                     }

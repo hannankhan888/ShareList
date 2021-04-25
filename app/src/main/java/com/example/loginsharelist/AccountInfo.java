@@ -1,22 +1,20 @@
 package com.example.loginsharelist;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+
+import java.util.Objects;
 
 public class AccountInfo extends AppCompatActivity {
 
@@ -35,7 +33,7 @@ public class AccountInfo extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_info);
-        getSupportActionBar().setTitle("Account Info");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Account Info");
 
         auth = FirebaseAuth.getInstance();
         currUserID = auth.getUid();
@@ -54,7 +52,8 @@ public class AccountInfo extends AppCompatActivity {
                 Log.e("firebase", "Error getting data", task.getException());
             }
             else {
-                currUserObject = task.getResult().getValue(User.class);
+                currUserObject = Objects.requireNonNull(task.getResult()).getValue(User.class);
+                assert currUserObject != null;
                 usernameText.setText(currUserObject.userName);
                 emailText.setText(currUserObject.emailAddress);
                 phoneText.setText(currUserObject.phoneNumber);

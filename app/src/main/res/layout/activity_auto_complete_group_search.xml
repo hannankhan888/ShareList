@@ -37,6 +37,7 @@
         android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
         android:clickable="true"
+        app:tint="@color/white"
         android:src="@drawable/ic_group_add_56px"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

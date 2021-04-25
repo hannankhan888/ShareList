@@ -1,11 +1,5 @@
 package com.example.loginsharelist;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -18,11 +12,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -32,9 +30,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * This class implements an autocomplete search for groups.*/
@@ -57,21 +55,21 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_complete_group_search);
 
-        getSupportActionBar().setTitle("Search Your Groups");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Search Your Groups");
 
         auth = FirebaseAuth.getInstance();
         currUserID = auth.getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         databaseReferenceGroup = FirebaseDatabase.getInstance().getReference().child("Groups");
 
-        autoGroupSearchList = (RecyclerView) findViewById(R.id.autoCompleteGroupSearchList);
+        autoGroupSearchList = findViewById(R.id.autoCompleteGroupSearchList);
         autoGroupSearchList.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         autoGroupSearchList.setHasFixedSize(true);
 
-        autoCompleteCreateGroupButton = (FloatingActionButton) findViewById(R.id.autoCompleteCreateGroupButton);
+        autoCompleteCreateGroupButton = findViewById(R.id.autoCompleteCreateGroupButton);
         autoCompleteCreateGroupButton.setOnClickListener((view) -> addGroupActivity());
 
-        autoGroupSearchInput = (EditText) findViewById(R.id.autoCompleteGroupNameSearchInput);
+        autoGroupSearchInput = findViewById(R.id.autoCompleteGroupNameSearchInput);
         // Citation Source
         // https://www.youtube.com/watch?v=b_tz8kbFUsU&ab_channel=TVACStudio
         // https://www.youtube.com/watch?v=_nIoEAC3kLg&ab_channel=TechnicalSkillz
@@ -127,7 +125,6 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
             // Validate everything is not empty
             if (groupNameStr.isEmpty()) {
                 groupName.setError("Group name cannot be empty. ");
-                return;
             } else {
                 Group group = new Group(groupNameStr, id, groupMembers, groupAdmins);
                 databaseReferenceGroup.child(databaseReferenceGroup.push().getKey()).setValue(group).addOnCompleteListener(task -> {
@@ -159,17 +156,13 @@ public class AutoCompleteGroupSearch extends AppCompatActivity {
         //https://stackoverflow.com/questions/52041870/does-using-snapshotparser-while-querying-firestore-an-expensive-operation
         FirebaseRecyclerOptions firebaseRecyclerOptions = new FirebaseRecyclerOptions
                 .Builder<Group>()
-                .setQuery(query, new SnapshotParser<Group>() {
-                    @NonNull
-                    @Override
-                    public Group parseSnapshot(@NonNull DataSnapshot snapshot) {
-                        Group tempGroup = snapshot.getValue(Group.class);
-                        // this way we can search all groups that match or contain the current string.
-                        if (tempGroup.getGroupName().toLowerCase().contains(groupNameStr)){
-                            return tempGroup;
-                        } else {
-                            return new Group();
-                        }
+                .setQuery(query, snapshot -> {
+                    Group tempGroup = snapshot.getValue(Group.class);
+                    // this way we can search all groups that match or contain the current string.
+                    if (tempGroup.getGroupName().toLowerCase().contains(groupNameStr)){
+                        return tempGroup;
+                    } else {
+                        return new Group();
                     }
                 })
                 .build();

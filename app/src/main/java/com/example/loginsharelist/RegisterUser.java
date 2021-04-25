@@ -38,14 +38,14 @@ public class RegisterUser extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        createUserName = (EditText) findViewById(R.id.createUserName);
-        createPhoneNumber = (EditText) findViewById(R.id.createPhoneNumber);
-        createEmail = (EditText) findViewById(R.id.createEmail);
-        createPassword = (EditText) findViewById(R.id.createPassword);
+        createUserName = findViewById(R.id.createUserName);
+        createPhoneNumber = findViewById(R.id.createPhoneNumber);
+        createEmail = findViewById(R.id.createEmail);
+        createPassword = findViewById(R.id.createPassword);
 
         // If the user click the create account button,
         // it will create account on the firebase
-        createAccountButton = (Button) findViewById(R.id.createAccountButton);
+        createAccountButton = findViewById(R.id.createAccountButton);
         // We can use the statement lambda to make the code easier to understand
         createAccountButton.setOnClickListener((view) -> createAccountActivity());
     }

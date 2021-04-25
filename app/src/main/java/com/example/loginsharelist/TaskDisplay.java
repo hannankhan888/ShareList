@@ -1,8 +1,6 @@
 package com.example.loginsharelist;
 
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
@@ -12,8 +10,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.w3c.dom.Text;
 
 /**
  * This class implements a TaskDisplay which the FirebaseRecyclerView will use to display the tasks

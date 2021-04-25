@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/createTaskAdminCornerMenu"
         android:icon="@drawable/ic_more_vert_56px"
         app:showAsAction="always"
         android:title="@string/create_group_corner_menu">
