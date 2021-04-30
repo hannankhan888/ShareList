@@ -1,3 +1,7 @@
+This Android app was made for CSE 5324 - Software Engineering: Analysis, Design, and Testing. Made by Group 6 - Coffee_Code.
+The purpose of this project was to learn major SFT ENG principles. All design materials can be found in the CSE 5324 folder.
+The final design notebook is in the Iteration 3 'final' folder, and contains all planning work (Requirements, Use Cases, ..., Design Class Diagram, etc.) for this project.
+
 # ShareList
 
 This to-do app is designed to allow users to create, delegate, and track tasks that are shared
@@ -10,7 +14,7 @@ is an efficient, fast, user-friendly and smooth task-management tool for you!
 
 ## Getting Started
 
-You can clone and run in Android studio, or use the included APK (once its added).
+You can clone and run in Android studio.
 
 ### Prerequisites
 
@@ -35,4 +39,4 @@ Add your firebase configuration via AndroidStudio>Tools>Firebase.
 
 ## Acknowledgments
 
-* Coffe code and SE1 Team
+* Coffee_Code and SE1 Team
