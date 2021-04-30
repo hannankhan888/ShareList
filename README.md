@@ -2,6 +2,8 @@ This Android app was made for CSE 5324 - Software Engineering: Analysis, Design,
 The purpose of this project was to learn major SFT ENG principles. All design materials can be found in the CSE 5324 folder.
 The final design notebook is in the Iteration 3 'final' folder, and contains all planning work (Requirements, Use Cases, ..., Design Class Diagram, etc.) for this project.
 
+A demonstration of the use cases can be found at: https://www.youtube.com/watch?v=00hI1BCEehk
+
 # ShareList
 
 This to-do app is designed to allow users to create, delegate, and track tasks that are shared
